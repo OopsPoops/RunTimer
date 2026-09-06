@@ -24,6 +24,11 @@ h1{font-size:27px;margin:4px 0 18px}
 .controls{display:flex;gap:10px}
 .btn{border:0;border-radius:16px;padding:15px 10px;font-size:17px;font-weight:650;flex:1;background:#fff;color:#111}
 .btn.secondary{background:#303033;color:#fff}
+.player{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:18px}
+.pbtn{width:58px;height:58px;border-radius:50%;border:0;background:#303033;color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity .15s}
+.pbtn.main{width:68px;height:68px;background:#fff;color:#111;font-size:26px}
+.pbtn.side{width:50px;height:50px;font-size:18px;background:#26262a}
+.pbtn:disabled{opacity:.35;cursor:default}
 .settings h2{font-size:18px;margin:0 0 12px}
 .row{display:grid;grid-template-columns:1fr 180px;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #333}
 .row label{font-size:16px}
@@ -68,13 +73,14 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 </div>
 
 <div class="next" id="next">—</div>
-</div>
 
-<div class="controls">
-<button class="btn" id="start">Старт</button>
-<button class="btn secondary" id="pause" disabled>Пауза</button>
-<button class="btn secondary" id="stop" disabled>Стоп</button>
-<button class="btn secondary" id="skip" disabled>Пропустить</button>
+<div class="player">
+<button class="pbtn side" id="back" title="Назад" disabled>⏮</button>
+<button class="pbtn main" id="start" title="Старт">▶</button>
+<button class="pbtn" id="pause" title="Пауза" disabled>⏸</button>
+<button class="pbtn" id="stop" title="Стоп" disabled>⏹</button>
+<button class="pbtn side" id="skip" title="Пропустить" disabled>⏭</button>
+</div>
 </div>
 
 <div class="status" id="status"></div>
@@ -321,10 +327,11 @@ idx=0;
 remaining=phases[0].sec;
 running=true;
 paused=false;
-$("start").textContent="Заново";
+$("start").textContent="↻";
 $("pause").disabled=false;
 $("stop").disabled=false;
 $("skip").disabled=false;
+$("back").disabled=false;
 announce(phases[0]);
 render();
 keepScreenOn();
@@ -374,7 +381,7 @@ if(!running)
 return;
 paused=!paused;
 $("pause").textContent=
-paused?"Продолжить":"Пауза";
+paused?"▶":"⏸";
 $("status").textContent=
 paused?"На паузе":"";
 if(!paused){
@@ -390,6 +397,17 @@ if(idx>=phases.length){
 finish();
 return;
 }
+remaining=phases[idx].sec;
+announce(phases[idx]);
+render();
+last=performance.now();
+}
+
+function back(){
+if(!running)
+return;
+idx--;
+if(idx<0)idx=0;
 remaining=phases[idx].sec;
 announce(phases[idx]);
 render();
@@ -412,7 +430,8 @@ $("status").textContent="";
 $("pause").disabled=true;
 $("stop").disabled=true;
 $("skip").disabled=true;
-$("start").textContent="Старт";
+$("back").disabled=true;
+$("start").textContent="▶";
 releaseScreenLock();
 }
 
@@ -431,7 +450,8 @@ $("fill").style.width="100%";
 $("pause").disabled=true;
 $("stop").disabled=true;
 $("skip").disabled=true;
-$("start").textContent="Старт";
+$("back").disabled=true;
+$("start").textContent="▶";
 releaseScreenLock();
 }
 
@@ -639,6 +659,7 @@ start();
 $("pause").onclick=togglePause;
 $("stop").onclick=stop;
 $("skip").onclick=skip;
+$("back").onclick=back;
 $("settingsToggle").onclick=()=>{
 let body=$("settingsBody");
 body.classList.toggle("hidden");
