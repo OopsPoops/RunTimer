@@ -28,6 +28,7 @@ h1{font-size:27px;margin:4px 0 18px}
 .pbtn{width:58px;height:58px;border-radius:50%;border:0;background:#303033;color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity .15s}
 .pbtn.main{width:68px;height:68px;background:#fff;color:#111;font-size:26px}
 .pbtn.side{width:50px;height:50px;font-size:18px;background:#26262a}
+.pbtn.snd-off-style{background:#fff;color:#111}
 .pbtn:disabled{opacity:.35;cursor:default}
 .settings h2{font-size:18px;margin:0 0 12px}
 .row{display:grid;grid-template-columns:1fr 180px;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #333}
@@ -85,17 +86,21 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <div class="next" id="next">—</div>
 
 <div class="player">
+<button class="pbtn" id="stop" title="Стоп" disabled>
+<svg viewBox="0 0 24 24" width="22" height="22"><rect x="6.5" y="6.5" width="11" height="11" rx="2" fill="currentColor"/></svg>
+</button>
 <button class="pbtn side" id="back" title="Назад" disabled>
 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11 18 6 12 11 6M18 18 13 12 18 6"/></svg>
 </button>
 <button class="pbtn main" id="toggle" title="Старт/Пауза">
 <svg viewBox="0 0 24 24" width="26" height="26"><path d="M6.5 6.5l9.5 5.5-9.5 5.5Z" fill="currentColor"/><rect x="18" y="7" width="2.6" height="10" rx="1.2" fill="currentColor"/><rect x="22" y="7" width="2.6" height="10" rx="1.2" fill="currentColor"/></svg>
 </button>
-<button class="pbtn" id="stop" title="Стоп" disabled>
-<svg viewBox="0 0 24 24" width="22" height="22"><rect x="6.5" y="6.5" width="11" height="11" rx="2" fill="currentColor"/></svg>
-</button>
 <button class="pbtn side" id="skip" title="Пропустить" disabled>
 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 18 18 12 13 6M6 18 11 12 6 6"/></svg>
+</button>
+<button class="pbtn side" id="sound" title="Звук">
+<svg class="snd-on" viewBox="0 0 24 24" width="20" height="20"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/><path d="M16 9a4 4 0 0 1 0 6M18.6 6.4a8 8 0 0 1 0 11.2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+<svg class="snd-off" viewBox="0 0 24 24" width="20" height="20" style="display:none"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
 </button>
 </div>
 </div>
@@ -285,6 +290,7 @@ return parts.join(" ")||"0 секунд";
 }
 
 let ruVoice=null;
+let soundOn=true;
 function loadVoices(){
 try{
 let voices=speechSynthesis.getVoices();
@@ -297,6 +303,7 @@ speechSynthesis.onvoiceschanged=loadVoices;
 }
 
 function speak(text){
+if(!soundOn)return;
 if(!("speechSynthesis" in window))
 return;
 speechSynthesis.cancel();
@@ -309,7 +316,26 @@ utterance.pitch=1;
 speechSynthesis.speak(utterance);
 }
 
+function updateSound(){
+let btn=$("sound");
+if(!btn)return;
+let on=btn.querySelector(".snd-on");
+let off=btn.querySelector(".snd-off");
+if(soundOn){
+on.style.display="";
+off.style.display="none";
+btn.classList.remove("snd-off-style");
+btn.title="Звук";
+}else{
+on.style.display="none";
+off.style.display="";
+btn.classList.add("snd-off-style");
+btn.title="Без звука";
+}
+}
+
 function beep(){
+if(!soundOn)return;
 try{
 let Audio=window.AudioContext||window.webkitAudioContext;
 if(Audio){
@@ -746,6 +772,10 @@ updateToggle();
 $("stop").onclick=stop;
 $("skip").onclick=skip;
 $("back").onclick=back;
+$("sound").onclick=()=>{
+soundOn=!soundOn;
+updateSound();
+};
 $("privacyLink").onclick=(e)=>{
 e.preventDefault();
 $("privacyModal").classList.add("open");
