@@ -275,6 +275,18 @@ if(s>0)parts.push(s+" "+plural(s,"секунда","секунды","секунд
 return parts.join(" ")||"0 секунд";
 }
 
+let ruVoice=null;
+function loadVoices(){
+try{
+let voices=speechSynthesis.getVoices();
+ruVoice=voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith("ru"))||null;
+}catch(e){}
+}
+if("speechSynthesis" in window){
+loadVoices();
+speechSynthesis.onvoiceschanged=loadVoices;
+}
+
 function speak(text){
 if(!("speechSynthesis" in window))
 return;
@@ -282,6 +294,7 @@ speechSynthesis.cancel();
 try{speechSynthesis.resume();}catch(e){}
 let utterance=new SpeechSynthesisUtterance(text);
 utterance.lang="ru-RU";
+if(ruVoice)utterance.voice=ruVoice;
 utterance.rate=.95;
 utterance.pitch=1;
 speechSynthesis.speak(utterance);
@@ -612,6 +625,7 @@ function fmtSeconds(v){
 if(v<60)return v+" сек";
 let m=Math.floor(v/60);
 let s=v%60;
+if(v>=300)return m+" мин";
 return m+" мин "+String(s).padStart(2,"0")+" сек";
 }
 
