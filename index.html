@@ -45,6 +45,8 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .pick-overlay{position:absolute;inset:0;width:100%;height:100%;opacity:0;appearance:none;-webkit-appearance:none;cursor:pointer}
 .status{text-align:center;color:#aaa;min-height:22px;margin:10px}
 .note{color:#888;font-size:13px;line-height:1.4;margin-top:12px}
+.footer{text-align:center;color:#666;font-size:13px;margin-top:26px;padding-bottom:10px}
+.footer a{color:#888;text-decoration:none}
 .settings-toggle{width:100%;background:transparent;border:0;color:#fff;font-size:18px;font-weight:600;text-align:left;padding:4px 0 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
 .settings-arrow{color:#888;font-size:14px;transition:transform .2s}
 .settings-arrow.open{transform:rotate(180deg)}
@@ -94,7 +96,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <label>Ходьба в начале</label>
 <div class="input-wrap">
 <input id="warm" type="number" min="0" value="3" class="wi-hidden">
-<select class="picky" data-field="warm" data-min="0" data-max="1200" data-step="5"></select>
+<select class="picky" data-field="warm" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
 <span class="wunit">сек</span>
 </div>
 </div>
@@ -103,7 +105,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <label>Быстрая ходьба</label>
 <div class="input-wrap">
 <input id="fast" type="number" min="0" value="3" class="wi-hidden">
-<select class="picky" data-field="fast" data-min="0" data-max="1200" data-step="5"></select>
+<select class="picky" data-field="fast" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
 <span class="wunit">сек</span>
 </div>
 </div>
@@ -115,7 +117,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <label>Количество подходов</label>
 <div class="input-wrap">
 <input id="cycles" type="number" min="1" value="2" class="wi-hidden">
-<select class="picky" data-field="cycles" data-min="1" data-max="10" data-step="1"></select>
+<select class="picky" data-kind="count" data-field="cycles" data-min="1" data-max="10" data-step="1"></select>
 <span class="wunit">шт</span>
 </div>
 </div>
@@ -124,7 +126,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <label>Бег в подходе</label>
 <div class="input-wrap">
 <input id="run" type="number" min="0" value="3" class="wi-hidden">
-<select class="picky" data-field="run" data-min="0" data-max="1200" data-step="5"></select>
+<select class="picky" data-field="run" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
 <span class="wunit">сек</span>
 </div>
 </div>
@@ -133,7 +135,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <label>Ходьба в подходе</label>
 <div class="input-wrap">
 <input id="cycleWalk" type="number" min="0" value="3" class="wi-hidden">
-<select class="picky" data-field="cycleWalk" data-min="0" data-max="1200" data-step="5"></select>
+<select class="picky" data-field="cycleWalk" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
 <span class="wunit">сек</span>
 </div>
 </div>
@@ -143,7 +145,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <label>Ходьба в конце</label>
 <div class="input-wrap">
 <input id="cool" type="number" min="0" value="3" class="wi-hidden">
-<select class="picky" data-field="cool" data-min="0" data-max="1200" data-step="5"></select>
+<select class="picky" data-field="cool" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
 <span class="wunit">сек</span>
 </div>
 </div>
@@ -162,6 +164,8 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <div class="tpl-grid" id="tplGrid"></div>
 </div>
 </div>
+
+<div class="footer">by <a href="mailto:avalarionov@gmail.com">larik</a></div>
 
 </div>
 
@@ -283,6 +287,8 @@ void el.offsetWidth;
 el.classList.add("blink");
 }
 
+const ORDINALS=["первый","второй","третий","четвёртый","пятый","шестой","седьмой","восьмой","девятый","десятый"];
+
 function announce(phase){
 if(!phase)return;
 beep();
@@ -291,8 +297,8 @@ let text=phase.name;
 if(phase.name==="Бег")text="Бежим";
 else if(phase.name==="Ходьба")text="Идём";
 else if(phase.name==="Быстрая ходьба")text="Быстрым шагом";
-if(phase.cycle){
-text+=", подход "+phase.cycle;
+if(phase.name==="Бег"&&phase.cycle&&ORDINALS[phase.cycle-1]){
+text+=", подход "+ORDINALS[phase.cycle-1];
 }
 text+=". "+describeTime(phase.sec);
 speak(text);
@@ -568,19 +574,45 @@ b.classList.toggle("today",b.dataset.id===id);
 applyTemplate(t);
 }
 
+const TIME_VALUES=[];
+for(let v=0;v<=55;v+=5)TIME_VALUES.push(v);
+for(let v=70;v<=110;v+=10)TIME_VALUES.push(v);
+for(let v=120;v<=300;v+=30)TIME_VALUES.push(v);
+for(let v=360;v<=1200;v+=60)TIME_VALUES.push(v);
+
+function fmtSeconds(v){
+if(v<60)return v+" сек";
+let m=Math.floor(v/60);
+let s=v%60;
+if(s===0)return m+" мин";
+return m+" мин "+s+" сек";
+}
+
+function selValues(sel){
+if(sel.dataset.kind==="count"){
+let a=[];
+for(let v=1;v<=10;v++)a.push(v);
+return a;
+}
+return TIME_VALUES;
+}
+
+function selLabel(sel,v){
+if(sel.dataset.kind==="count")return String(v);
+return fmtSeconds(v);
+}
+
 function buildPickers(){
 document.querySelectorAll(".picky").forEach(sel=>{
-let min=parseInt(sel.dataset.min)||0;
-let max=parseInt(sel.dataset.max)||1200;
-let step=parseInt(sel.dataset.step)||5;
 let field=sel.dataset.field;
+let values=selValues(sel);
 sel.innerHTML="";
-for(let v=min;v<=max;v+=step){
+values.forEach(v=>{
 let o=document.createElement("option");
 o.value=v;
-o.textContent=v;
+o.textContent=selLabel(sel,v);
 sel.appendChild(o);
-}
+});
 let wrap=document.createElement("div");
 wrap.className="picker";
 let disp=document.createElement("div");
@@ -592,7 +624,7 @@ wrap.appendChild(sel);
 sel._disp=disp;
 function upd(){
 let idx=sel.selectedIndex;
-disp.textContent=(idx>=0&&sel.options[idx])?sel.options[idx].textContent:sel.value;
+disp.textContent=(idx>=0&&sel.options[idx])?sel.options[idx].textContent:selLabel(sel,parseInt(sel.value)||0);
 }
 upd();
 sel.addEventListener("change",()=>{
@@ -608,17 +640,16 @@ function syncPickers(){
 document.querySelectorAll(".pick-overlay").forEach(sel=>{
 let inp=document.getElementById(sel.dataset.field);
 if(!inp)return;
-let min=parseInt(sel.dataset.min)||0;
-let max=parseInt(sel.dataset.max)||1200;
-let step=parseInt(sel.dataset.step)||5;
+let values=selValues(sel);
 let v=parseInt(inp.value);
-if(isNaN(v))v=min;
-let snapped=Math.min(max,Math.max(min,Math.round((v-min)/step)*step+min));
+if(isNaN(v))v=values[0];
+let snapped=values[0],best=Math.abs(v-values[0]);
+values.forEach(x=>{let d=Math.abs(v-x);if(d<best){best=d;snapped=x;}});
 inp.value=snapped;
 sel.value=snapped;
 if(sel._disp){
 let idx=sel.selectedIndex;
-sel._disp.textContent=(idx>=0&&sel.options[idx])?sel.options[idx].textContent:snapped;
+sel._disp.textContent=(idx>=0&&sel.options[idx])?sel.options[idx].textContent:selLabel(sel,snapped);
 }
 });
 }
