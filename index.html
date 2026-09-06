@@ -42,6 +42,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .tpl-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .tpl-btn{border:0;border-radius:12px;padding:22px 6px;font-size:12px;font-weight:600;background:#303033;color:#fff;cursor:pointer}
 .tpl-btn:active{background:#3a3a3d}
+.tpl-btn.today{background:#34c759;color:#111}
 .timer.blink{animation:timerBlink .7s ease-in-out}
 @keyframes timerBlink{0%{color:#fff;transform:scale(1)}30%{color:#34c759;transform:scale(1.06)}70%{color:#34c759;transform:scale(1.06)}100%{color:#fff;transform:scale(1)}}
 </style>
@@ -514,11 +515,32 @@ TEMPLATES.forEach(t=>{
 let b=document.createElement("button");
 b.type="button";
 b.className="tpl-btn";
+b.dataset.id=t.id;
 let w=t.walk>0?fmtNum(t.walk):"—";
 b.textContent=t.id+" · "+fmtNum(t.run)+"/"+w+"×"+t.cycles;
 b.onclick=()=>applyTemplate(t);
 grid.appendChild(b);
 });
+}
+
+const WEEK_START=new Date(2026,8,7);
+const DAY_LABELS={1:"Пн",4:"Чт",6:"Сб"};
+
+function selectTodayTemplate(){
+let now=new Date();
+let startOfToday=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+let days=Math.floor((startOfToday-WEEK_START)/86400000);
+if(days<0)return;
+let week=Math.floor(days/7)+1;
+let label=DAY_LABELS[startOfToday.getDay()];
+if(week>8||!label)return;
+let id=week+". "+label;
+let t=TEMPLATES.find(x=>x.id===id);
+if(!t)return;
+document.querySelectorAll(".tpl-btn").forEach(b=>{
+b.classList.toggle("today",b.dataset.id===id);
+});
+applyTemplate(t);
 }
 
 $("templatesToggle").onclick=()=>{
@@ -528,6 +550,7 @@ $("templatesArrow").classList.toggle("open");
 };
 
 buildTemplates();
+selectTodayTemplate();
 
 $("start").onclick=()=>{
 if(running){
