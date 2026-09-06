@@ -39,13 +39,11 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .settings-arrow.open{transform:rotate(180deg)}
 .settings-body{overflow:hidden}
 .settings-body.hidden{display:none}
-.flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:10}
-.flash.on{animation:flashPulse .7s ease-out forwards}
-@keyframes flashPulse{0%{opacity:0}20%{opacity:.2}100%{opacity:0}}
+.timer.blink{animation:timerBlink .7s ease-in-out}
+@keyframes timerBlink{0%{color:#fff;transform:scale(1)}30%{color:#ffd60a;transform:scale(1.06)}70%{color:#ffd60a;transform:scale(1.06)}100%{color:#fff;transform:scale(1)}}
 </style>
 </head>
 <body>
-<div class="flash" id="flash"></div>
 <div class="app">
 
 <h1>🏃 Тренировка</h1>
@@ -240,17 +238,17 @@ navigator.vibrate([180,80,180]);
 }
 }
 
-function flash(){
-let el=$("flash");
+function blink(){
+let el=$("timer");
 if(!el)return;
-el.classList.remove("on");
+el.classList.remove("blink");
 void el.offsetWidth;
-el.classList.add("on");
+el.classList.add("blink");
 }
 
 function announce(phase){
 beep();
-flash();
+blink();
 let text=phase.name;
 if(phase.cycle){
 text+=", подход "+phase.cycle;
