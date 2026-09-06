@@ -54,6 +54,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .modal-card{background:#1d1d1f;border-radius:16px;padding:20px;max-width:420px;width:100%;max-height:80vh;overflow-y:auto}
 .modal-card h2{margin:0 0 12px;font-size:20px}
 .modal-card p{color:#ccc;font-size:14px;line-height:1.5;margin:0 0 12px}
+.modal-close{display:block;margin:10px auto 0;width:46px;height:46px;border-radius:50%;border:0;background:#303033;color:#fff;font-size:18px;cursor:pointer}
 .settings-toggle{width:100%;background:transparent;border:0;color:#fff;font-size:18px;font-weight:600;text-align:left;padding:4px 0 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
 .settings-arrow{color:#888;font-size:14px;transition:transform .2s}
 .settings-arrow.open{transform:rotate(180deg)}
@@ -193,7 +194,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <p><strong>Звук и озвучка.</strong> Для голосовых подсказок и звуковых сигналов используются стандартные возможности браузера (SpeechSynthesis, Web Audio). Данные не передаются на сервер.</p>
 <p><strong>Сторонние сервисы.</strong> Приложение размещено на GitHub Pages (GitHub Inc.), который обрабатывает сетевые запросы в соответствии со своей политикой конфиденциальности.</p>
 <p><strong>Контакты.</strong> По вопросам, связанным с политикой конфиденциальности, пишите на <a href="mailto:avalarionov@gmail.com" style="color:#7ab8ff">avalarionov@gmail.com</a>.</p>
-<button class="btn" id="privacyClose">Закрыть</button>
+<button class="modal-close" id="privacyClose" aria-label="Закрыть">✕</button>
 </div>
 </div>
 
