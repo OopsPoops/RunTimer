@@ -4,7 +4,7 @@
 
 ## 🌐 Сайт
 
-**Открыть приложение: [https://oopspoops.github.io/RunTimer/](https://oopspoops.github.io/RunTimer/)**
+**Открыть приложение: <a href="https://oopspoops.github.io/RunTimer/" target="_blank" rel="noopener">https://oopspoops.github.io/RunTimer/</a>**
 
 > 💡 На iPhone: откройте ссылку в Safari → «Поделиться» → «На экран “Домой”» — приложение появится на главном экране с иконкой и будет работать в полноэкранном режиме.
 
