@@ -13,7 +13,7 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#111;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif}
-.app{max-width:520px;margin:auto;padding:20px 18px 32px}
+.app{max-width:520px;margin:auto;padding:calc(env(safe-area-inset-top) + 48px) 18px 32px}
 h1{font-size:27px;margin:4px 0 18px}
 .card{background:#1d1d1f;border-radius:22px;padding:18px;margin-bottom:14px}
 .phase{font-size:28px;font-weight:700;text-align:center}
@@ -39,8 +39,9 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .settings-arrow.open{transform:rotate(180deg)}
 .settings-body{overflow:hidden}
 .settings-body.hidden{display:none}
-.flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:10;transition:opacity .15s}
-.flash.on{opacity:.25}
+.flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:10}
+.flash.on{animation:flashPulse .7s ease-out forwards}
+@keyframes flashPulse{0%{opacity:0}20%{opacity:.2}100%{opacity:0}}
 </style>
 </head>
 <body>
@@ -242,8 +243,9 @@ navigator.vibrate([180,80,180]);
 function flash(){
 let el=$("flash");
 if(!el)return;
+el.classList.remove("on");
+void el.offsetWidth;
 el.classList.add("on");
-setTimeout(()=>el.classList.remove("on"),150);
 }
 
 function announce(phase){
