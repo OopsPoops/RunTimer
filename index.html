@@ -247,6 +247,7 @@ function speak(text){
 if(!("speechSynthesis" in window))
 return;
 speechSynthesis.cancel();
+try{speechSynthesis.resume();}catch(e){}
 let utterance=new SpeechSynthesisUtterance(text);
 utterance.lang="ru-RU";
 utterance.rate=.95;
@@ -283,6 +284,7 @@ el.classList.add("blink");
 }
 
 function announce(phase){
+if(!phase)return;
 beep();
 blink();
 let text=phase.name;
