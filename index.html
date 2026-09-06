@@ -125,9 +125,10 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 
 <div class="row">
 <label>Количество подходов</label>
-<div class="input-single">
-<input id="cycles" type="number" min="1" value="2">
-<span class="unit">шт</span>
+<div class="input-wrap">
+<input id="cycles" type="number" min="1" value="2" class="wi-hidden">
+<div class="wheel" data-field="cycles" data-min="1" data-max="10" data-step="1"></div>
+<span class="wunit">шт</span>
 </div>
 </div>
 
