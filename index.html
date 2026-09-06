@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111">
-<title>Тренировка</title>
+<title>RunTimer</title>
 <link rel="apple-touch-icon" href="icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Тренировка">
+<meta name="apple-mobile-web-app-title" content="RunTimer">
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#111;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif}
@@ -45,8 +45,15 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .pick-overlay{position:absolute;inset:0;width:100%;height:100%;opacity:0;appearance:none;-webkit-appearance:none;cursor:pointer}
 .status{text-align:center;color:#aaa;min-height:22px;margin:10px}
 .note{color:#888;font-size:13px;line-height:1.4;margin-top:12px}
-.footer{text-align:center;color:#666;font-size:13px;margin-top:26px;padding-bottom:10px}
+.footer{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;text-align:center;color:#666;font-size:13px;margin-top:26px;padding:14px 0;border-top:1px solid #222}
 .footer a{color:#888;text-decoration:none}
+.footer a:active{color:#fff}
+.footer .sep{color:#555}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal.open{display:flex}
+.modal-card{background:#1d1d1f;border-radius:16px;padding:20px;max-width:420px;width:100%;max-height:80vh;overflow-y:auto}
+.modal-card h2{margin:0 0 12px;font-size:20px}
+.modal-card p{color:#ccc;font-size:14px;line-height:1.5;margin:0 0 12px}
 .settings-toggle{width:100%;background:transparent;border:0;color:#fff;font-size:18px;font-weight:600;text-align:left;padding:4px 0 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
 .settings-arrow{color:#888;font-size:14px;transition:transform .2s}
 .settings-arrow.open{transform:rotate(180deg)}
@@ -63,7 +70,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <body>
 <div class="app">
 
-<h1>🏃 Тренировка</h1>
+<h1>🏃 RunTimer</h1>
 
 <div class="card">
 <div class="phase" id="phase">Готов</div>
@@ -165,8 +172,29 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 </div>
 </div>
 
-<div class="footer">by <a href="mailto:avalarionov@gmail.com">larik</a></div>
+<div class="footer">
+<span>© 2026 RunTimer</span>
+<span class="sep">·</span>
+<a href="https://github.com/OopsPoops/run" target="_blank" rel="noopener">О приложении</a>
+<span class="sep">·</span>
+<a href="mailto:avalarionov@gmail.com">Сотрудничество</a>
+<span class="sep">·</span>
+<a href="#" id="privacyLink">Политика</a>
+</div>
 
+</div>
+
+<div class="modal" id="privacyModal">
+<div class="modal-card">
+<h2>Политика конфиденциальности</h2>
+<p><strong>RunTimer</strong> — это личный таймер для тренировок. Приложение не собирает и не передаёт никакие личные данные.</p>
+<p><strong>Хранение настроек.</strong> Ваши настройки (время этапов, выбранные шаблоны) хранятся локально в вашем браузере (localStorage) и никуда не отправляются. Очистка данных сайта в браузере удалит их.</p>
+<p><strong>Отсутствие трекеров и рекламы.</strong> Приложение не использует сторонние аналитику, трекеры и рекламу.</p>
+<p><strong>Звук и озвучка.</strong> Для голосовых подсказок и звуковых сигналов используются стандартные возможности браузера (SpeechSynthesis, Web Audio). Данные не передаются на сервер.</p>
+<p><strong>Сторонние сервисы.</strong> Приложение размещено на GitHub Pages (GitHub Inc.), который обрабатывает сетевые запросы в соответствии со своей политикой конфиденциальности.</p>
+<p><strong>Контакты.</strong> По вопросам, связанным с политикой конфиденциальности, пишите на <a href="mailto:avalarionov@gmail.com" style="color:#7ab8ff">avalarionov@gmail.com</a>.</p>
+<button class="btn" id="privacyClose">Закрыть</button>
+</div>
 </div>
 
 <script>
@@ -682,6 +710,16 @@ updateToggle();
 $("stop").onclick=stop;
 $("skip").onclick=skip;
 $("back").onclick=back;
+$("privacyLink").onclick=(e)=>{
+e.preventDefault();
+$("privacyModal").classList.add("open");
+};
+$("privacyClose").onclick=()=>{
+$("privacyModal").classList.remove("open");
+};
+$("privacyModal").addEventListener("click",(e)=>{
+if(e.target===$("privacyModal"))$("privacyModal").classList.remove("open");
+});
 $("settingsToggle").onclick=()=>{
 let body=$("settingsBody");
 body.classList.toggle("hidden");
