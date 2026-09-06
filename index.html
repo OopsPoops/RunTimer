@@ -629,6 +629,14 @@ if(v>=300)return m+" мин";
 return m+" мин "+String(s).padStart(2,"0")+" сек";
 }
 
+function fmtDisplay(v){
+if(v<60)return v+" сек";
+let m=Math.floor(v/60);
+let s=v%60;
+if(s===0)return m+" мин";
+return m+" мин "+s+" сек";
+}
+
 function selValues(sel){
 if(sel.dataset.kind==="count"){
 let a=[];
@@ -641,6 +649,11 @@ return TIME_VALUES;
 function selLabel(sel,v){
 if(sel.dataset.kind==="count")return String(v);
 return fmtSeconds(v);
+}
+
+function selDisplay(sel,v){
+if(sel.dataset.kind==="count")return String(v);
+return fmtDisplay(v);
 }
 
 function buildPickers(){
@@ -665,7 +678,8 @@ wrap.appendChild(sel);
 sel._disp=disp;
 function upd(){
 let idx=sel.selectedIndex;
-disp.textContent=(idx>=0&&sel.options[idx])?sel.options[idx].textContent:selLabel(sel,parseInt(sel.value)||0);
+let v=(idx>=0&&sel.options[idx])?parseInt(sel.options[idx].value):(parseInt(sel.value)||0);
+disp.textContent=selDisplay(sel,v);
 }
 upd();
 sel.addEventListener("change",()=>{
@@ -689,8 +703,7 @@ values.forEach(x=>{let d=Math.abs(v-x);if(d<best){best=d;snapped=x;}});
 inp.value=snapped;
 sel.value=snapped;
 if(sel._disp){
-let idx=sel.selectedIndex;
-sel._disp.textContent=(idx>=0&&sel.options[idx])?sel.options[idx].textContent:selLabel(sel,snapped);
+sel._disp.textContent=selDisplay(sel,snapped);
 }
 });
 }
