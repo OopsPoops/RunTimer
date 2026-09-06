@@ -32,11 +32,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .wi-hidden{display:none}
 .input-wrap{display:flex;flex-direction:column;align-items:center}
 .wunit{color:#888;font-size:12px;margin-top:2px}
-.wheel{position:relative;width:150px;height:110px;overflow:hidden}
-.wheel-list{height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:37px 0}
-.wheel-list::-webkit-scrollbar{display:none}
-.wheel-item{height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;color:#fff;scroll-snap-align:center}
-.wheel-marker{position:absolute;left:0;right:0;top:50%;height:36px;transform:translateY(-50%);border-top:1px solid #444;border-bottom:1px solid #444;background:rgba(255,255,255,.05);pointer-events:none}
+.picky{width:150px;height:110px;background:#1d1d1f;border:1px solid #333;border-radius:14px;color:#fff;font-size:28px;font-weight:700;text-align:center;appearance:none;-webkit-appearance:none;padding:0}
 .status{text-align:center;color:#aaa;min-height:22px;margin:10px}
 .note{color:#888;font-size:13px;line-height:1.4;margin-top:12px}
 .settings-toggle{width:100%;background:transparent;border:0;color:#fff;font-size:18px;font-weight:600;text-align:left;padding:4px 0 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
@@ -88,7 +84,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <label>Ходьба в начале</label>
 <div class="input-wrap">
 <input id="warm" type="number" min="0" value="3" class="wi-hidden">
-<div class="wheel" data-field="warm" data-min="0" data-max="1200" data-step="5"></div>
+<select class="picky" data-field="warm" data-min="0" data-max="1200" data-step="5"></select>
 <span class="wunit">сек</span>
 </div>
 </div>
@@ -97,7 +93,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <label>Быстрая ходьба</label>
 <div class="input-wrap">
 <input id="fast" type="number" min="0" value="3" class="wi-hidden">
-<div class="wheel" data-field="fast" data-min="0" data-max="1200" data-step="5"></div>
+<select class="picky" data-field="fast" data-min="0" data-max="1200" data-step="5"></select>
 <span class="wunit">сек</span>
 </div>
 </div>
@@ -106,7 +102,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <label>Бег в подходе</label>
 <div class="input-wrap">
 <input id="run" type="number" min="0" value="3" class="wi-hidden">
-<div class="wheel" data-field="run" data-min="0" data-max="1200" data-step="5"></div>
+<select class="picky" data-field="run" data-min="0" data-max="1200" data-step="5"></select>
 <span class="wunit">сек</span>
 </div>
 </div>
@@ -115,7 +111,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <label>Ходьба в подходе</label>
 <div class="input-wrap">
 <input id="cycleWalk" type="number" min="0" value="3" class="wi-hidden">
-<div class="wheel" data-field="cycleWalk" data-min="0" data-max="1200" data-step="5"></div>
+<select class="picky" data-field="cycleWalk" data-min="0" data-max="1200" data-step="5"></select>
 <span class="wunit">сек</span>
 </div>
 </div>
@@ -124,7 +120,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <label>Количество подходов</label>
 <div class="input-wrap">
 <input id="cycles" type="number" min="1" value="2" class="wi-hidden">
-<div class="wheel" data-field="cycles" data-min="1" data-max="10" data-step="1"></div>
+<select class="picky" data-field="cycles" data-min="1" data-max="10" data-step="1"></select>
 <span class="wunit">шт</span>
 </div>
 </div>
@@ -133,7 +129,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <label>Ходьба в конце</label>
 <div class="input-wrap">
 <input id="cool" type="number" min="0" value="3" class="wi-hidden">
-<div class="wheel" data-field="cool" data-min="0" data-max="1200" data-step="5"></div>
+<select class="picky" data-field="cool" data-min="0" data-max="1200" data-step="5"></select>
 <span class="wunit">сек</span>
 </div>
 </div>
@@ -515,7 +511,7 @@ $("run").value=Math.round(t.run*60);
 $("cycleWalk").value=Math.round(t.walk*60);
 $("cycles").value=t.cycles;
 saveSettings();
-syncAllWheels();
+syncPickers();
 $("status").textContent="Шаблон "+t.id+": бег "+fmtNum(t.run)+" мин, ходьба "+(t.walk>0?fmtNum(t.walk)+" мин":"—")+", "+t.cycles+" подх.";
 }
 
@@ -555,64 +551,36 @@ b.classList.toggle("today",b.dataset.id===id);
 applyTemplate(t);
 }
 
-const WHEEL_ITEM_H=36;
-
-function buildWheel(w){
-let field=w.dataset.field;
-let min=parseInt(w.dataset.min)||0;
-let max=parseInt(w.dataset.max)||1200;
-let step=parseInt(w.dataset.step)||5;
-let list=document.createElement("div");
-list.className="wheel-list";
+function buildPickers(){
+document.querySelectorAll(".picky").forEach(sel=>{
+let min=parseInt(sel.dataset.min)||0;
+let max=parseInt(sel.dataset.max)||1200;
+let step=parseInt(sel.dataset.step)||5;
+let field=sel.dataset.field;
+sel.innerHTML="";
 for(let v=min;v<=max;v+=step){
-let item=document.createElement("div");
-item.className="wheel-item";
-item.dataset.value=v;
-item.textContent=v;
-list.appendChild(item);
+let o=document.createElement("option");
+o.value=v;
+o.textContent=v;
+sel.appendChild(o);
 }
-w.appendChild(list);
-let marker=document.createElement("div");
-marker.className="wheel-marker";
-w.appendChild(marker);
-list.addEventListener("scroll",()=>{
-let idx=Math.round(list.scrollTop/WHEEL_ITEM_H);
-let item=list.children[idx];
-if(item){
-let val=parseInt(item.dataset.value);
+sel.addEventListener("change",()=>{
 let inp=document.getElementById(field);
-if(inp&&parseInt(inp.value)!==val){
-inp.value=val;
+if(inp)inp.value=sel.value;
 saveSettings();
-}
-}
-},{passive:true});
-syncWheel(w);
+});
+});
 }
 
-function syncWheel(w){
-let list=w.querySelector(".wheel-list");
-if(!list)return;
-let field=w.dataset.field;
-let min=parseInt(w.dataset.min)||0;
-let step=parseInt(w.dataset.step)||5;
-let inp=document.getElementById(field);
-let val=parseInt(inp?inp.value:0)||0;
-let idx=Math.max(0,Math.round((val-min)/step));
-let maxIdx=list.children.length-1;
-if(idx>maxIdx)idx=maxIdx;
-list.scrollTop=idx*WHEEL_ITEM_H;
+function syncPickers(){
+document.querySelectorAll(".picky").forEach(sel=>{
+let inp=document.getElementById(sel.dataset.field);
+if(inp)sel.value=inp.value;
+});
 }
 
-function syncAllWheels(){
-document.querySelectorAll(".wheel").forEach(syncWheel);
-}
-
-function buildWheels(){
-document.querySelectorAll(".wheel").forEach(buildWheel);
-}
-
-buildWheels();
+buildPickers();
+syncPickers();
 
 $("templatesToggle").onclick=()=>{
 let body=$("templatesBody");
