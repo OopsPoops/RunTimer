@@ -319,13 +319,17 @@ speak(
 );
 }
 if(remaining<=0){
+let advanced=false;
+while(remaining<=0){
 idx++;
 if(idx>=phases.length){
 finish();
 return;
 }
-remaining=phases[idx].sec;
-announce(phases[idx]);
+remaining+=phases[idx].sec;
+advanced=true;
+}
+if(advanced)announce(phases[idx]);
 }
 render();
 }else{
