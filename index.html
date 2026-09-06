@@ -32,7 +32,9 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .wi-hidden{display:none}
 .input-wrap{display:flex;flex-direction:column;align-items:center}
 .wunit{color:#888;font-size:12px;margin-top:2px}
-.picky{width:150px;height:48px;background:#1d1d1f;border:1px solid #333;border-radius:12px;color:#fff;font-size:20px;font-weight:600;text-align:center;appearance:none;-webkit-appearance:none;padding:0}
+.picker{position:relative;width:150px;height:48px}
+.pick-value{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#1d1d1f;border:1px solid #333;border-radius:12px;color:#fff;font-size:20px;font-weight:600}
+.pick-overlay{position:absolute;inset:0;width:100%;height:100%;opacity:0;appearance:none;-webkit-appearance:none;cursor:pointer}
 .status{text-align:center;color:#aaa;min-height:22px;margin:10px}
 .note{color:#888;font-size:13px;line-height:1.4;margin-top:12px}
 .settings-toggle{width:100%;background:transparent;border:0;color:#fff;font-size:18px;font-weight:600;text-align:left;padding:4px 0 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
@@ -564,18 +566,45 @@ o.value=v;
 o.textContent=v;
 sel.appendChild(o);
 }
+let wrap=document.createElement("div");
+wrap.className="picker";
+let disp=document.createElement("div");
+disp.className="pick-value";
+sel.className="pick-overlay";
+sel.parentNode.insertBefore(wrap,sel);
+wrap.appendChild(disp);
+wrap.appendChild(sel);
+sel._disp=disp;
+function upd(){
+let idx=sel.selectedIndex;
+disp.textContent=(idx>=0&&sel.options[idx])?sel.options[idx].textContent:sel.value;
+}
+upd();
 sel.addEventListener("change",()=>{
 let inp=document.getElementById(field);
 if(inp)inp.value=sel.value;
 saveSettings();
+upd();
 });
 });
 }
 
 function syncPickers(){
-document.querySelectorAll(".picky").forEach(sel=>{
+document.querySelectorAll(".pick-overlay").forEach(sel=>{
 let inp=document.getElementById(sel.dataset.field);
-if(inp)sel.value=inp.value;
+if(!inp)return;
+let min=parseInt(sel.dataset.min)||0;
+let max=parseInt(sel.dataset.max)||1200;
+let step=parseInt(sel.dataset.step)||5;
+let v=parseInt(inp.value);
+if(isNaN(v))v=min;
+let snapped=Math.min(max,Math.max(min,Math.round((v-min)/step)*step+min));
+inp.value=snapped;
+sel.value=snapped;
+if(sel._disp){
+let idx=sel.selectedIndex;
+sel._disp.textContent=(idx>=0&&sel.options[idx])?sel.options[idx].textContent:snapped;
+}
 });
 }
 
