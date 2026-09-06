@@ -424,6 +424,36 @@ wakeLockRef=null;
 }
 }
 
+const STORE_KEY="trenirovka_settings";
+
+function loadSettings(){
+try{
+let data=JSON.parse(localStorage.getItem(STORE_KEY)||"{}");
+["warm","fast","run","cycleWalk","cycles","cool"].forEach(id=>{
+if(data[id]!==undefined&&$(id))$(id).value=data[id];
+});
+}catch(e){}
+}
+
+function saveSettings(){
+try{
+let data={};
+["warm","fast","run","cycleWalk","cycles","cool"].forEach(id=>{
+if($(id))data[id]=$(id).value;
+});
+localStorage.setItem(STORE_KEY,JSON.stringify(data));
+}catch(e){}
+}
+
+loadSettings();
+["warm","fast","run","cycleWalk","cycles","cool"].forEach(id=>{
+let el=$(id);
+if(el){
+el.addEventListener("input",saveSettings);
+el.addEventListener("change",saveSettings);
+}
+});
+
 $("start").onclick=()=>{
 if(running){
 running=false;
