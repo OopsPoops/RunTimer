@@ -39,6 +39,9 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .settings-arrow.open{transform:rotate(180deg)}
 .settings-body{overflow:hidden}
 .settings-body.hidden{display:none}
+.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tpl-btn{border:0;border-radius:12px;padding:12px 8px;font-size:14px;font-weight:600;background:#303033;color:#fff;cursor:pointer}
+.tpl-btn:active{background:#3a3a3d}
 .timer.blink{animation:timerBlink .7s ease-in-out}
 @keyframes timerBlink{0%{color:#fff;transform:scale(1)}30%{color:#34c759;transform:scale(1.06)}70%{color:#34c759;transform:scale(1.06)}100%{color:#fff;transform:scale(1)}}
 </style>
@@ -130,6 +133,14 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 </div>
 
 </div>
+
+<div class="card templates">
+<button class="settings-toggle" id="templatesToggle" type="button">📋 Шаблоны <span class="settings-arrow" id="templatesArrow">▾</span></button>
+<div class="settings-body hidden" id="templatesBody">
+<div class="tpl-grid" id="tplGrid"></div>
+</div>
+</div>
+
 </div>
 
 <script>
@@ -169,11 +180,13 @@ name:"Бег",
 sec:value("run"),
 cycle:i
 });
+if(value("cycleWalk")>0){
 phases.push({
 name:"Ходьба",
 sec:value("cycleWalk"),
 cycle:i
 });
+}
 }
 if(value("cool")){
 phases.push({
@@ -453,6 +466,71 @@ el.addEventListener("input",saveSettings);
 el.addEventListener("change",saveSettings);
 }
 });
+
+const TEMPLATES=[
+{id:"1. Пн",run:1,walk:1.5,cycles:6},
+{id:"1. Чт",run:1,walk:1.5,cycles:6},
+{id:"1. Сб",run:1,walk:2,cycles:5},
+{id:"2. Пн",run:1.5,walk:1.5,cycles:6},
+{id:"2. Чт",run:2,walk:2,cycles:5},
+{id:"2. Сб",run:1,walk:2,cycles:6},
+{id:"3. Пн",run:2,walk:2,cycles:6},
+{id:"3. Чт",run:3,walk:2,cycles:5},
+{id:"3. Сб",run:2,walk:2,cycles:5},
+{id:"4. Пн",run:3,walk:2,cycles:5},
+{id:"4. Чт",run:4,walk:2,cycles:4},
+{id:"4. Сб",run:3,walk:2,cycles:5},
+{id:"5. Пн",run:5,walk:2,cycles:3},
+{id:"5. Чт",run:6,walk:2,cycles:3},
+{id:"5. Сб",run:4,walk:2,cycles:4},
+{id:"6. Пн",run:8,walk:2,cycles:2},
+{id:"6. Чт",run:10,walk:2,cycles:2},
+{id:"6. Сб",run:6,walk:2,cycles:3},
+{id:"7. Пн",run:12,walk:3,cycles:2},
+{id:"7. Чт",run:15,walk:0,cycles:1},
+{id:"7. Сб",run:8,walk:2,cycles:2},
+{id:"8. Пн",run:15,walk:3,cycles:2},
+{id:"8. Чт",run:20,walk:0,cycles:1},
+{id:"8. Сб",run:5,walk:2,cycles:3}
+];
+
+function fmtNum(n){
+return String(n).replace(".",",");
+}
+
+function applyTemplate(t){
+$("run").value=Math.round(t.run*60);
+$("cycleWalk").value=Math.round(t.walk*60);
+$("cycles").value=t.cycles;
+$("warm").value=300;
+$("fast").value=300;
+$("cool").value=300;
+saveSettings();
+$("status").textContent="Шаблон "+t.id+": бег "+fmtNum(t.run)+" мин, ходьба "+(t.walk>0?fmtNum(t.walk)+" мин":"—")+", "+t.cycles+" подх.";
+}
+
+function buildTemplates(){
+let grid=$("tplGrid");
+if(!grid)return;
+grid.innerHTML="";
+TEMPLATES.forEach(t=>{
+let b=document.createElement("button");
+b.type="button";
+b.className="tpl-btn";
+let w=t.walk>0?fmtNum(t.walk):"—";
+b.textContent=t.id+" · "+fmtNum(t.run)+"/"+w+"×"+t.cycles;
+b.onclick=()=>applyTemplate(t);
+grid.appendChild(b);
+});
+}
+
+$("templatesToggle").onclick=()=>{
+let body=$("templatesBody");
+body.classList.toggle("hidden");
+$("templatesArrow").classList.toggle("open");
+};
+
+buildTemplates();
 
 $("start").onclick=()=>{
 if(running){
