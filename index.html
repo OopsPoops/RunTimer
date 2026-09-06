@@ -548,7 +548,7 @@ b.type="button";
 b.className="tpl-btn";
 b.dataset.id=t.id;
 let w=t.walk>0?fmtNum(t.walk):"—";
-b.textContent=t.id+" · "+fmtNum(t.run)+"/"+w+"×"+t.cycles;
+b.textContent=t.id+" · "+t.cycles+"х"+fmtNum(t.run)+"/"+w;
 b.onclick=()=>applyTemplate(t);
 grid.appendChild(b);
 });
@@ -584,8 +584,7 @@ function fmtSeconds(v){
 if(v<60)return v+" сек";
 let m=Math.floor(v/60);
 let s=v%60;
-if(s===0)return m+" мин";
-return m+" мин "+s+" сек";
+return m+" мин "+String(s).padStart(2,"0")+" сек";
 }
 
 function selValues(sel){
