@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111">
+<title>Интервальная тренировка</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#111;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif}
+.app{max-width:520px;margin:auto;padding:20px 18px 32px}
+h1{font-size:27px;margin:4px 0 18px}
+.card{background:#1d1d1f;border-radius:22px;padding:18px;margin-bottom:14px}
+.phase{font-size:28px;font-weight:700;text-align:center}
+.timer{font-variant-numeric:tabular-nums;font-size:76px;line-height:1.05;font-weight:700;text-align:center;margin:12px 0}
+.sub,.next{text-align:center;color:#aaa;font-size:16px}
+.bar{height:8px;background:#333;border-radius:8px;overflow:hidden;margin:20px 0 8px}
+.fill{height:100%;width:0%;background:#fff}
+.controls{display:flex;gap:10px}
+.btn{border:0;border-radius:16px;padding:15px 10px;font-size:17px;font-weight:650;flex:1;background:#fff;color:#111}
+.btn.secondary{background:#303033;color:#fff}
+.settings h2{font-size:18px;margin:0 0 12px}
+.row{display:grid;grid-template-columns:1fr 150px;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #333}
+.row label{font-size:16px}
+.row small{display:block;color:#888;margin-top:3px}
+input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radius:11px;padding:11px;font-size:17px;text-align:center}
+.input-wrap{position:relative}
+.input-wrap input{padding-right:44px}
+.input-wrap .unit{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#888;font-size:13px;pointer-events:none}
+.status{text-align:center;color:#aaa;min-height:22px;margin:10px}
+.note{color:#888;font-size:13px;line-height:1.4;margin-top:12px}
+.settings-toggle{width:100%;background:transparent;border:0;color:#fff;font-size:18px;font-weight:600;text-align:left;padding:4px 0 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.settings-arrow{color:#888;font-size:14px;transition:transform .2s}
+.settings-arrow.open{transform:rotate(180deg)}
+.settings-body{overflow:hidden}
+.settings-body.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+
+<h1>🏃 Интервальная тренировка</h1>
+
+<div class="card">
+<div class="phase" id="phase">Готов</div>
+<div class="timer" id="timer">00:00</div>
+<div class="sub" id="round">Настрой параметры и нажми «Старт»</div>
+
+<div class="bar">
+<div class="fill" id="fill"></div>
+</div>
+
+<div class="next" id="next">—</div>
+</div>
+
+<div class="controls">
+<button class="btn" id="start">Старт</button>
+<button class="btn secondary" id="pause" disabled>Пауза</button>
+<button class="btn secondary" id="stop" disabled>Стоп</button>
+<button class="btn secondary" id="skip" disabled>Пропустить</button>
+</div>
+
+<div class="status" id="status"></div>
+
+<div class="card settings">
+
+<button class="settings-toggle" id="settingsToggle" type="button">⚙️ Настройки <span class="settings-arrow" id="settingsArrow">▾</span></button>
+
+<div class="settings-body" id="settingsBody">
+
+<div class="row">
+<label>Ходьба в начале</label>
+<div class="input-wrap">
+<input id="warm" type="number" min="0" value="300">
+<span class="unit">сек</span>
+</div>
+</div>
+
+<div class="row">
+<label>Быстрая ходьба</label>
+<div class="input-wrap">
+<input id="fast" type="number" min="0" value="300">
+<span class="unit">сек</span>
+</div>
+</div>
+
+<div class="row">
+<label>Бег в цикле</label>
+<div class="input-wrap">
+<input id="run" type="number" min="1" value="60">
+<span class="unit">сек</span>
+</div>
+</div>
+
+<div class="row">
+<label>Ходьба в цикле</label>
+<div class="input-wrap">
+<input id="cycleWalk" type="number" min="1" value="60">
+<span class="unit">сек</span>
+</div>
+</div>
+
+<div class="row">
+<label>Количество циклов</label>
+<div class="input-wrap">
+<input id="cycles" type="number" min="1" value="2">
+<span class="unit">шт</span>
+</div>
+</div>
+
+<div class="row">
+<label>Ходьба в конце</label>
+<div class="input-wrap">
+<input id="cool" type="number" min="0" value="300">
+<span class="unit">сек</span>
+</div>
+</div>
+
+<div class="note">
+Время задаётся в секундах. Телефон озвучивает каждый этап и предупреждает за 10 секунд до переключения.
+</div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+let phases=[];
+let idx=0;
+let remaining=0;
+let running=false;
+let paused=false;
+let last=0;
+let raf;
+
+const $=id=>document.getElementById(id);
+
+function value(id){
+return Math.max(0,parseInt($(id).value)||0);
+}
+
+function build(){
+let cycles=Math.max(1,value("cycles"));
+phases=[];
+if(value("warm")){
+phases.push({
+name:"Ходьба",
+sec:value("warm")
+});
+}
+if(value("fast")){
+phases.push({
+name:"Быстрая ходьба",
+sec:value("fast")
+});
+}
+for(let i=1;i<=cycles;i++){
+phases.push({
+name:"Бег",
+sec:value("run"),
+cycle:i
+});
+phases.push({
+name:"Ходьба",
+sec:value("cycleWalk"),
+cycle:i
+});
+}
+if(value("cool")){
+phases.push({
+name:"Ходьба",
+sec:value("cool"),
+final:true
+});
+}
+}
+
+function format(seconds){
+seconds=Math.max(0,Math.ceil(seconds));
+let min=Math.floor(seconds/60);
+let sec=seconds%60;
+return String(min).padStart(2,"0")+":"+String(sec).padStart(2,"0");
+}
+
+function plural(n,one,few,many){
+let n10=n%10,n100=n%100;
+if(n10===1&&n100!==11)return one;
+if(n10>=2&&n10<=4&&(n100<12||n100>14))return few;
+return many;
+}
+
+function describeTime(sec){
+sec=Math.max(0,Math.round(sec));
+let m=Math.floor(sec/60);
+let s=sec%60;
+let parts=[];
+if(m>0)parts.push(m+" "+plural(m,"минута","минуты","минут"));
+if(s>0)parts.push(s+" "+plural(s,"секунда","секунды","секунд"));
+return parts.join(" ")||"0 секунд";
+}
+
+function speak(text){
+if(!("speechSynthesis" in window))
+return;
+speechSynthesis.cancel();
+let utterance=new SpeechSynthesisUtterance(text);
+utterance.lang="ru-RU";
+utterance.rate=.95;
+utterance.pitch=1;
+speechSynthesis.speak(utterance);
+}
+
+function beep(){
+try{
+let Audio=window.AudioContext||window.webkitAudioContext;
+if(Audio){
+let audio=new Audio();
+let oscillator=audio.createOscillator();
+let gain=audio.createGain();
+oscillator.connect(gain);
+gain.connect(audio.destination);
+oscillator.frequency.value=880;
+gain.gain.value=.12;
+oscillator.start();
+oscillator.stop(audio.currentTime+.16);
+}
+}catch(e){}
+if(navigator.vibrate){
+navigator.vibrate([180,80,180]);
+}
+}
+
+function announce(phase){
+beep();
+let text=phase.name;
+if(phase.cycle){
+text+=", цикл "+phase.cycle;
+}
+text+=". Время — "+describeTime(phase.sec);
+speak(text);
+}
+
+function render(){
+let phase=phases[idx];
+if(!phase)
+return;
+$("phase").textContent=phase.name;
+$("timer").textContent=format(remaining);
+if(phase.cycle){
+$("round").textContent=
+"Цикл "+phase.cycle+" из "+value("cycles");
+}else if(phase.final){
+$("round").textContent="Завершение";
+}else{
+$("round").textContent="Подготовка";
+}
+let next=phases[idx+1];
+if(next){
+$("next").textContent=
+"Далее: "+next.name+
+(next.cycle?" (цикл "+next.cycle+")":"");
+}else{
+$("next").textContent=
+"После этого — конец";
+}
+let progress=100*(1-remaining/phase.sec);
+$("fill").style.width=progress+"%";
+}
+
+function start(){
+build();
+idx=0;
+remaining=phases[0].sec;
+running=true;
+paused=false;
+$("start").textContent="Заново";
+$("pause").disabled=false;
+$("stop").disabled=false;
+$("skip").disabled=false;
+announce(phases[0]);
+render();
+keepScreenOn();
+last=performance.now();
+raf=requestAnimationFrame(tick);
+}
+
+function tick(now){
+if(!running)
+return;
+if(!paused){
+let delta=(now-last)/1000;
+last=now;
+remaining-=delta;
+if(
+remaining<=10 &&
+remaining>9
+){
+let next=phases[idx+1];
+speak(
+"Через 10 секунд — "+
+(next?next.name:"конец")
+);
+}
+if(remaining<=0){
+idx++;
+if(idx>=phases.length){
+finish();
+return;
+}
+remaining=phases[idx].sec;
+announce(phases[idx]);
+}
+render();
+}else{
+last=now;
+}
+raf=requestAnimationFrame(tick);
+}
+
+function togglePause(){
+if(!running)
+return;
+paused=!paused;
+$("pause").textContent=
+paused?"Продолжить":"Пауза";
+$("status").textContent=
+paused?"На паузе":"";
+if(!paused){
+last=performance.now();
+}
+}
+
+function skip(){
+if(!running)
+return;
+idx++;
+if(idx>=phases.length){
+finish();
+return;
+}
+remaining=phases[idx].sec;
+announce(phases[idx]);
+render();
+last=performance.now();
+}
+
+function stop(){
+running=false;
+paused=false;
+cancelAnimationFrame(raf);
+if("speechSynthesis" in window)speechSynthesis.cancel();
+idx=0;
+remaining=0;
+$("phase").textContent="Готов";
+$("timer").textContent="00:00";
+$("round").textContent="Настрой параметры и нажми «Старт»";
+$("next").textContent="—";
+$("fill").style.width="0%";
+$("status").textContent="";
+$("pause").disabled=true;
+$("stop").disabled=true;
+$("skip").disabled=true;
+$("start").textContent="Старт";
+}
+
+function finish(){
+running=false;
+cancelAnimationFrame(raf);
+beep();
+speak(
+"Тренировка закончена. Отличная работа!"
+);
+$("phase").textContent="Готово 🎉";
+$("timer").textContent="00:00";
+$("round").textContent="Тренировка завершена";
+$("next").textContent="";
+$("fill").style.width="100%";
+$("pause").disabled=true;
+$("stop").disabled=true;
+$("skip").disabled=true;
+$("start").textContent="Старт";
+}
+
+async function keepScreenOn(){
+try{
+if("wakeLock" in navigator){
+await navigator.wakeLock.request("screen");
+}
+}catch(e){}
+}
+
+$("start").onclick=()=>{
+if(running){
+running=false;
+cancelAnimationFrame(raf);
+start();
+}else{
+start();
+}
+};
+$("pause").onclick=togglePause;
+$("stop").onclick=stop;
+$("skip").onclick=skip;
+$("settingsToggle").onclick=()=>{
+let body=$("settingsBody");
+body.classList.toggle("hidden");
+$("settingsArrow").classList.toggle("open");
+};
+document.addEventListener(
+"visibilitychange",
+()=>{
+if(
+document.visibilityState==="visible" &&
+running
+){
+keepScreenOn();
+}
+});
+</script>
+</body>
+</html>
