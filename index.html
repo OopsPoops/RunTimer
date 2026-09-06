@@ -140,6 +140,7 @@ let running=false;
 let paused=false;
 let last=0;
 let raf;
+let wakeLockRef=null;
 
 const $=id=>document.getElementById(id);
 
@@ -382,6 +383,7 @@ $("pause").disabled=true;
 $("stop").disabled=true;
 $("skip").disabled=true;
 $("start").textContent="Старт";
+releaseScreenLock();
 }
 
 function finish(){
@@ -400,14 +402,26 @@ $("pause").disabled=true;
 $("stop").disabled=true;
 $("skip").disabled=true;
 $("start").textContent="Старт";
+releaseScreenLock();
 }
 
 async function keepScreenOn(){
 try{
-if("wakeLock" in navigator){
-await navigator.wakeLock.request("screen");
-}
+if(!("wakeLock" in navigator))return;
+if(wakeLockRef)return;
+wakeLockRef=await navigator.wakeLock.request("screen");
+wakeLockRef.addEventListener("release",()=>{
+wakeLockRef=null;
+if(running&&!paused)keepScreenOn();
+});
 }catch(e){}
+}
+
+function releaseScreenLock(){
+if(wakeLockRef){
+try{wakeLockRef.release();}catch(e){}
+wakeLockRef=null;
+}
 }
 
 $("start").onclick=()=>{
@@ -430,10 +444,12 @@ $("settingsArrow").classList.toggle("open");
 document.addEventListener(
 "visibilitychange",
 ()=>{
-if(
-document.visibilityState==="visible" &&
-running
-){
+if(document.visibilityState==="visible"&&running){
+keepScreenOn();
+}
+});
+window.addEventListener("focus",()=>{
+if(running&&!paused){
 keepScreenOn();
 }
 });
