@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111">
 <title>Интервальная тренировка</title>
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Тренировка">
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#111;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif}
@@ -34,9 +39,12 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .settings-arrow.open{transform:rotate(180deg)}
 .settings-body{overflow:hidden}
 .settings-body.hidden{display:none}
+.flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:10;transition:opacity .15s}
+.flash.on{opacity:.25}
 </style>
 </head>
 <body>
+<div class="flash" id="flash"></div>
 <div class="app">
 
 <h1>🏃 Интервальная тренировка</h1>
@@ -85,7 +93,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 </div>
 
 <div class="row">
-<label>Бег в цикле</label>
+<label>Бег в подходе</label>
 <div class="input-wrap">
 <input id="run" type="number" min="1" value="60">
 <span class="unit">сек</span>
@@ -93,7 +101,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 </div>
 
 <div class="row">
-<label>Ходьба в цикле</label>
+<label>Ходьба в подходе</label>
 <div class="input-wrap">
 <input id="cycleWalk" type="number" min="1" value="60">
 <span class="unit">сек</span>
@@ -101,7 +109,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 </div>
 
 <div class="row">
-<label>Количество циклов</label>
+<label>Количество подходов</label>
 <div class="input-wrap">
 <input id="cycles" type="number" min="1" value="2">
 <span class="unit">шт</span>
@@ -145,7 +153,7 @@ let cycles=Math.max(1,value("cycles"));
 phases=[];
 if(value("warm")){
 phases.push({
-name:"Ходьба",
+name:"Спокойная ходьба",
 sec:value("warm")
 });
 }
@@ -169,7 +177,7 @@ cycle:i
 }
 if(value("cool")){
 phases.push({
-name:"Ходьба",
+name:"Спокойная ходьба",
 sec:value("cool"),
 final:true
 });
@@ -231,11 +239,19 @@ navigator.vibrate([180,80,180]);
 }
 }
 
+function flash(){
+let el=$("flash");
+if(!el)return;
+el.classList.add("on");
+setTimeout(()=>el.classList.remove("on"),150);
+}
+
 function announce(phase){
 beep();
+flash();
 let text=phase.name;
 if(phase.cycle){
-text+=", цикл "+phase.cycle;
+text+=", подход "+phase.cycle;
 }
 text+=". Время — "+describeTime(phase.sec);
 speak(text);
@@ -249,7 +265,7 @@ $("phase").textContent=phase.name;
 $("timer").textContent=format(remaining);
 if(phase.cycle){
 $("round").textContent=
-"Цикл "+phase.cycle+" из "+value("cycles");
+"Подход "+phase.cycle+" из "+value("cycles");
 }else if(phase.final){
 $("round").textContent="Завершение";
 }else{
@@ -259,7 +275,7 @@ let next=phases[idx+1];
 if(next){
 $("next").textContent=
 "Далее: "+next.name+
-(next.cycle?" (цикл "+next.cycle+")":"");
+(next.cycle?" (подход "+next.cycle+")":"");
 }else{
 $("next").textContent=
 "После этого — конец";
