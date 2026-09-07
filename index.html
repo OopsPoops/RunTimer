@@ -79,6 +79,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .date-value{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#303033;border:1px solid #333;border-radius:10px;color:#fff;font-size:14px;font-variant-numeric:tabular-nums}
 .timer.blink{animation:timerBlink .7s ease-in-out}
 @keyframes timerBlink{0%{color:#fff;transform:scale(1)}30%{color:#34c759;transform:scale(1.06)}70%{color:#34c759;transform:scale(1.06)}100%{color:#fff;transform:scale(1)}}
+.timer.paused{color:#ffcc00}
 </style>
 </head>
 <body>
@@ -437,6 +438,7 @@ idx=0;
 remaining=phases[0].sec;
 running=true;
 paused=false;
+$("timer").classList.remove("paused");
 $("skip").disabled=false;
 $("back").disabled=false;
 updateToggle();
@@ -520,6 +522,7 @@ running=false;
 paused=false;
 cancelAnimationFrame(raf);
 if("speechSynthesis" in window)speechSynthesis.cancel();
+$("timer").classList.remove("paused");
 idx=0;
 remaining=0;
 $("phase").textContent="Готов";
@@ -566,6 +569,7 @@ const FINISH_PHRASES=[
 function finish(){
 running=false;
 cancelAnimationFrame(raf);
+$("timer").classList.remove("paused");
 beep();
 let phrase=FINISH_PHRASES[Math.floor(Math.random()*FINISH_PHRASES.length)];
 speak(phrase);
@@ -927,11 +931,13 @@ if(!running){
 start();
 }else if(paused){
 paused=false;
+$("timer").classList.remove("paused");
 $("status").textContent="";
 last=performance.now();
 updateToggle();
 }else{
 paused=true;
+$("timer").classList.add("paused");
 $("status").textContent="На паузе";
 updateToggle();
 }
