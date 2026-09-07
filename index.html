@@ -627,10 +627,10 @@ if(!el)return;
 let diff=Math.floor((startOfToday()-START_DATE)/86400000);
 if(diff<0){
 let n=-diff;
-el.textContent=n+" "+dayWord(n)+" до начала тренировок";
+el.textContent="Осталось "+n+" "+dayWord(n);
 }else{
 let n=diff+1;
-el.textContent=n+" "+dayWord(n)+" с начала тренировок";
+el.textContent="Прошло "+n+" "+dayWord(n);
 }
 }
 
