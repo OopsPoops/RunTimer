@@ -932,6 +932,7 @@ start();
 }else if(paused){
 paused=false;
 $("timer").classList.remove("paused");
+blink();
 $("status").textContent="";
 last=performance.now();
 updateToggle();
