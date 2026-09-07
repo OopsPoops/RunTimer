@@ -70,7 +70,10 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .tpl-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .tpl-btn{border:0;border-radius:12px;padding:22px 6px;font-size:12px;font-weight:600;background:#303033;color:#fff;cursor:pointer}
 .tpl-btn:active{background:#3a3a3d}
-.tpl-btn.today{background:#34c759;color:#111}
+.tpl-btn.sel{background:#fff;color:#111}
+.tpl-start{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.tpl-start label{font-size:13px;color:#888;flex:1}
+.tpl-start input[type=date]{background:#303033;color:#fff;border:1px solid #333;border-radius:10px;padding:8px 10px;font-size:14px;color-scheme:dark}
 .timer.blink{animation:timerBlink .7s ease-in-out}
 @keyframes timerBlink{0%{color:#fff;transform:scale(1)}30%{color:#34c759;transform:scale(1.06)}70%{color:#34c759;transform:scale(1.06)}100%{color:#fff;transform:scale(1)}}
 </style>
@@ -188,6 +191,10 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <div class="card templates">
 <button class="settings-toggle" id="templatesToggle" type="button">📋 Шаблоны <span class="settings-arrow" id="templatesArrow">▾</span></button>
 <div class="settings-body hidden" id="templatesBody">
+<div class="tpl-start">
+<label for="startDate">Дата начала · 1-я неделя (Пн)</label>
+<input type="date" id="startDate">
+</div>
 <div class="tpl-grid" id="tplGrid"></div>
 </div>
 </div>
@@ -562,6 +569,9 @@ wakeLockRef=null;
 }
 
 const STORE_KEY="trenirovka_settings";
+let START_DATE=new Date();
+START_DATE.setHours(0,0,0,0);
+let selectedTpl=null;
 
 function loadSettings(){
 try{
@@ -569,6 +579,8 @@ let data=JSON.parse(localStorage.getItem(STORE_KEY)||"{}");
 ["warm","fast","run","cycleWalk","cycles","cool"].forEach(id=>{
 if(data[id]!==undefined&&$(id))$(id).value=data[id];
 });
+if(data.start)START_DATE=new Date(data.start+"T00:00:00");
+if(data.sel)selectedTpl=data.sel;
 }catch(e){}
 }
 
@@ -578,8 +590,14 @@ let data={};
 ["warm","fast","run","cycleWalk","cycles","cool"].forEach(id=>{
 if($(id))data[id]=$(id).value;
 });
+data.start=fmtDate(START_DATE);
+if(selectedTpl)data.sel=selectedTpl;
 localStorage.setItem(STORE_KEY,JSON.stringify(data));
 }catch(e){}
+}
+
+function fmtDate(d){
+return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
 
 loadSettings();
@@ -588,6 +606,13 @@ let el=$(id);
 if(el){
 el.addEventListener("input",saveSettings);
 el.addEventListener("change",saveSettings);
+}
+});
+["run","cycleWalk","cycles"].forEach(id=>{
+let el=$(id);
+if(el){
+el.addEventListener("input",updateSelection);
+el.addEventListener("change",updateSelection);
 }
 });
 
@@ -622,12 +647,14 @@ function fmtNum(n){
 return String(n).replace(".",",");
 }
 
-function applyTemplate(t){
+function applyTemplate(t,explicit){
+if(explicit)selectedTpl=t.id;
 $("run").value=Math.round(t.run*60);
 $("cycleWalk").value=Math.round(t.walk*60);
 $("cycles").value=t.cycles;
 saveSettings();
 syncPickers();
+updateSelection();
 $("status").textContent="Шаблон "+t.id+": бег "+fmtNum(t.run)+" мин, ходьба "+(t.walk>0?fmtNum(t.walk)+" мин":"—")+", "+t.cycles+" подх.";
 }
 
@@ -642,29 +669,68 @@ b.className="tpl-btn";
 b.dataset.id=t.id;
 let w=t.walk>0?fmtNum(t.walk):"—";
 b.textContent=t.id+" · "+t.cycles+"х"+fmtNum(t.run)+"/"+w;
-b.onclick=()=>applyTemplate(t);
+b.onclick=()=>applyTemplate(t,true);
 grid.appendChild(b);
 });
 }
 
-const WEEK_START=new Date(2026,8,7);
 const DAY_LABELS={1:"Пн",4:"Чт",6:"Сб"};
+const DAY_OFFSET={Пн:0,Чт:3,Сб:5};
+
+function startOfToday(){
+let n=new Date();
+return new Date(n.getFullYear(),n.getMonth(),n.getDate());
+}
+
+function templateDate(t){
+let parts=t.id.split(" ");
+let week=parseInt(parts[0]);
+let day=DAY_OFFSET[parts[1]]||0;
+let d=new Date(START_DATE);
+d.setDate(d.getDate()+(week-1)*7+day);
+return d;
+}
+
+function currentTemplate(){
+let days=Math.floor((startOfToday()-START_DATE)/86400000);
+if(days<0)return null;
+let week=Math.floor(days/7)+1;
+let label=DAY_LABELS[startOfToday().getDay()];
+if(week>8||!label)return null;
+return TEMPLATES.find(x=>x.id===week+". "+label)||null;
+}
 
 function selectTodayTemplate(){
-let now=new Date();
-let startOfToday=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-let days=Math.floor((startOfToday-WEEK_START)/86400000);
-if(days<0)return;
-let week=Math.floor(days/7)+1;
-let label=DAY_LABELS[startOfToday.getDay()];
-if(week>8||!label)return;
-let id=week+". "+label;
-let t=TEMPLATES.find(x=>x.id===id);
+if(selectedTpl)return;
+let t=currentTemplate();
 if(!t)return;
-document.querySelectorAll(".tpl-btn").forEach(b=>{
-b.classList.toggle("today",b.dataset.id===id);
+applyTemplate(t,false);
+}
+
+function updateSelection(){
+document.querySelectorAll(".tpl-btn").forEach(b=>b.classList.remove("sel"));
+let target=null;
+if(selectedTpl){
+target=TEMPLATES.find(t=>t.id===selectedTpl);
+}else{
+let run=parseInt($("run").value)||0;
+let walk=parseInt($("cycleWalk").value)||0;
+let cycles=parseInt($("cycles").value)||0;
+let matches=TEMPLATES.filter(t=>Math.round(t.run*60)===run&&Math.round(t.walk*60)===walk&&t.cycles===cycles);
+if(matches.length){
+let today=startOfToday();
+let best=matches[0],bestDiff=Infinity;
+matches.forEach(m=>{
+let diff=Math.abs(templateDate(m).getTime()-today.getTime());
+if(diff<bestDiff){bestDiff=diff;best=m;}
 });
-applyTemplate(t);
+target=best;
+}
+}
+if(target){
+let b=document.querySelector('.tpl-btn[data-id="'+target.id+'"]');
+if(b)b.classList.add("sel");
+}
 }
 
 const TIME_VALUES=[];
@@ -770,7 +836,23 @@ $("templatesArrow").classList.toggle("open");
 };
 
 buildTemplates();
+$("startDate").value=fmtDate(START_DATE);
+if(selectedTpl){
+let t=TEMPLATES.find(x=>x.id===selectedTpl);
+if(t)applyTemplate(t,true);
+}
 selectTodayTemplate();
+updateSelection();
+
+$("startDate").addEventListener("change",()=>{
+let v=$("startDate").value;
+if(!v)return;
+START_DATE=new Date(v+"T00:00:00");
+START_DATE.setHours(0,0,0,0);
+selectTodayTemplate();
+saveSettings();
+updateSelection();
+});
 
 $("toggle").onclick=()=>{
 if(!running){
