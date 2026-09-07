@@ -40,6 +40,7 @@ h1{font-size:27px;margin:4px 0 18px}
 input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radius:11px;padding:11px;font-size:17px;text-align:center}
 .wi-hidden{display:none}
 .input-wrap{display:flex;flex-direction:column;align-items:center}
+.voice-select{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radius:11px;padding:11px;font-size:16px}
 .set-group{background:#242428;border:1px solid #333;border-radius:14px;padding:6px 0 12px;margin:10px 0}
 .set-group .row:last-child{border-bottom:0}
 .group-label{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.6px;padding:8px 0 2px 6px}
@@ -183,6 +184,13 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 
 </div>
 
+<div class="row">
+<label>Голос</label>
+<div class="input-wrap">
+<select id="voiceSel" class="voice-select"></select>
+</div>
+</div>
+
 </div>
 
 </div>
@@ -315,11 +323,29 @@ return parts.join(" ")||"0 секунд";
 }
 
 let ruVoice=null;
+let voices=[];
+let voicePref="";
 let soundOn=true;
 function loadVoices(){
 try{
-let voices=speechSynthesis.getVoices();
-ruVoice=voices.find(v=>v.lang&&v.lang.toLowerCase().startsWith("ru"))||null;
+let all=speechSynthesis.getVoices();
+voices=all.filter(v=>v.lang&&v.lang.toLowerCase().startsWith("ru"))||[];
+ruVoice=voices[0]||null;
+let sel=$("voiceSel");
+if(sel){
+sel.innerHTML="";
+let auto=document.createElement("option");
+auto.value="";
+auto.textContent="Авто";
+sel.appendChild(auto);
+voices.forEach(v=>{
+let o=document.createElement("option");
+o.value=v.name;
+o.textContent=v.name;
+sel.appendChild(o);
+});
+sel.value=voicePref||"";
+}
 }catch(e){}
 }
 if("speechSynthesis" in window){
@@ -335,7 +361,9 @@ speechSynthesis.cancel();
 try{speechSynthesis.resume();}catch(e){}
 let utterance=new SpeechSynthesisUtterance(text);
 utterance.lang="ru-RU";
-if(ruVoice)utterance.voice=ruVoice;
+let chosen=$("voiceSel")?$("voiceSel").value:"";
+let v=chosen?voices.find(x=>x.name===chosen):null;
+utterance.voice=v||ruVoice;
 utterance.rate=.95;
 utterance.pitch=1;
 speechSynthesis.speak(utterance);
@@ -616,6 +644,7 @@ if(data[id]!==undefined&&$(id))$(id).value=data[id];
 });
 if(data.start)START_DATE=new Date(data.start+"T00:00:00");
 if(data.sel)selectedTpl=data.sel;
+if(data.voice)voicePref=data.voice;
 }catch(e){}
 }
 
@@ -627,6 +656,7 @@ if($(id))data[id]=$(id).value;
 });
 data.start=fmtDate(START_DATE);
 if(selectedTpl)data.sel=selectedTpl;
+data.voice=$("voiceSel")?$("voiceSel").value:voicePref;
 localStorage.setItem(STORE_KEY,JSON.stringify(data));
 }catch(e){}
 }
@@ -673,6 +703,12 @@ if(el){
 el.addEventListener("input",updateSelection);
 el.addEventListener("change",updateSelection);
 }
+});
+if("speechSynthesis" in window)loadVoices();
+let vs=$("voiceSel");
+if(vs)vs.addEventListener("change",()=>{
+voicePref=vs.value;
+saveSettings();
 });
 
 const TEMPLATES=[
