@@ -74,8 +74,8 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .tpl-btn{border:0;border-radius:12px;padding:22px 6px;font-size:12px;font-weight:600;background:#303033;color:#fff;cursor:pointer}
 .tpl-btn:active{background:#3a3a3d}
 .tpl-btn.sel{background:#fff;color:#111}
-.tpl-btn.done{background:#2e7d4f;color:#fff}
-.tpl-btn.done.sel{background:#2e7d4f;color:#fff;box-shadow:inset 0 0 0 3px #fff}
+.tpl-btn.done{background:#B5EA7B;color:#111}
+.tpl-btn.done.sel{background:#B5EA7B;color:#111;box-shadow:inset 0 0 0 3px #fff}
 .tpl-start{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .tpl-labels{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
 .tpl-start label{font-size:13px;color:#888;white-space:nowrap}
@@ -697,18 +697,16 @@ el.textContent="Прошло "+n+" "+dayWord(n)+" с начала трениро
 }
 
 loadSettings();
+function onSettingsEdit(){
+selectedTpl=null;
+saveSettings();
+updateSelection();
+}
 ["warm","fast","run","cycleWalk","cycles","cool"].forEach(id=>{
 let el=$(id);
 if(el){
-el.addEventListener("input",saveSettings);
-el.addEventListener("change",saveSettings);
-}
-});
-["run","cycleWalk","cycles"].forEach(id=>{
-let el=$(id);
-if(el){
-el.addEventListener("input",updateSelection);
-el.addEventListener("change",updateSelection);
+el.addEventListener("input",onSettingsEdit);
+el.addEventListener("change",onSettingsEdit);
 }
 });
 if("speechSynthesis" in window)loadVoices();
@@ -819,7 +817,7 @@ document.querySelectorAll(".tpl-btn").forEach(b=>b.classList.remove("done"));
 let today=startOfToday();
 document.querySelectorAll(".tpl-btn").forEach(b=>{
 let t=TEMPLATES.find(x=>x.id===b.dataset.id);
-if(t&&templateDate(t).getTime()<today.getTime())b.classList.add("done");
+if(t&&templateDate(t).getTime()<=today.getTime())b.classList.add("done");
 });
 let target=null;
 if(selectedTpl){
@@ -914,7 +912,7 @@ upd();
 sel.addEventListener("change",()=>{
 let inp=document.getElementById(field);
 if(inp)inp.value=sel.value;
-saveSettings();
+onSettingsEdit();
 upd();
 });
 });
