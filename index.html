@@ -74,6 +74,8 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .tpl-btn{border:0;border-radius:12px;padding:22px 6px;font-size:12px;font-weight:600;background:#303033;color:#fff;cursor:pointer}
 .tpl-btn:active{background:#3a3a3d}
 .tpl-btn.sel{background:#fff;color:#111}
+.tpl-btn.done{background:#34c759;color:#111}
+.tpl-btn.done.sel{background:#34c759;color:#111;box-shadow:inset 0 0 0 3px #fff}
 .tpl-start{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .tpl-labels{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
 .tpl-start label{font-size:13px;color:#888;white-space:nowrap}
@@ -637,7 +639,7 @@ wakeLockRef=null;
 }
 
 const STORE_KEY="trenirovka_settings";
-let START_DATE=new Date();
+let START_DATE=new Date(2026,8,7);
 START_DATE.setHours(0,0,0,0);
 let selectedTpl=null;
 
@@ -813,6 +815,12 @@ applyTemplate(t,false);
 
 function updateSelection(){
 document.querySelectorAll(".tpl-btn").forEach(b=>b.classList.remove("sel"));
+document.querySelectorAll(".tpl-btn").forEach(b=>b.classList.remove("done"));
+let today=startOfToday();
+document.querySelectorAll(".tpl-btn").forEach(b=>{
+let t=TEMPLATES.find(x=>x.id===b.dataset.id);
+if(t&&templateDate(t).getTime()<today.getTime())b.classList.add("done");
+});
 let target=null;
 if(selectedTpl){
 target=TEMPLATES.find(t=>t.id===selectedTpl);
@@ -822,7 +830,6 @@ let walk=parseInt($("cycleWalk").value)||0;
 let cycles=parseInt($("cycles").value)||0;
 let matches=TEMPLATES.filter(t=>Math.round(t.run*60)===run&&Math.round(t.walk*60)===walk&&t.cycles===cycles);
 if(matches.length){
-let today=startOfToday();
 let best=matches[0],bestDiff=Infinity;
 matches.forEach(m=>{
 let diff=Math.abs(templateDate(m).getTime()-today.getTime());
