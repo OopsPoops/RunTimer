@@ -815,9 +815,15 @@ function updateSelection(){
 document.querySelectorAll(".tpl-btn").forEach(b=>b.classList.remove("sel"));
 document.querySelectorAll(".tpl-btn").forEach(b=>b.classList.remove("done"));
 let today=startOfToday();
+let sessions=TEMPLATES.map(t=>({t,d:templateDate(t)})).sort((a,b)=>a.d-b.d);
+let curIdx=-1;
+sessions.forEach((s,i)=>{if(s.d.getTime()<=today.getTime())curIdx=i;});
+let limit=curIdx>=0?Math.min(curIdx+1,sessions.length-1):-1;
 document.querySelectorAll(".tpl-btn").forEach(b=>{
 let t=TEMPLATES.find(x=>x.id===b.dataset.id);
-if(t&&templateDate(t).getTime()<=today.getTime())b.classList.add("done");
+if(!t)return;
+let idx=sessions.findIndex(s=>s.t.id===t.id);
+if(idx>=0&&idx<=limit)b.classList.add("done");
 });
 let target=null;
 if(selectedTpl){
