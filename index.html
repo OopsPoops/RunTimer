@@ -41,7 +41,6 @@ h1{font-size:27px;margin:4px 0 18px}
 input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radius:11px;padding:11px;font-size:17px;text-align:center}
 .wi-hidden{display:none}
 .input-wrap{display:flex;flex-direction:column;align-items:center}
-.voice-select{width:150px;height:48px;background:#303033;border:1px solid #333;border-radius:12px;color:#fff;font-size:16px;font-weight:600;text-align:center;padding:0 8px}
 .voice-help{width:18px;height:18px;border-radius:50%;border:1px solid #888;background:none;color:#888;font-size:12px;line-height:1;padding:0;margin-left:6px;vertical-align:middle;cursor:pointer}
 .voice-hint{font-size:12px;color:#888;line-height:1.45;margin-top:8px;padding:10px 12px;background:#242428;border:1px solid #333;border-radius:12px}
 .reset-btn{width:100%;border:0;border-radius:12px;padding:13px;font-size:15px;font-weight:600;background:#303033;color:#fff;cursor:pointer;margin-top:14px}
@@ -174,14 +173,14 @@ body.light .timer.blink{animation:timerBlinkLight .7s ease-in-out}
 
 <div class="card settings">
 
-<button class="settings-toggle" id="settingsToggle" type="button">⚙️ Настройки <span class="settings-arrow" id="settingsArrow">▾</span></button>
+<button class="settings-toggle" id="settingsToggle" type="button">🏃 Тренировка <span class="settings-arrow" id="settingsArrow">▾</span></button>
 
 <div class="settings-body hidden" id="settingsBody">
 
 <div class="row">
 <label>Ходьба в начале</label>
 <div class="input-wrap">
-<input id="warm" type="number" min="0" value="3" class="wi-hidden">
+<input id="warm" type="number" min="0" value="300" class="wi-hidden">
 <select class="picky" data-field="warm" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
 </div>
 </div>
@@ -189,7 +188,7 @@ body.light .timer.blink{animation:timerBlinkLight .7s ease-in-out}
 <div class="row">
 <label>Быстрая ходьба</label>
 <div class="input-wrap">
-<input id="fast" type="number" min="0" value="3" class="wi-hidden">
+<input id="fast" type="number" min="0" value="300" class="wi-hidden">
 <select class="picky" data-field="fast" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
 </div>
 </div>
@@ -225,10 +224,34 @@ body.light .timer.blink{animation:timerBlinkLight .7s ease-in-out}
 <div class="row">
 <label>Ходьба в конце</label>
 <div class="input-wrap">
-<input id="cool" type="number" min="0" value="3" class="wi-hidden">
+<input id="cool" type="number" min="0" value="300" class="wi-hidden">
 <select class="picky" data-field="cool" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
 </div>
+</div>
 
+</div>
+
+</div>
+
+<div class="card templates">
+<button class="settings-toggle" id="templatesToggle" type="button">📋 Шаблоны <span class="settings-arrow" id="templatesArrow">▾</span></button>
+<div class="settings-body hidden" id="templatesBody">
+<div class="tpl-grid" id="tplGrid"></div>
+</div>
+</div>
+
+<div class="card settings">
+<button class="settings-toggle" id="appSettingsToggle" type="button">⚙️ Настройки <span class="settings-arrow" id="appSettingsArrow">▾</span></button>
+<div class="settings-body hidden" id="appSettingsBody">
+
+<div class="tpl-start">
+<div class="tpl-labels">
+<label for="startDate">Дата начала тренировок</label>
+</div>
+<div class="date-wrap" id="dateWrap">
+<input type="date" id="startDate">
+<div class="date-value" id="startDateVal">—</div>
+</div>
 </div>
 
 <div class="row">
@@ -242,30 +265,14 @@ body.light .timer.blink{animation:timerBlinkLight .7s ease-in-out}
 <div class="row">
 <label>Голос <button type="button" class="voice-help" id="voiceHelp" aria-label="Справка">?</button></label>
 <div class="input-wrap">
-<select id="voiceSel" class="voice-select"></select>
+<input id="voiceSel" type="text" value="" class="wi-hidden">
+<select class="picky" id="voicePick" data-kind="voice" data-field="voiceSel"></select>
 </div>
 </div>
 <div class="voice-hint hidden" id="voiceHint">Голоса — стандартные системные. Доступный набор зависит от устройства и операционной системы.</div>
 
 <button type="button" class="reset-btn" id="resetSettings">Сбросить настройки</button>
 
-</div>
-
-</div>
-
-<div class="card templates">
-<button class="settings-toggle" id="templatesToggle" type="button">📋 Шаблоны <span class="settings-arrow" id="templatesArrow">▾</span></button>
-<div class="settings-body hidden" id="templatesBody">
-<div class="tpl-start">
-<div class="tpl-labels">
-<label for="startDate">Дата начала тренировок</label>
-</div>
-<div class="date-wrap" id="dateWrap">
-<input type="date" id="startDate">
-<div class="date-value" id="startDateVal">—</div>
-</div>
-</div>
-<div class="tpl-grid" id="tplGrid"></div>
 </div>
 </div>
 
@@ -389,21 +396,21 @@ try{
 let all=speechSynthesis.getVoices();
 voices=all.filter(v=>v.lang&&v.lang.toLowerCase().startsWith("ru"))||[];
 ruVoice=voices[0]||null;
-let sel=$("voiceSel");
+let sel=$("voicePick");
 if(sel){
+let cur=voicePref;
 sel.innerHTML="";
-let auto=document.createElement("option");
-auto.value="";
-auto.textContent="Авто";
-sel.appendChild(auto);
-voices.forEach(v=>{
+selValues(sel).forEach(v=>{
 let o=document.createElement("option");
-o.value=v.name;
-o.textContent=v.name;
+o.value=v;
+o.textContent=selLabel(sel,v);
 sel.appendChild(o);
 });
-sel.value=voicePref||"";
+sel.value=cur;
+if(sel._disp)sel._disp.textContent=selDisplay(sel,cur);
 }
+let inp=$("voiceSel");
+if(inp)inp.value=voicePref;
 }catch(e){}
 }
 if("speechSynthesis" in window){
@@ -767,11 +774,6 @@ el.addEventListener("change",onSettingsEdit);
 }
 });
 if("speechSynthesis" in window)loadVoices();
-let vs=$("voiceSel");
-if(vs)vs.addEventListener("change",()=>{
-voicePref=vs.value;
-saveSettings();
-});
 let vh=$("voiceHelp");
 if(vh)vh.addEventListener("click",()=>{
 $("voiceHint").classList.toggle("hidden");
@@ -935,18 +937,21 @@ for(let v=1;v<=10;v++)a.push(v);
 return a;
 }
 if(sel.dataset.kind==="theme")return ["dark","light"];
+if(sel.dataset.kind==="voice")return ["",...voices.map(v=>v.name)];
 return TIME_VALUES;
 }
 
 function selLabel(sel,v){
 if(sel.dataset.kind==="count")return v+" шт";
 if(sel.dataset.kind==="theme")return v==="light"?"Светлая":"Тёмная";
+if(sel.dataset.kind==="voice")return v===""?"Авто":v;
 return fmtSeconds(v);
 }
 
 function selDisplay(sel,v){
 if(sel.dataset.kind==="count")return v+" шт";
 if(sel.dataset.kind==="theme")return v==="light"?"Светлая":"Тёмная";
+if(sel.dataset.kind==="voice")return v===""?"Авто":v;
 return fmtDisplay(v);
 }
 
@@ -973,7 +978,7 @@ sel._disp=disp;
 function upd(){
 let idx=sel.selectedIndex;
 let raw=(idx>=0&&sel.options[idx])?sel.options[idx].value:(sel.value||"");
-let v=sel.dataset.kind==="theme"?raw:(parseInt(raw)||0);
+let v=(sel.dataset.kind==="theme"||sel.dataset.kind==="voice")?raw:(parseInt(raw)||0);
 disp.textContent=selDisplay(sel,v);
 }
 upd();
@@ -983,6 +988,9 @@ if(inp)inp.value=sel.value;
 if(sel.dataset.kind==="theme"){
 saveSettings();
 applyTheme();
+}else if(sel.dataset.kind==="voice"){
+voicePref=sel.value;
+saveSettings();
 }else{
 onSettingsEdit();
 }
@@ -996,7 +1004,7 @@ document.querySelectorAll(".pick-overlay").forEach(sel=>{
 let inp=document.getElementById(sel.dataset.field);
 if(!inp)return;
 let values=selValues(sel);
-let isStr=sel.dataset.kind==="theme";
+let isStr=sel.dataset.kind==="theme"||sel.dataset.kind==="voice";
 let v=isStr?inp.value:parseInt(inp.value);
 if(v===""||(!isStr&&isNaN(v)))v=values[0];
 let snapped=values[0],best=Infinity;
@@ -1088,6 +1096,11 @@ $("settingsToggle").onclick=()=>{
 let body=$("settingsBody");
 body.classList.toggle("hidden");
 $("settingsArrow").classList.toggle("open");
+};
+$("appSettingsToggle").onclick=()=>{
+let body=$("appSettingsBody");
+body.classList.toggle("hidden");
+$("appSettingsArrow").classList.toggle("open");
 };
 document.addEventListener(
 "visibilitychange",
