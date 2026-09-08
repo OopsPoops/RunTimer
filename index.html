@@ -90,6 +90,44 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 @keyframes timerBlink{0%{color:#fff;transform:scale(1)}30%{color:#34c759;transform:scale(1.06)}70%{color:#34c759;transform:scale(1.06)}100%{color:#fff;transform:scale(1)}}
 @keyframes timerGrow{0%{transform:scale(1)}50%{transform:scale(1.07)}100%{transform:scale(1)}}
 .timer.paused{color:#ffcc00;animation:timerGrow .45s ease}
+@keyframes timerBlinkLight{0%{color:#111;transform:scale(1)}30%{color:#34c759;transform:scale(1.06)}70%{color:#34c759;transform:scale(1.06)}100%{color:#111;transform:scale(1)}}
+body.light{background:#f2f2f5;color:#111}
+body.light .card{background:#fff}
+body.light .sub,body.light .next,body.light .status{color:#666}
+body.light .bar{background:#e2e2e6}
+body.light .fill{background:#2e7d4f}
+body.light .pbtn{background:#e8e8ec;color:#111}
+body.light .pbtn.main{background:#111;color:#fff}
+body.light .corner-btn{background:#e8e8ec;color:#111}
+body.light .corner-btn.snd-off-style{background:#111;color:#fff}
+body.light .settings-toggle{color:#111}
+body.light .settings-arrow{color:#888}
+body.light .row{border-bottom:1px solid #e5e5e8}
+body.light input,body.light .voice-select{background:#f2f2f5;border-color:#ddd;color:#111}
+body.light .set-group{background:#f7f7f9;border-color:#e5e5e8}
+body.light .group-label{color:#999}
+body.light .pick-value{background:#fff;border-color:#ddd;color:#111}
+body.light .tpl-btn{background:#e8e8ec;color:#111}
+body.light .tpl-btn:active{background:#d8d8dc}
+body.light .tpl-btn.sel{background:#111;color:#fff}
+body.light .tpl-btn.done{background:#B5EA7B;color:#111}
+body.light .tpl-btn.done.sel{background:#B5EA7B;color:#111;box-shadow:inset 0 0 0 3px #111}
+body.light .tpl-start label,body.light .days{color:#666}
+body.light .date-value{background:#f2f2f5;border-color:#ddd;color:#111}
+body.light .date-wrap input[type=date]{color-scheme:light}
+body.light .voice-hint{background:#f7f7f9;border-color:#e5e5e8;color:#666}
+body.light .reset-btn{background:#e8e8ec;color:#111}
+body.light .reset-btn:active{background:#d8d8dc}
+body.light .footer{color:#888;border-top-color:#ddd}
+body.light .footer a{color:#666}
+body.light .footer-right a{border-color:#ddd;color:#666}
+body.light .footer-right a:hover{color:#111;border-color:#bbb}
+body.light .modal{background:rgba(0,0,0,.4)}
+body.light .modal-card{background:#fff}
+body.light .modal-card p{color:#444}
+body.light .modal-close{background:#e8e8ec;color:#111}
+body.light .voice-help{border-color:#888;color:#888}
+body.light .timer.blink{animation:timerBlinkLight .7s ease-in-out}
 </style>
 </head>
 <body>
@@ -191,6 +229,14 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 <select class="picky" data-field="cool" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
 </div>
 
+</div>
+
+<div class="row">
+<label>Тема</label>
+<div class="input-wrap">
+<input id="theme" type="text" value="dark" class="wi-hidden">
+<select class="picky" data-kind="theme" data-field="theme"></select>
+</div>
 </div>
 
 <div class="row">
@@ -651,7 +697,7 @@ let selectedTpl=null;
 function loadSettings(){
 try{
 let data=JSON.parse(localStorage.getItem(STORE_KEY)||"{}");
-["warm","fast","run","cycleWalk","cycles","cool"].forEach(id=>{
+["warm","fast","run","cycleWalk","cycles","cool","theme"].forEach(id=>{
 if(data[id]!==undefined&&$(id))$(id).value=data[id];
 });
 if(data.start)START_DATE=new Date(data.start+"T00:00:00");
@@ -660,10 +706,15 @@ if(data.voice)voicePref=data.voice;
 }catch(e){}
 }
 
+function applyTheme(){
+let v=$("theme")?$("theme").value:"dark";
+document.body.classList.toggle("light",v==="light");
+}
+
 function saveSettings(){
 try{
 let data={};
-["warm","fast","run","cycleWalk","cycles","cool"].forEach(id=>{
+["warm","fast","run","cycleWalk","cycles","cool","theme"].forEach(id=>{
 if($(id))data[id]=$(id).value;
 });
 data.start=fmtDate(START_DATE);
@@ -702,6 +753,7 @@ el.textContent="Прошло "+n+" "+dayWord(n)+" с начала трениро
 }
 
 loadSettings();
+applyTheme();
 function onSettingsEdit(){
 selectedTpl=null;
 saveSettings();
@@ -888,16 +940,19 @@ let a=[];
 for(let v=1;v<=10;v++)a.push(v);
 return a;
 }
+if(sel.dataset.kind==="theme")return ["dark","light"];
 return TIME_VALUES;
 }
 
 function selLabel(sel,v){
 if(sel.dataset.kind==="count")return v+" шт";
+if(sel.dataset.kind==="theme")return v==="light"?"Светлая":"Тёмная";
 return fmtSeconds(v);
 }
 
 function selDisplay(sel,v){
 if(sel.dataset.kind==="count")return v+" шт";
+if(sel.dataset.kind==="theme")return v==="light"?"Светлая":"Тёмная";
 return fmtDisplay(v);
 }
 
@@ -923,14 +978,20 @@ wrap.appendChild(sel);
 sel._disp=disp;
 function upd(){
 let idx=sel.selectedIndex;
-let v=(idx>=0&&sel.options[idx])?parseInt(sel.options[idx].value):(parseInt(sel.value)||0);
+let raw=(idx>=0&&sel.options[idx])?sel.options[idx].value:(sel.value||"");
+let v=sel.dataset.kind==="theme"?raw:(parseInt(raw)||0);
 disp.textContent=selDisplay(sel,v);
 }
 upd();
 sel.addEventListener("change",()=>{
 let inp=document.getElementById(field);
 if(inp)inp.value=sel.value;
+if(sel.dataset.kind==="theme"){
+saveSettings();
+applyTheme();
+}else{
 onSettingsEdit();
+}
 upd();
 });
 });
@@ -941,10 +1002,11 @@ document.querySelectorAll(".pick-overlay").forEach(sel=>{
 let inp=document.getElementById(sel.dataset.field);
 if(!inp)return;
 let values=selValues(sel);
-let v=parseInt(inp.value);
-if(isNaN(v))v=values[0];
-let snapped=values[0],best=Math.abs(v-values[0]);
-values.forEach(x=>{let d=Math.abs(v-x);if(d<best){best=d;snapped=x;}});
+let isStr=sel.dataset.kind==="theme";
+let v=isStr?inp.value:parseInt(inp.value);
+if(v===""||(!isStr&&isNaN(v)))v=values[0];
+let snapped=values[0],best=Infinity;
+values.forEach(x=>{let d=isStr?(x===v?0:1):Math.abs(v-x);if(d<best){best=d;snapped=x;}});
 inp.value=snapped;
 sel.value=snapped;
 if(sel._disp){
