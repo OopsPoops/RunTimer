@@ -14,9 +14,7 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#111;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif}
-.app-header{position:sticky;top:0;z-index:20;padding:calc(env(safe-area-inset-top) + 4px) 18px 4px;background:rgba(30,30,32,.45);-webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5)}
-.app-header h1{font-size:27px;margin:0}
-.app{max-width:520px;margin:auto;padding:12px 18px 32px}
+.app{max-width:520px;margin:auto;padding:calc(env(safe-area-inset-top) + 48px) 18px 32px}
 h1{font-size:27px;margin:4px 0 18px}
 .run-emoji{display:inline-block;transform:scaleX(-1)}
 .card{background:#1d1d1f;border-radius:22px;padding:18px;margin-bottom:14px}
@@ -93,7 +91,6 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .timer.paused{color:#ffcc00;animation:timerGrow .45s ease}
 @keyframes timerBlinkLight{0%{color:#111;transform:scale(1)}30%{color:#34c759;transform:scale(1.06)}70%{color:#34c759;transform:scale(1.06)}100%{color:#111;transform:scale(1)}}
 body.light{background:#f2f2f5;color:#111}
-body.light .app-header{background:rgba(246,246,248,.45)}
 body.light .card{background:#fff}
 body.light .sub,body.light .next,body.light .status{color:#666}
 body.light .bar{background:#e2e2e6}
@@ -133,7 +130,6 @@ body.light .timer.blink{animation:timerBlinkLight .7s ease-in-out}
 </style>
 </head>
 <body>
-<header class="app-header"></header>
 <div class="app">
 
 <h1>RunTimer <span class="run-emoji">🏃</span></h1>
