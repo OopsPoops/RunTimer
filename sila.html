@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111">
+<title>Силовая · RunTimer</title>
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RunTimer">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<button class="menu-btn" id="menuBtn" aria-label="Меню"><span></span><span></span></button>
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<aside class="drawer" id="drawer">
+<div class="drawer-title">RunTimer</div>
+<a href="index.html">Главная</a>
+<a href="sila.html" class="active">Силовая</a>
+</aside>
+<div class="app">
+
+<h1>Силовая 🏋️</h1>
+
+<div class="card">
+<div class="card-top">
+<button class="corner-btn" id="sound" title="Звук">
+<svg class="snd-on" viewBox="0 0 24 24" width="20" height="20"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/><path d="M16 9a4 4 0 0 1 0 6M18.6 6.4a8 8 0 0 1 0 11.2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+<svg class="snd-off" viewBox="0 0 24 24" width="20" height="20" style="display:none"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+</button>
+<button class="corner-btn" id="reset" title="Заново">
+<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8Z"/></svg>
+</button>
+</div>
+<div class="phase" id="phase">Готов</div>
+<div class="timer" id="timer">00:00</div>
+<div class="sub" id="round">Настрой параметры и нажми «Старт»</div>
+<div class="bar"><div class="fill" id="fill"></div></div>
+<div class="next" id="next">—</div>
+<div class="player">
+<button class="pbtn side" id="back" title="Назад" disabled>
+<svg viewBox="0 0 24 24" width="20" height="20"><rect x="4" y="4" width="3" height="16" rx="1" fill="currentColor"/><path d="M17 5.5 8 12 17 18.5Z" fill="currentColor"/></svg>
+</button>
+<button class="pbtn main" id="toggle" title="Старт/Пауза">
+<svg class="play" viewBox="0 0 24 24" width="30" height="30"><path d="M7 3.5 22 12 7 20.5Z" fill="currentColor"/></svg>
+<svg class="pause" viewBox="0 0 24 24" width="30" height="30" style="display:none"><rect x="6" y="6" width="4.5" height="12" rx="1.5" fill="currentColor"/><rect x="13.5" y="6" width="4.5" height="12" rx="1.5" fill="currentColor"/></svg>
+</button>
+<button class="pbtn side" id="skip" title="Пропустить" disabled>
+<svg viewBox="0 0 24 24" width="20" height="20"><path d="M7 5.5 16 12 7 18.5Z" fill="currentColor"/><rect x="17" y="4" width="3" height="16" rx="1" fill="currentColor"/></svg>
+</button>
+</div>
+</div>
+
+<div class="status" id="status"></div>
+
+<div class="card settings">
+<button class="settings-toggle" id="settingsToggle" type="button"><span>🏋️ Тренировка</span><span class="settings-arrow" id="settingsArrow">▾</span></button>
+<div class="settings-body hidden" id="settingsBody">
+
+<div class="row">
+<label>Разминка</label>
+<div class="input-wrap">
+<input id="warm" type="number" min="0" value="300" class="wi-hidden">
+<select class="picky" data-field="warm" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
+</div>
+</div>
+
+<div class="set-group">
+<div class="group-label">Подходы</div>
+
+<div class="row">
+<label>Количество подходов</label>
+<div class="input-wrap">
+<input id="cycles" type="number" min="1" value="3" class="wi-hidden">
+<select class="picky" data-kind="count" data-field="cycles" data-min="1" data-max="10" data-step="1"></select>
+</div>
+</div>
+
+<div class="row">
+<label>Рабочий подход</label>
+<div class="input-wrap">
+<input id="work" type="number" min="0" value="60" class="wi-hidden">
+<select class="picky" data-field="work" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
+</div>
+</div>
+
+<div class="row">
+<label>Отдых</label>
+<div class="input-wrap">
+<input id="rest" type="number" min="0" value="90" class="wi-hidden">
+<select class="picky" data-field="rest" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
+</div>
+</div>
+</div>
+
+<div class="total-time" id="totalTime"></div>
+
+</div>
+</div>
+
+<div class="footer">
+<div class="footer-left">
+<span>© 2026 RunTimer</span>
+<span class="sep">·</span>
+<a href="https://github.com/OopsPoops/RunTimer" target="_blank" rel="noopener">О приложении</a>
+</div>
+</div>
+
+</div>
+
+<script>
+let running=false,paused=false,phases=[],idx=0,remaining=0,raf=null,last=0,lastBack=0,wakeLockRef=null,soundOn=true;
+const $=id=>document.getElementById(id);
+
+function value(id){return Math.max(0,parseInt($(id).value)||0);}
+
+function build(){
+let cycles=Math.max(1,value("cycles"));
+phases=[];
+if(value("warm"))phases.push({name:"Разминка",sec:value("warm")});
+for(let i=1;i<=cycles;i++){
+phases.push({name:"Подход",sec:value("work"),cycle:i});
+if(value("rest")>0)phases.push({name:"Отдых",sec:value("rest"),cycle:i});
+}
+}
+
+function format(seconds){
+seconds=Math.max(0,Math.ceil(seconds));
+let min=Math.floor(seconds/60);
+let sec=seconds%60;
+return String(min).padStart(2,"0")+":"+String(sec).padStart(2,"0");
+}
+
+function plural(n,one,few,many){
+let n10=n%10,n100=n%100;
+if(n10===1&&n100!==11)return one;
+if(n10>=2&&n10<=4&&(n100<12||n100>14))return few;
+return many;
+}
+
+function describeTime(sec){
+sec=Math.max(0,Math.round(sec));
+let m=Math.floor(sec/60);
+let s=sec%60;
+let parts=[];
+if(m>0)parts.push(m+" "+plural(m,"минута","минуты","минут"));
+if(s>0)parts.push(s+" "+plural(s,"секунда","секунды","секунд"));
+return parts.join(" ")||"0 секунд";
+}
+
+const TIME_VALUES=[];
+for(let v=0;v<=60;v+=5)TIME_VALUES.push(v);
+for(let v=70;v<=110;v+=10)TIME_VALUES.push(v);
+for(let v=120;v<=300;v+=30)TIME_VALUES.push(v);
+for(let v=360;v<=1200;v+=60)TIME_VALUES.push(v);
+
+function fmtSeconds(v){
+if(v<60)return v+" сек";
+let m=Math.floor(v/60);
+let s=v%60;
+if(v>=300)return m+" мин";
+return m+" мин "+String(s).padStart(2,"0")+" сек";
+}
+function fmtDisplay(v){
+if(v<60)return v+" сек";
+let m=Math.floor(v/60);
+let s=v%60;
+if(s===0)return m+" мин";
+return m+" мин "+s+" сек";
+}
+
+function selValues(sel){
+if(sel.dataset.kind==="count"){let a=[];for(let v=1;v<=10;v++)a.push(v);return a;}
+return TIME_VALUES;
+}
+function selLabel(sel,v){
+return sel.dataset.kind==="count"?v+" шт":fmtSeconds(v);
+}
+function selDisplay(sel,v){
+return sel.dataset.kind==="count"?v+" шт":fmtDisplay(v);
+}
+
+function buildPickers(){
+document.querySelectorAll(".picky").forEach(sel=>{
+let field=sel.dataset.field;
+let values=selValues(sel);
+sel.innerHTML="";
+values.forEach(v=>{
+let o=document.createElement("option");
+o.value=v;
+o.textContent=selLabel(sel,v);
+sel.appendChild(o);
+});
+let wrap=document.createElement("div");
+wrap.className="picker";
+let disp=document.createElement("div");
+disp.className="pick-value";
+sel.className="pick-overlay";
+sel.parentNode.insertBefore(wrap,sel);
+wrap.appendChild(disp);
+wrap.appendChild(sel);
+sel._disp=disp;
+function upd(){
+let idx=sel.selectedIndex;
+let raw=(idx>=0&&sel.options[idx])?sel.options[idx].value:(sel.value||"");
+disp.textContent=selDisplay(sel,parseInt(raw)||0);
+}
+upd();
+sel.addEventListener("change",()=>{
+let inp=document.getElementById(field);
+if(inp)inp.value=sel.value;
+onSettingsEdit();
+upd();
+});
+});
+}
+
+function syncPickers(){
+document.querySelectorAll(".pick-overlay").forEach(sel=>{
+let inp=document.getElementById(sel.dataset.field);
+if(!inp)return;
+let values=selValues(sel);
+let v=parseInt(inp.value);
+if(isNaN(v))v=values[0];
+let snapped=values[0],best=Infinity;
+values.forEach(x=>{let d=Math.abs(v-x);if(d<best){best=d;snapped=x;}});
+inp.value=snapped;
+sel.value=snapped;
+if(sel._disp)sel._disp.textContent=selDisplay(sel,snapped);
+});
+}
+
+function loadSettings(){
+try{
+let d=JSON.parse(localStorage.getItem("sila_settings")||"{}");
+["warm","cycles","work","rest"].forEach(id=>{if(d[id]!==undefined&&$(id))$(id).value=d[id];});
+}catch(e){}
+}
+function saveSettings(){
+try{
+let d={};
+["warm","cycles","work","rest"].forEach(id=>{if($(id))d[id]=$(id).value;});
+localStorage.setItem("sila_settings",JSON.stringify(d));
+}catch(e){}
+}
+function onSettingsEdit(){
+saveSettings();
+updateTotal();
+}
+
+function fmtTotal(sec){
+let h=Math.floor(sec/3600);
+let m=Math.floor(sec%3600/60);
+let s=sec%60;
+let parts=[];
+if(h)parts.push(h+" ч");
+if(m)parts.push(m+" мин");
+if(s)parts.push(s+" сек");
+return parts.join(" ")||"0 сек";
+}
+function updateTotal(){
+let el=$("totalTime");
+if(!el)return;
+let total=value("warm")+Math.max(1,value("cycles"))*(value("work")+value("rest"));
+el.textContent="Общее время: "+fmtTotal(total);
+}
+
+let ruVoice=null;
+function loadVoices(){
+try{ruVoice=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.toLowerCase().startsWith("ru"))||null;}catch(e){}
+}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+
+function speak(text){
+if(!soundOn)return;
+if(!("speechSynthesis" in window))return;
+speechSynthesis.cancel();
+try{speechSynthesis.resume();}catch(e){}
+let u=new SpeechSynthesisUtterance(text);
+u.lang="ru-RU";
+if(ruVoice)u.voice=ruVoice;
+u.rate=.95;u.pitch=1;
+speechSynthesis.speak(u);
+}
+
+function updateSound(){
+let btn=$("sound");
+if(!btn)return;
+let on=btn.querySelector(".snd-on");
+let off=btn.querySelector(".snd-off");
+if(soundOn){
+on.style.display="";off.style.display="none";btn.classList.remove("snd-off-style");btn.title="Звук";
+}else{
+on.style.display="none";off.style.display="";btn.classList.add("snd-off-style");btn.title="Без звука";
+}
+}
+
+function beep(){
+if(!soundOn)return;
+try{
+let Audio=window.AudioContext||window.webkitAudioContext;
+if(Audio){
+let audio=new Audio();
+let osc=audio.createOscillator();
+let gain=audio.createGain();
+osc.connect(gain);gain.connect(audio.destination);
+osc.frequency.value=880;gain.gain.value=.12;
+osc.start();osc.stop(audio.currentTime+.16);
+}
+}catch(e){}
+if(navigator.vibrate)navigator.vibrate([180,80,180]);
+}
+
+function blink(){
+let el=$("timer");
+if(!el)return;
+el.classList.remove("blink");
+void el.offsetWidth;
+el.classList.add("blink");
+}
+
+const ORDINALS=["первый","второй","третий","четвёртый","пятый","шестой","седьмой","восьмой","девятый","десятый"];
+
+function announce(phase){
+if(!phase)return;
+beep();blink();
+let text=phase.name;
+if(phase.name==="Подход"&&phase.cycle&&ORDINALS[phase.cycle-1])text="Подход "+ORDINALS[phase.cycle-1];
+text+=". "+describeTime(phase.sec);
+speak(text);
+}
+
+function render(){
+let phase=phases[idx];
+if(!phase)return;
+$("phase").textContent=phase.name;
+$("timer").textContent=format(remaining);
+if(phase.cycle)$("round").textContent="Подход "+phase.cycle+" из "+value("cycles");
+else if(phase.name==="Разминка")$("round").textContent="Разминка";
+else $("round").textContent="Отдых";
+let next=phases[idx+1];
+$("next").textContent=next?("Далее: "+next.name+(next.cycle?" (подход "+next.cycle+")":"")):"После этого — конец";
+let progress=100*(1-remaining/phase.sec);
+$("fill").style.width=progress+"%";
+}
+
+function start(){
+build();
+idx=0;
+remaining=phases[0].sec;
+running=true;
+paused=false;
+$("timer").classList.remove("paused");
+$("skip").disabled=false;
+$("back").disabled=false;
+updateToggle();
+announce(phases[0]);
+render();
+keepScreenOn();
+last=performance.now();
+raf=requestAnimationFrame(tick);
+}
+
+function tick(now){
+if(!running)return;
+if(!paused){
+let delta=(now-last)/1000;
+last=now;
+remaining-=delta;
+if(remaining<=0){
+let advanced=false;
+while(remaining<=0){
+idx++;
+if(idx>=phases.length){finish();return;}
+remaining+=phases[idx].sec;
+advanced=true;
+}
+if(advanced)announce(phases[idx]);
+}
+render();
+}else{last=now;}
+raf=requestAnimationFrame(tick);
+}
+
+function updateToggle(){
+let play=$("toggle").querySelector(".play");
+let pause=$("toggle").querySelector(".pause");
+let playing=running&&!paused;
+play.style.display=playing?"none":"";
+pause.style.display=playing?"":"none";
+}
+
+function skip(){
+if(!running)return;
+idx++;
+if(idx>=phases.length){finish();return;}
+remaining=phases[idx].sec;
+announce(phases[idx]);
+render();
+last=performance.now();
+}
+
+function back(){
+if(!running)return;
+let now=Date.now();
+if(now-lastBack<800){lastBack=0;idx--;if(idx<0)idx=0;}
+else{lastBack=now;}
+remaining=phases[idx].sec;
+announce(phases[idx]);
+render();
+last=performance.now();
+}
+
+function stop(){
+running=false;
+paused=false;
+cancelAnimationFrame(raf);
+if("speechSynthesis" in window)speechSynthesis.cancel();
+$("timer").classList.remove("paused");
+idx=0;remaining=0;
+$("phase").textContent="Готов";
+$("timer").textContent="00:00";
+$("round").textContent="Настрой параметры и нажми «Старт»";
+$("next").textContent="—";
+$("fill").style.width="0%";
+$("status").textContent="";
+$("skip").disabled=true;
+$("back").disabled=true;
+updateToggle();
+releaseScreenLock();
+}
+
+const FINISH_PHRASES=[
+"Отличная работа! Ещё один шаг вперёд.",
+"Красиво! Тренировка сделана.",
+"Так держать!",
+"Готово! Ещё одна тренировка в копилке.",
+"Сильная работа. Гордись собой.",
+"Ещё один шаг к цели. Так держать.",
+"Дело сделано. Можно собой гордиться.",
+"Сильный финиш. Заслуженный результат.",
+"План выполнен на все сто. Горжусь твоим упорством.",
+"Тело скажет тебе спасибо.",
+"Ты сегодня сильнее своих оправданий. Так держать."
+];
+
+function finish(){
+running=false;
+cancelAnimationFrame(raf);
+$("timer").classList.remove("paused");
+beep();
+let phrase=FINISH_PHRASES[Math.floor(Math.random()*FINISH_PHRASES.length)];
+speak(phrase);
+$("phase").textContent="Готово 🎉";
+$("timer").textContent="00:00";
+$("round").textContent=phrase;
+$("next").textContent="";
+$("fill").style.width="100%";
+$("skip").disabled=true;
+$("back").disabled=true;
+updateToggle();
+releaseScreenLock();
+}
+
+async function keepScreenOn(){
+try{
+if(!("wakeLock" in navigator))return;
+if(wakeLockRef)return;
+wakeLockRef=await navigator.wakeLock.request("screen");
+wakeLockRef.addEventListener("release",()=>{
+wakeLockRef=null;
+if(running&&!paused)keepScreenOn();
+});
+}catch(e){}
+}
+function releaseScreenLock(){
+if(wakeLockRef){try{wakeLockRef.release();}catch(e){}wakeLockRef=null;}
+}
+
+loadSettings();
+buildPickers();
+syncPickers();
+updateTotal();
+
+$("toggle").onclick=()=>{
+if(!running){
+start();
+}else if(paused){
+paused=false;
+$("timer").classList.remove("paused");
+blink();
+$("status").textContent="";
+last=performance.now();
+updateToggle();
+}else{
+paused=true;
+$("timer").classList.add("paused");
+$("status").textContent="На паузе";
+updateToggle();
+}
+};
+$("reset").onclick=stop;
+$("skip").onclick=skip;
+$("back").onclick=back;
+$("sound").onclick=()=>{soundOn=!soundOn;updateSound();};
+$("settingsToggle").onclick=()=>{
+let b=$("settingsBody");
+b.classList.toggle("hidden");
+$("settingsArrow").classList.toggle("open");
+};
+let menuBtn=$("menuBtn"),drawer=$("drawer"),drawerOverlay=$("drawerOverlay");
+if(menuBtn)menuBtn.onclick=()=>{drawer.classList.add("open");drawerOverlay.classList.add("open");};
+if(drawerOverlay)drawerOverlay.onclick=()=>{drawer.classList.remove("open");drawerOverlay.classList.remove("open");};
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&running)keepScreenOn();});
+window.addEventListener("focus",()=>{if(running&&!paused)keepScreenOn();});
+</script>
+</body>
+</html>
