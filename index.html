@@ -82,6 +82,7 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .tpl-labels{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
 .tpl-start label{font-size:13px;color:#888;white-space:nowrap}
 .days{font-size:12px;color:#888;text-align:center;margin-top:10px;min-height:15px}
+.total-time{text-align:center;color:#aaa;font-size:14px;font-weight:600;margin-top:12px;padding-top:10px;border-top:1px solid #333}
 .date-wrap{position:relative;width:150px;height:48px;flex:none}
 .date-wrap input[type=date]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;color-scheme:dark;z-index:1}
 .date-value{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#1d1d1f;border:1px solid #333;border-radius:12px;color:#fff;font-size:20px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
@@ -112,6 +113,7 @@ body.light .tpl-btn.sel{background:#111;color:#fff}
 body.light .tpl-btn.done{background:#B5EA7B;color:#111}
 body.light .tpl-btn.done.sel{background:#B5EA7B;color:#111;box-shadow:inset 0 0 0 3px #111}
 body.light .tpl-start label,body.light .days{color:#666}
+body.light .total-time{color:#555;border-top-color:#e5e5e8}
 body.light .date-value{background:#fff;border-color:#ddd;color:#111}
 body.light .date-wrap input[type=date]{color-scheme:light}
 body.light .voice-hint{background:#f7f7f9;border-color:#e5e5e8;color:#666}
@@ -228,6 +230,8 @@ body.light .timer.blink{animation:timerBlinkLight .7s ease-in-out}
 <select class="picky" data-field="cool" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
 </div>
 </div>
+
+<div class="total-time" id="totalTime"></div>
 
 </div>
 
@@ -761,10 +765,35 @@ el.textContent="Прошло "+n+" "+dayWord(n)+" с начала трениро
 
 loadSettings();
 applyTheme();
+function fmtTotal(sec){
+let h=Math.floor(sec/3600);
+let m=Math.floor(sec%3600/60);
+let s=sec%60;
+let parts=[];
+if(h)parts.push(h+" ч");
+if(m)parts.push(m+" мин");
+if(s)parts.push(s+" сек");
+return parts.join(" ")||"0 сек";
+}
+
+function updateTotal(){
+let el=$("totalTime");
+if(!el)return;
+let warm=parseInt($("warm").value)||0;
+let fast=parseInt($("fast").value)||0;
+let run=parseInt($("run").value)||0;
+let walk=parseInt($("cycleWalk").value)||0;
+let cool=parseInt($("cool").value)||0;
+let cycles=parseInt($("cycles").value)||1;
+let total=warm+fast+cycles*(run+walk)+cool;
+el.textContent="Общее время: "+fmtTotal(total);
+}
+
 function onSettingsEdit(){
 selectedTpl=null;
 saveSettings();
 updateSelection();
+updateTotal();
 }
 ["warm","fast","run","cycleWalk","cycles","cool"].forEach(id=>{
 let el=$(id);
@@ -825,6 +854,7 @@ $("cycles").value=t.cycles;
 saveSettings();
 syncPickers();
 updateSelection();
+updateTotal();
 $("status").textContent="Шаблон "+t.id+": бег "+fmtNum(t.run)+" мин, ходьба "+(t.walk>0?fmtNum(t.walk)+" мин":"—")+", "+t.cycles+" подх.";
 }
 
@@ -1019,6 +1049,7 @@ sel._disp.textContent=selDisplay(sel,snapped);
 
 buildPickers();
 syncPickers();
+updateTotal();
 
 $("templatesToggle").onclick=()=>{
 let body=$("templatesBody");
