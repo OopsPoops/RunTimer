@@ -130,6 +130,13 @@
 <div class="card templates">
 <button class="settings-toggle" id="templatesToggle" type="button">📋 Шаблоны <span class="settings-arrow" id="templatesArrow">▾</span></button>
 <div class="settings-body hidden" id="templatesBody">
+<div class="tpl-switch">
+<span>Использовать шаблоны</span>
+<label class="switch">
+<input type="checkbox" id="templatesOn" checked>
+<span class="slider"></span>
+</label>
+</div>
 <div class="tpl-grid" id="tplGrid"></div>
 </div>
 </div>
@@ -595,6 +602,7 @@ let START_DATE=new Date(2026,8,7);
 START_DATE.setHours(0,0,0,0);
 let selectedTpl=null;
 let autoDate="";
+let templatesOn=true;
 
 function loadSettings(){
 try{
@@ -606,6 +614,7 @@ if(data.start)START_DATE=new Date(data.start+"T00:00:00");
 if(data.sel)selectedTpl=data.sel;
 if(data.voice)voicePref=data.voice;
 if(data.autoDate)autoDate=data.autoDate;
+if(data.tplOn!==undefined)templatesOn=!!data.tplOn;
 }catch(e){}
 }
 
@@ -624,6 +633,7 @@ data.start=fmtDate(START_DATE);
 if(selectedTpl)data.sel=selectedTpl;
 data.voice=$("voiceSel")?$("voiceSel").value:voicePref;
 data.autoDate=autoDate;
+data.tplOn=templatesOn;
 localStorage.setItem(STORE_KEY,JSON.stringify(data));
 }catch(e){}
 }
@@ -804,7 +814,7 @@ return best;
 }
 
 function selectTodayTemplate(){
-if(selectedTpl)return;
+if(selectedTpl||!templatesOn)return;
 let todayStr=fmtDate(startOfToday());
 if(autoDate===todayStr)return;
 let t=nextTemplate();
@@ -816,6 +826,7 @@ applyTemplate(t,false);
 function updateSelection(){
 document.querySelectorAll(".tpl-btn").forEach(b=>b.classList.remove("sel"));
 document.querySelectorAll(".tpl-btn").forEach(b=>b.classList.remove("done"));
+if(!templatesOn)return;
 let today=startOfToday();
 document.querySelectorAll(".tpl-btn").forEach(b=>{
 let t=TEMPLATES.find(x=>x.id===b.dataset.id);
@@ -964,6 +975,12 @@ $("templatesArrow").classList.toggle("open");
 };
 
 buildTemplates();
+$("templatesOn").checked=templatesOn;
+$("templatesOn").addEventListener("change",()=>{
+templatesOn=$("templatesOn").checked;
+saveSettings();
+updateSelection();
+});
 $("startDate").value=fmtDate(START_DATE);
 $("startDateVal").textContent=fmtRu(START_DATE);
 updateDays();
