@@ -594,6 +594,7 @@ const STORE_KEY="trenirovka_settings";
 let START_DATE=new Date(2026,8,7);
 START_DATE.setHours(0,0,0,0);
 let selectedTpl=null;
+let autoDate="";
 
 function loadSettings(){
 try{
@@ -604,6 +605,7 @@ if(data[id]!==undefined&&$(id))$(id).value=data[id];
 if(data.start)START_DATE=new Date(data.start+"T00:00:00");
 if(data.sel)selectedTpl=data.sel;
 if(data.voice)voicePref=data.voice;
+if(data.autoDate)autoDate=data.autoDate;
 }catch(e){}
 }
 
@@ -621,6 +623,7 @@ if($(id))data[id]=$(id).value;
 data.start=fmtDate(START_DATE);
 if(selectedTpl)data.sel=selectedTpl;
 data.voice=$("voiceSel")?$("voiceSel").value:voicePref;
+data.autoDate=autoDate;
 localStorage.setItem(STORE_KEY,JSON.stringify(data));
 }catch(e){}
 }
@@ -802,8 +805,11 @@ return best;
 
 function selectTodayTemplate(){
 if(selectedTpl)return;
+let todayStr=fmtDate(startOfToday());
+if(autoDate===todayStr)return;
 let t=nextTemplate();
 if(!t)return;
+autoDate=todayStr;
 applyTemplate(t,false);
 }
 
@@ -984,6 +990,7 @@ START_DATE=new Date(v+"T00:00:00");
 START_DATE.setHours(0,0,0,0);
 $("startDateVal").textContent=fmtRu(START_DATE);
 updateDays();
+autoDate="";
 selectTodayTemplate();
 saveSettings();
 updateSelection();
