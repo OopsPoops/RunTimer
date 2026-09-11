@@ -16,6 +16,7 @@
 <body>
 <div class="drawer-overlay" id="drawerOverlay"></div>
 <aside class="drawer" id="drawer">
+<button class="drawer-close" id="drawerClose" aria-label="Закрыть меню">✕</button>
 <div class="drawer-title">RunTimer</div>
 <a href="index.html">Главная</a>
 <a href="sila.html" class="active">Силовая</a>
@@ -511,8 +512,9 @@ let b=$("settingsBody");
 b.classList.toggle("hidden");
 $("settingsArrow").classList.toggle("open");
 };
-let menuBtn=$("menuBtn"),drawer=$("drawer"),drawerOverlay=$("drawerOverlay");
+let menuBtn=$("menuBtn"),drawer=$("drawer"),drawerOverlay=$("drawerOverlay"),drawerClose=$("drawerClose");
 if(menuBtn)menuBtn.onclick=()=>{drawer.classList.add("open");drawerOverlay.classList.add("open");};
+if(drawerClose)drawerClose.onclick=()=>{drawer.classList.remove("open");drawerOverlay.classList.remove("open");};
 if(drawerOverlay)drawerOverlay.onclick=()=>{drawer.classList.remove("open");drawerOverlay.classList.remove("open");};
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&running)keepScreenOn();});
 window.addEventListener("focus",()=>{if(running&&!paused)keepScreenOn();});
