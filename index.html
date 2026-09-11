@@ -790,9 +790,19 @@ if(week>8||!label)return null;
 return TEMPLATES.find(x=>x.id===week+". "+label)||null;
 }
 
+function nextTemplate(){
+let today=startOfToday();
+let best=null,bestDiff=Infinity;
+TEMPLATES.forEach(t=>{
+let diff=templateDate(t).getTime()-today.getTime();
+if(diff>=0&&diff<bestDiff){bestDiff=diff;best=t;}
+});
+return best;
+}
+
 function selectTodayTemplate(){
 if(selectedTpl)return;
-let t=currentTemplate();
+let t=nextTemplate();
 if(!t)return;
 applyTemplate(t,false);
 }
