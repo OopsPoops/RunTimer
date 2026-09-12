@@ -815,7 +815,7 @@ return best;
 }
 
 function selectTodayTemplate(){
-if(selectedTpl||!templatesOn)return;
+if(!templatesOn)return;
 let t=nextTemplate();
 if(!t)return;
 applyTemplate(t,false);
@@ -982,11 +982,13 @@ updateSelection();
 $("startDate").value=fmtDate(START_DATE);
 $("startDateVal").textContent=fmtRu(START_DATE);
 updateDays();
-if(selectedTpl){
+if(templatesOn){
+selectedTpl=null;
+selectTodayTemplate();
+}else if(selectedTpl){
 let t=TEMPLATES.find(x=>x.id===selectedTpl);
 if(t)applyTemplate(t,true);
 }
-selectTodayTemplate();
 updateSelection();
 
 $("startDate").addEventListener("click",()=>{
