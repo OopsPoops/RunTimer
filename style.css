@@ -133,15 +133,15 @@ body.light .timer.blink{animation:timerBlinkLight .7s ease-in-out}
 body.light .menu-shell .menu-btn{background:#fff;color:#111}
 .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .25s;z-index:60}
 .drawer-overlay.open{opacity:1;pointer-events:auto}
-.drawer{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;background:#1c1c1e;z-index:70;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top) + 18px) 24px 18px}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(33.333vw,440px);background:#1c1c1e;z-index:70;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top) + 18px) 38px 18px 20px}
 .drawer.open{transform:translateX(0)}
-.drawer a.drawer-title{display:block;padding:0 78px 14px 0;font-size:20px;font-weight:700;color:#fff;text-align:right;text-decoration:none}
+.drawer a.drawer-title{display:block;padding:0 0 14px;font-size:20px;font-weight:700;color:#fff;text-align:left;text-decoration:none}
 .drawer-close{align-self:flex-end;width:44px;height:44px;border-radius:12px;border:0;background:#2c2c2e;color:#fff;font-size:20px;cursor:pointer;margin-bottom:8px}
-.drawer a{display:block;padding:14px 0;color:#ccc;font-size:17px;text-decoration:none;text-align:right}
+.drawer a,.drawer .nav-label{display:block;padding:12px 0;color:#ccc;font-size:17px;text-decoration:none;text-align:left}
 .drawer a.active{color:#fff;font-weight:600}
-.drawer a:active{background:#2c2c2e}
-.drawer .nav-1{padding-right:52px}
-.drawer .nav-2{padding-right:26px}
+.drawer a:active,.drawer .nav-label:active{background:#2c2c2e}
+.drawer .nav-1{padding-left:22px}
+.drawer .nav-2{padding-left:44px}
 body.light .drawer{background:#f5f5f7}
 body.light .drawer .drawer-title{color:#111}
 body.light .drawer-close{background:#e5e5e7;color:#111}
@@ -150,8 +150,6 @@ body.light .drawer a.active{color:#111}
 body.light .drawer a:active{background:#e5e5e7}
 
 /* Game 2048 */
-.drawer-group{padding:18px 0 0;font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.6px;text-align:right}
-body.light .drawer-group{color:#999}
 .game-card{text-align:center}
 .game-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
 .score-box{flex:1;background:#242428;border:1px solid #333;border-radius:12px;padding:8px 10px}
