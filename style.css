@@ -178,3 +178,31 @@ body.light .game-top .score-label{color:#999}
 body.light .board{background:#f0f0f3;border-color:#e5e5e8}
 body.light .tile{background:#e2e2e6}
 body.light .game-hint{color:#666}
+
+/* Memory game */
+.mem-card{text-align:center}
+.mem-top{display:flex;gap:10px;margin-bottom:14px}
+.mem-box{flex:1;background:#242428;border:1px solid #333;border-radius:12px;padding:8px 6px}
+.mem-label{display:block;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.mem-val{font-size:19px;font-weight:700;display:block;margin-top:2px;font-variant-numeric:tabular-nums}
+.mem-size-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:14px}
+.mem-size-row label{font-size:15px;color:#fff}
+.mem-size{background:#303033;border:1px solid #444;color:#fff;border-radius:11px;padding:10px;font-size:16px}
+.mem-new{flex:none;width:auto;margin-top:0;padding:10px 14px;font-size:14px}
+.mem-grid{display:grid;gap:8px;width:100%;max-width:400px;margin:0 auto}
+.mem-tile{border:0;border-radius:12px;background:#303033;color:#fff;aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:background .15s,transform .1s}
+.mem-tile:active{transform:scale(.96)}
+.mem-emoji{font-size:34px;line-height:1;opacity:0}
+.mem-tile.flipped{background:#fff}
+.mem-tile.flipped .mem-emoji{opacity:1}
+.mem-tile.matched{background:#34c759}
+.mem-tile.matched .mem-emoji{opacity:1}
+.mem-msg{min-height:40px;margin:14px 0 0;font-size:17px;font-weight:700;color:#34c759}
+body.light .mem-top .mem-box{background:#f7f7f9;border-color:#e5e5e8}
+body.light .mem-top .mem-label{color:#999}
+body.light .mem-size-row label{color:#111}
+body.light .mem-size{background:#f2f2f5;border-color:#ddd;color:#111}
+body.light .mem-tile{background:#e8e8ec}
+body.light .mem-tile.flipped{background:#fff}
+body.light .mem-tile.matched{background:#34c759}
+body.light .mem-msg{color:#1d7a37}
