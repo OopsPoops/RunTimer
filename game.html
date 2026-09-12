@@ -36,13 +36,7 @@
 </div>
 <div class="board" id="board"></div>
 <div class="game-msg hidden" id="gameMsg"></div>
-<div class="pad" id="pad">
-<button class="pad-btn" data-dir="0" aria-label="Вверх">▲</button>
-<button class="pad-btn" data-dir="2" aria-label="Влево">◀</button>
-<button class="pad-btn" data-dir="1" aria-label="Вниз">▼</button>
-<button class="pad-btn" data-dir="3" aria-label="Вправо">▶</button>
-</div>
-<div class="game-hint">Свайпайте пальцем или жмите стрелки, чтобы двигать плитки</div>
+<div class="game-hint">Свайпайте пальцем или жмите стрелки на клавиатуре, чтобы двигать плитки</div>
 </div>
 
 <div class="footer">
@@ -171,12 +165,15 @@ function render(){
 for(let i=0;i<grid.length;i++){
 let tile=document.getElementById("cell"+i);
 tile.className="tile";
+let n=tile.querySelector(".tile-num");
+let l=tile.querySelector(".tile-label");
 if(grid[i]!==0){
 tile.classList.add("t"+grid[i]);
-let n=tile.querySelector(".tile-num");
 n.textContent=grid[i];
-let l=tile.querySelector(".tile-label");
 l.textContent=LABELS[grid[i]]||"";
+}else{
+n.textContent="";
+l.textContent="";
 }
 }
 $("score").textContent=score;
@@ -246,10 +243,7 @@ if(ax>ay)move(dx>0?3:2);
 else move(dy>0?1:0);
 },{passive:true});
 
-// pad buttons
-document.querySelectorAll(".pad-btn").forEach(b=>{
-b.addEventListener("click",()=>{if(!over)move(parseInt(b.dataset.dir,10));});
-});
+// new game
 $("newGame").addEventListener("click",newGame);
 
 // drawer

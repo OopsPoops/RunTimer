@@ -172,19 +172,10 @@ body.light .drawer-group{color:#999}
 .tile.t1024{background:#edc53f;color:#fff}
 .tile.t2048{background:#34c759;color:#111}
 .game-msg{min-height:40px;margin:14px 0 0;font-size:17px;font-weight:700;color:#34c759}
-.pad{display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(2,54px);gap:8px;justify-content:center;margin:16px auto 0}
-.pad-btn{width:60px;height:54px;border:0;border-radius:12px;background:#303033;color:#fff;font-size:22px;cursor:pointer;line-height:1}
-.pad-btn:active{background:#3a3a3d}
-.pad-btn[data-dir="0"]{grid-column:2}
-.pad-btn[data-dir="2"]{grid-column:1;grid-row:2}
-.pad-btn[data-dir="1"]{grid-column:2;grid-row:2}
-.pad-btn[data-dir="3"]{grid-column:3;grid-row:2}
 .game-hint{font-size:13px;color:#888;margin-top:14px}
 body.light .game-top .score-box{background:#f7f7f9;border-color:#e5e5e8}
 body.light .game-top .score-label{color:#999}
 body.light .board{background:#f0f0f3;border-color:#e5e5e8}
 body.light .tile{background:#e2e2e6}
 body.light .tile-label{color:#666}
-body.light .pad-btn{background:#e8e8ec;color:#111}
-body.light .pad-btn:active{background:#d8d8dc}
 body.light .game-hint{color:#666}
