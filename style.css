@@ -62,20 +62,20 @@ input{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radi
 .tpl-btn{border:0;border-radius:12px;padding:22px 6px;font-size:12px;font-weight:600;background:#303033;color:#fff;cursor:pointer}
 .tpl-btn:active{background:#3a3a3d}
 .tpl-btn.sel{background:#fff;color:#111}
-.tpl-btn.done{background:#B5EA7B;color:#111}
-.tpl-btn.done.sel{background:#B5EA7B;color:#111;box-shadow:inset 0 0 0 3px #fff}
+.tpl-btn.done{background:#34c759;color:#111}
+.tpl-btn.done.sel{background:#34c759;color:#111;box-shadow:inset 0 0 0 3px #fff}
 .tpl-start{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .tpl-labels{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
 .tpl-start label{font-size:13px;color:#888;white-space:nowrap}
 .tpl-switch{display:flex;align-items:center;justify-content:space-between;padding:2px 0 14px}
 .tpl-switch span{font-size:15px;color:#fff}
 body.light .tpl-switch span{color:#111}
-.switch{position:relative;display:inline-block;width:50px;height:30px}
+.switch{position:relative;display:inline-block;width:56px;height:30px}
 .switch input{opacity:0;width:0;height:0}
 .slider{position:absolute;inset:0;background:#3a3a3d;border-radius:15px;transition:background .2s;cursor:pointer}
 .slider:before{content:"";position:absolute;height:26px;width:26px;left:2px;top:2px;background:#fff;border-radius:50%;transition:transform .2s}
 .switch input:checked + .slider{background:#34c759}
-.switch input:checked + .slider:before{transform:translateX(20px)}
+.switch input:checked + .slider:before{transform:translateX(26px)}
 body.light .slider{background:#e0e0e4}
 .days{font-size:12px;color:#888;text-align:center;margin-top:10px;min-height:15px}
 .total-time{text-align:center;color:#aaa;font-size:14px;font-weight:600;margin-top:12px;padding-top:10px}
@@ -106,8 +106,8 @@ body.light .pick-value{background:#fff;border-color:#ddd;color:#111}
 body.light .tpl-btn{background:#e8e8ec;color:#111}
 body.light .tpl-btn:active{background:#d8d8dc}
 body.light .tpl-btn.sel{background:#111;color:#fff}
-body.light .tpl-btn.done{background:#B5EA7B;color:#111}
-body.light .tpl-btn.done.sel{background:#B5EA7B;color:#111;box-shadow:inset 0 0 0 3px #111}
+body.light .tpl-btn.done{background:#34c759;color:#111}
+body.light .tpl-btn.done.sel{background:#34c759;color:#111;box-shadow:inset 0 0 0 3px #111}
 body.light .tpl-start label,body.light .days{color:#666}
 body.light .total-time{color:#555}
 body.light .date-value{background:#fff;border-color:#ddd;color:#111}
