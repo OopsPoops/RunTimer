@@ -107,9 +107,31 @@
 <span>© 2026 RunTimer</span>
 <span class="sep">·</span>
 <a href="https://github.com/OopsPoops/RunTimer" target="_blank" rel="noopener">О приложении</a>
+<span class="sep">·</span>
+<a href="#" id="privacyLink">Политика</a>
+</div>
+<div class="footer-right">
+<a href="mailto:avalarionov@gmail.com" title="Написать на почту" aria-label="Почта">
+<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+</a>
+<a href="https://t.me/larik_11" target="_blank" rel="noopener" title="Telegram: larik_11" aria-label="Telegram">
+<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21.9 4.1 2.9 11.2c-1.1.4-1.1 1.5 0 1.9l4.7 1.5 1.8 5.6c.3.9 1.2.9 1.6.2l2.5-3.9 4.9 3.6c.7.5 1.6.2 1.8-.8l2.9-13.6c.2-1-.5-1.6-1.2-1.6Z"/></svg>
+</a>
 </div>
 </div>
 
+</div>
+
+<div class="modal" id="privacyModal">
+<div class="modal-card">
+<h2>Политика конфиденциальности</h2>
+<p><strong>RunTimer</strong> — это личный таймер для тренировок. Приложение не собирает и не передаёт никакие личные данные.</p>
+<p><strong>Хранение настроек.</strong> Ваши настройки хранятся локально в вашем браузере (localStorage) и никуда не отправляются.</p>
+<p><strong>Отсутствие трекеров и рекламы.</strong> Приложение не использует сторонние аналитику, трекеры и рекламу.</p>
+<p><strong>Сторонние сервисы.</strong> Приложение размещено на GitHub Pages (GitHub Inc.).</p>
+<p><strong>Контакты.</strong> По вопросам пишите на <a href="mailto:avalarionov@gmail.com" style="color:#7ab8ff">avalarionov@gmail.com</a>.</p>
+<button class="modal-close" id="privacyClose" aria-label="Закрыть">✕</button>
+</div>
 </div>
 
 <script>
@@ -516,6 +538,10 @@ let menuBtn=$("menuBtn"),drawer=$("drawer"),drawerOverlay=$("drawerOverlay"),dra
 if(menuBtn)menuBtn.onclick=()=>{drawer.classList.add("open");drawerOverlay.classList.add("open");};
 if(drawerClose)drawerClose.onclick=()=>{drawer.classList.remove("open");drawerOverlay.classList.remove("open");};
 if(drawerOverlay)drawerOverlay.onclick=()=>{drawer.classList.remove("open");drawerOverlay.classList.remove("open");};
+let pLink=$("privacyLink"),pClose=$("privacyClose");
+if(pLink)pLink.onclick=(e)=>{e.preventDefault();$("privacyModal").classList.add("open");};
+if(pClose)pClose.onclick=()=>{$("privacyModal").classList.remove("open");};
+if($("privacyModal"))$("privacyModal").addEventListener("click",(e)=>{if(e.target===$("privacyModal"))$("privacyModal").classList.remove("open");});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&running)keepScreenOn();});
 window.addEventListener("focus",()=>{if(running&&!paused)keepScreenOn();});
 </script>
