@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111">
+<title>Найди пару · RunTimer</title>
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RunTimer">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<aside class="drawer" id="drawer">
+<button class="drawer-close" id="drawerClose" aria-label="Закрыть меню">✕</button>
+<div class="drawer-title">RunTimer</div>
+<a href="index.html">Главная</a>
+<a href="sila.html">Силовая</a>
+<div class="drawer-group">Игры</div>
+<a href="game.html">2048</a>
+<a href="memory.html" class="active">Найди пару</a>
+</aside>
+<div class="app">
+
+<div class="menu-shell"><button class="menu-btn" id="menuBtn" aria-label="Меню"><span></span><span></span></button></div>
+<h1>Найди пару 🃏</h1>
+
+<div class="card mem-card">
+<div class="mem-top">
+<div class="mem-box"><span class="mem-label">Время</span><span class="mem-val" id="time">0:00</span></div>
+<div class="mem-box"><span class="mem-label">Ходы</span><span class="mem-val" id="moves">0</span></div>
+<div class="mem-box"><span class="mem-label">Рекорд</span><span class="mem-val" id="record">—</span></div>
+</div>
+<div class="mem-size-row">
+<label>Пар:</label>
+<select class="mem-size" id="sizeSel">
+<option value="8">8 пар</option>
+<option value="12">12 пар</option>
+</select>
+<button class="reset-btn mem-new" id="newGame">Заново</button>
+</div>
+<div class="mem-grid" id="grid"></div>
+<div class="mem-msg hidden" id="msg"></div>
+</div>
+
+<div class="footer">
+<div class="footer-left">
+<span>© 2026 RunTimer</span>
+<span class="sep">·</span>
+<a href="https://github.com/OopsPoops/RunTimer" target="_blank" rel="noopener">О приложении</a>
+<span class="sep">·</span>
+<a href="#" id="privacyLink">Политика</a>
+</div>
+<div class="footer-right">
+<a href="mailto:avalarionov@gmail.com" title="Написать на почту" aria-label="Почта">
+<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+</a>
+<a href="https://t.me/larik_11" target="_blank" rel="noopener" title="Telegram: larik_11" aria-label="Telegram">
+<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21.9 4.1 2.9 11.2c-1.1.4-1.1 1.5 0 1.9l4.7 1.5 1.8 5.6c.3.9 1.2.9 1.6.2l2.5-3.9 4.9 3.6c.7.5 1.6.2 1.8-.8l2.9-13.6c.2-1-.5-1.6-1.2-1.6Z"/></svg>
+</a>
+</div>
+</div>
+
+</div>
+
+<div class="modal" id="privacyModal">
+<div class="modal-card">
+<h2>Политика конфиденциальности</h2>
+<p><strong>RunTimer</strong> — это личный таймер для тренировок. Приложение не собирает и не передаёт никакие личные данные.</p>
+<p><strong>Хранение настроек.</strong> Ваши настройки хранятся локально в вашем браузере (localStorage) и никуда не отправляются.</p>
+<p><strong>Отсутствие трекеров и рекламы.</strong> Приложение не использует сторонние аналитику, трекеры и рекламу.</p>
+<p><strong>Сторонние сервисы.</strong> Приложение размещено на GitHub Pages (GitHub Inc.).</p>
+<p><strong>Контакты.</strong> По вопросам пишите на <a href="mailto:avalarionov@gmail.com" style="color:#7ab8ff">avalarionov@gmail.com</a>.</p>
+<button class="modal-close" id="privacyClose" aria-label="Закрыть">✕</button>
+</div>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const EMOJIS=["🏃","🏋️","🚴","🏊","🤸","⚽","🏀","🎾","🏓","🏐","🏸","⛳"];
+const REC_KEY="runtimer_memory_record";
+
+let size=8,pairs=[],moves=0,time=0,timer=null,firstFlip=true;
+let openCards=[],lock=false,remaining=0,done=false;
+let records={};
+
+function applyTheme(){
+let v="dark";
+try{let d=JSON.parse(localStorage.getItem("trenirovka_settings")||"{}");if(d.theme)v=d.theme;}catch(e){}
+document.body.classList.toggle("light",v==="light");
+}
+function loadRecords(){try{records=JSON.parse(localStorage.getItem(REC_KEY)||"{}");}catch(e){records={};}}
+function saveRecords(){try{localStorage.setItem(REC_KEY,JSON.stringify(records));}catch(e){}}
+
+function shuffle(a){
+for(let i=a.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1));
+let t=a[i];a[i]=a[j];a[j]=t;
+}
+return a;
+}
+
+function buildDeck(n){
+let em=EMOJIS.slice(0,n);
+let deck=[];
+em.forEach((e,i)=>{deck.push({emoji:e,id:i});deck.push({emoji:e,id:i});});
+return shuffle(deck);
+}
+
+function buildGrid(){
+let grid=$("grid");
+grid.innerHTML="";
+grid.style.gridTemplateColumns="repeat("+(size===8?4:6)+",1fr)";
+remaining=size;
+done=false;
+pairs.forEach((p,index)=>{
+let card=document.createElement("button");
+card.type="button";
+card.className="mem-card";
+card.dataset.index=index;
+card.dataset.id=p.id;
+card.dataset.flipped="0";
+let inner=document.createElement("span");
+inner.className="mem-emoji";
+inner.textContent=p.emoji;
+card.appendChild(inner);
+card.addEventListener("click",()=>flipCard(card));
+grid.appendChild(card);
+});
+}
+
+function newGame(n){
+size=n;
+pairs=buildDeck(n);
+moves=0;time=0;openCards=[];lock=false;done=false;firstFlip=true;
+if(timer){clearInterval(timer);timer=null;}
+buildGrid();
+updateProgress();
+$("msg").classList.add("hidden");
+}
+
+function startTimer(){
+if(timer)return;
+timer=setInterval(()=>{time++;updateProgress();},1000);
+}
+function stopTimer(){
+if(timer){clearInterval(timer);timer=null;}
+}
+
+function updateProgress(){
+let m=Math.floor(time/60);
+let s=time%60;
+$("time").textContent=m+":"+String(s).padStart(2,"0");
+$("moves").textContent=moves;
+let rec=records[size];
+$("record").textContent=rec?rec.moves+" ход., "+rec.time+" сек":"—";
+}
+
+function formatTime(sec){
+let m=Math.floor(sec/60);
+let s=sec%60;
+return m+":"+String(s).padStart(2,"0");
+}
+
+function updateRecord(){
+let cur=records[size];
+if(!cur||moves<cur.moves||(moves===cur.moves&&time<cur.time)){
+records[size]={moves:moves,time:time};
+saveRecords();
+}
+}
+
+function win(){
+done=true;
+stopTimer();
+updateRecord();
+updateProgress();
+let rec=records[size];
+let isNew=rec.moves===moves&&rec.time===time;
+let msg=$("msg");
+msg.textContent="Готово! 🎉 "+moves+" ход., "+formatTime(time)+(isNew?" · Новый рекорд!":"");
+msg.classList.remove("hidden");
+setTimeout(()=>newGame(size),1200);
+}
+
+function flipCard(card){
+if(lock||done)return;
+if(card.dataset.flipped==="1")return;
+if(openCards.length>=2)return;
+if(firstFlip){firstFlip=false;startTimer();}
+card.dataset.flipped="1";
+card.classList.add("flipped");
+openCards.push(card);
+if(openCards.length===2){
+moves++;
+updateProgress();
+let a=openCards[0],b=openCards[1];
+if(a.dataset.id===b.dataset.id){
+a.classList.add("matched");
+b.classList.add("matched");
+openCards=[];
+remaining--;
+if(remaining===0)win();
+}else{
+lock=true;
+setTimeout(()=>{
+a.dataset.flipped="0";b.dataset.flipped="0";
+a.classList.remove("flipped");b.classList.remove("flipped");
+openCards=[];
+lock=false;
+},700);
+}
+}
+}
+
+// init
+applyTheme();
+loadRecords();
+newGame(8);
+
+$("sizeSel").addEventListener("change",e=>newGame(parseInt(e.target.value,10)));
+$("newGame").addEventListener("click",()=>newGame(size));
+
+// drawer
+let menuBtn=$("menuBtn"),drawer=$("drawer"),drawerOverlay=$("drawerOverlay"),drawerClose=$("drawerClose");
+menuBtn.onclick=()=>{drawer.classList.add("open");drawerOverlay.classList.add("open");};
+drawerClose.onclick=()=>{drawer.classList.remove("open");drawerOverlay.classList.remove("open");};
+drawerOverlay.onclick=()=>{drawer.classList.remove("open");drawerOverlay.classList.remove("open");};
+
+// privacy modal
+let pLink=$("privacyLink"),pClose=$("privacyClose");
+pLink.onclick=(e)=>{e.preventDefault();$("privacyModal").classList.add("open");};
+pClose.onclick=()=>{$("privacyModal").classList.remove("open");};
+$("privacyModal").addEventListener("click",(e)=>{if(e.target===$("privacyModal"))$("privacyModal").classList.remove("open");});
+</script>
+</body>
+</html>
