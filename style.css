@@ -159,7 +159,7 @@ body.light .drawer-group{color:#999}
 .board{position:relative;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:8px;background:#242428;border:1px solid #333;border-radius:14px;padding:8px;width:100%;max-width:400px;margin:0 auto;aspect-ratio:1}
 .tile{background:#303033;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
 .tile-num{font-size:26px;font-weight:800;line-height:1}
-.tile-label{font-size:10px;font-weight:600;color:#bbb;line-height:1.1;text-align:center}
+.tile-label{font-size:10px;font-weight:600;line-height:1.1;text-align:center}
 .tile.t2{background:#e9e2d6;color:#6b5d45}
 .tile.t4{background:#eed9b0;color:#6b5d45}
 .tile.t8{background:#f2b179;color:#fff}
@@ -177,5 +177,4 @@ body.light .game-top .score-box{background:#f7f7f9;border-color:#e5e5e8}
 body.light .game-top .score-label{color:#999}
 body.light .board{background:#f0f0f3;border-color:#e5e5e8}
 body.light .tile{background:#e2e2e6}
-body.light .tile-label{color:#666}
 body.light .game-hint{color:#666}
