@@ -45,7 +45,9 @@
 </div>
 <div class="mem-grid" id="grid"></div>
 <div class="mem-msg hidden" id="msg"></div>
+<button class="reset-btn mem-restart hidden" id="restartBtn">Заново</button>
 </div>
+<canvas id="confetti"></canvas>
 
 <div class="footer">
 <div class="footer-left">
@@ -139,6 +141,10 @@ size=n;
 pairs=buildDeck(n);
 moves=0;time=0;openCards=[];lock=false;done=false;firstFlip=true;
 if(timer){clearInterval(timer);timer=null;}
+if(confettiRaf)cancelAnimationFrame(confettiRaf);
+confettiRaf=null;
+$("confetti").classList.remove("active");
+$("restartBtn").classList.add("hidden");
 buildGrid();
 updateProgress();
 $("msg").classList.add("hidden");
@@ -185,7 +191,61 @@ let isNew=rec.moves===moves&&rec.time===time;
 let msg=$("msg");
 msg.textContent="Готово! 🎉 "+moves+" ход., "+formatTime(time)+(isNew?" · Новый рекорд!":"");
 msg.classList.remove("hidden");
-setTimeout(()=>newGame(size),1200);
+confettiBurst();
+}
+
+// Confetti
+let confettiCtx=null,confettiParts=[],confettiRaf=null,confettiEnd=0,confettiDone=null;
+function confettiBurst(){
+let cv=$("confetti");
+cv.width=window.innerWidth;
+cv.height=window.innerHeight;
+confettiCtx=cv.getContext("2d");
+confettiParts=[];
+let colors=["#34c759","#ff3b30","#ffcc00","#0a84ff","#ff2d55","#bf5af2","#ff9f0a","#30d158"];
+for(let i=0;i<160;i++){
+confettiParts.push({
+x:Math.random()*cv.width,
+y:Math.random()*-cv.height*0.6,
+w:6+Math.random()*8,
+h:9+Math.random()*10,
+c:colors[Math.floor(Math.random()*colors.length)],
+vy:2+Math.random()*3,
+vx:-1.5+Math.random()*3,
+rot:Math.random()*Math.PI*2,
+vr:-0.15+Math.random()*0.3
+});
+}
+confettiEnd=performance.now()+15000;
+confettiDone=null;
+cv.classList.add("active");
+requestAnimationFrame(confettiLoop);
+}
+function confettiLoop(now){
+let cv=$("confetti");
+confettiCtx.clearRect(0,0,cv.width,cv.height);
+confettiParts.forEach(p=>{
+p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;
+if(p.y>cv.height+30){p.y=-30;p.x=Math.random()*cv.width;}
+confettiCtx.save();
+confettiCtx.translate(p.x,p.y);
+confettiCtx.rotate(p.rot);
+confettiCtx.fillStyle=p.c;
+confettiCtx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+confettiCtx.restore();
+});
+if(now<confettiEnd){
+confettiRaf=requestAnimationFrame(confettiLoop);
+}else{
+confettiStop();
+}
+}
+function confettiStop(){
+if(confettiRaf)cancelAnimationFrame(confettiRaf);
+confettiRaf=null;
+$("confetti").classList.remove("active");
+let rb=$("restartBtn");
+rb.classList.remove("hidden");
 }
 
 function flipCard(card){
@@ -225,6 +285,7 @@ newGame(8);
 
 $("sizeSel").addEventListener("change",e=>newGame(parseInt(e.target.value,10)));
 $("newGame").addEventListener("click",()=>newGame(size));
+$("restartBtn").addEventListener("click",()=>newGame(size));
 
 // drawer
 let menuBtn=$("menuBtn"),drawer=$("drawer"),drawerOverlay=$("drawerOverlay"),drawerClose=$("drawerClose");
