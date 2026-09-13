@@ -607,6 +607,7 @@ let START_DATE=new Date(2026,8,7);
 START_DATE.setHours(0,0,0,0);
 let selectedTpl=null;
 let templatesOn=true;
+let weekSeq=[1,2,3,4,5,6,7,8];
 
 function loadSettings(){
 try{
@@ -618,6 +619,7 @@ if(data.start)START_DATE=new Date(data.start+"T00:00:00");
 if(data.sel)selectedTpl=data.sel;
 if(data.voice)voicePref=data.voice;
 if(data.tplOn!==undefined)templatesOn=!!data.tplOn;
+if(Array.isArray(data.weeks)&&data.weeks.length>0)weekSeq=data.weeks;
 }catch(e){}
 }
 
@@ -636,6 +638,7 @@ data.start=fmtDate(START_DATE);
 if(selectedTpl)data.sel=selectedTpl;
 data.voice=$("voiceSel")?$("voiceSel").value:voicePref;
 data.tplOn=templatesOn;
+data.weeks=weekSeq.slice();
 localStorage.setItem(STORE_KEY,JSON.stringify(data));
 }catch(e){}
 }
@@ -767,15 +770,41 @@ function buildTemplates(){
 let grid=$("tplGrid");
 if(!grid)return;
 grid.innerHTML="";
-TEMPLATES.forEach(t=>{
+const DAYS=["Пн","Чт","Сб"];
+// first occurrence index of each week number => base (has "+")
+let baseIdx={};
+weekSeq.forEach((w,i)=>{ if(!(w in baseIdx))baseIdx[w]=i; });
+weekSeq.forEach((weekNum,pos)=>{
+let row=document.createElement("div");
+row.className="tpl-row";
+let isBase=baseIdx[weekNum]===pos;
+let tgl=document.createElement("button");
+tgl.type="button";
+tgl.className="tpl-toggle";
+tgl.setAttribute("aria-label",isBase?"Добавить неделю":"Удалить неделю");
+tgl.textContent=isBase?"+":"−";
+if(isBase){
+let count=weekSeq.filter(w=>w===weekNum).length;
+if(count>=9){tgl.disabled=true;tgl.classList.add("tpl-toggle-off");}
+tgl.onclick=()=>{weekSeq.splice(pos+1,0,weekNum);saveSettings();buildTemplates();updateSelection();};
+}else{
+tgl.onclick=()=>{weekSeq.splice(pos,1);saveSettings();buildTemplates();updateSelection();};
+}
+row.appendChild(tgl);
+DAYS.forEach(day=>{
+let base=TEMPLATES.find(x=>x.id===weekNum+". "+day);
+if(!base)return;
+let t={id:(pos+1)+". "+day,run:base.run,walk:base.walk,cycles:base.cycles};
 let b=document.createElement("button");
 b.type="button";
 b.className="tpl-btn";
 b.dataset.id=t.id;
 let w=t.walk>0?fmtNum(t.walk):"—";
-b.textContent=t.id+" · "+t.cycles+"х"+fmtNum(t.run)+"/"+w;
+b.textContent=(pos+1)+". "+day+" · "+t.cycles+"х"+fmtNum(t.run)+"/"+w;
 b.onclick=()=>applyTemplate(t,true);
-grid.appendChild(b);
+row.appendChild(b);
+});
+grid.appendChild(row);
 });
 }
 
@@ -799,18 +828,26 @@ return d;
 function currentTemplate(){
 let days=Math.floor((startOfToday()-START_DATE)/86400000);
 if(days<0)return null;
-let week=Math.floor(days/7)+1;
+let pos=Math.floor(days/7)+1;
 let label=DAY_LABELS[startOfToday().getDay()];
-if(week>8||!label)return null;
-return TEMPLATES.find(x=>x.id===week+". "+label)||null;
+if(pos>weekSeq.length||!label)return null;
+let base=TEMPLATES.find(x=>x.id===weekSeq[pos-1]+". "+label);
+if(!base)return null;
+return {id:pos+". "+label,run:base.run,walk:base.walk,cycles:base.cycles};
 }
 
 function nextTemplate(){
 let today=startOfToday();
 let best=null,bestDiff=Infinity;
-TEMPLATES.forEach(t=>{
+weekSeq.forEach((weekNum,pos)=>{
+const DAYS=["Пн","Чт","Сб"];
+DAYS.forEach(day=>{
+let base=TEMPLATES.find(x=>x.id===weekNum+". "+day);
+if(!base)return;
+let t={id:(pos+1)+". "+day,run:base.run,walk:base.walk,cycles:base.cycles};
 let diff=templateDate(t).getTime()-today.getTime();
 if(diff>=0&&diff<bestDiff){bestDiff=diff;best=t;}
+});
 });
 return best;
 }
@@ -828,28 +865,32 @@ document.querySelectorAll(".tpl-btn").forEach(b=>b.classList.remove("done"));
 if(!templatesOn)return;
 let today=startOfToday();
 document.querySelectorAll(".tpl-btn").forEach(b=>{
-let t=TEMPLATES.find(x=>x.id===b.dataset.id);
-if(t&&templateDate(t).getTime()<today.getTime())b.classList.add("done");
+let t={id:b.dataset.id};
+if(templateDate(t).getTime()<today.getTime())b.classList.add("done");
 });
 let target=null;
 if(selectedTpl){
-target=TEMPLATES.find(t=>t.id===selectedTpl);
-}else{
+let b=document.querySelector('.tpl-btn[data-id="'+selectedTpl+'"]');
+if(b){b.classList.add("sel");return;}
+target=null;
+}
 let run=parseInt($("run").value)||0;
 let walk=parseInt($("cycleWalk").value)||0;
 let cycles=parseInt($("cycles").value)||0;
-let matches=TEMPLATES.filter(t=>Math.round(t.run*60)===run&&Math.round(t.walk*60)===walk&&t.cycles===cycles);
-if(matches.length){
-let best=matches[0],bestDiff=Infinity;
-matches.forEach(m=>{
-let diff=Math.abs(templateDate(m).getTime()-today.getTime());
-if(diff<bestDiff){bestDiff=diff;best=m;}
+let best=null,bestDiff=Infinity;
+weekSeq.forEach((weekNum,pos)=>{
+const DAYS=["Пн","Чт","Сб"];
+DAYS.forEach(day=>{
+let base=TEMPLATES.find(x=>x.id===weekNum+". "+day);
+if(!base)return;
+if(Math.round(base.run*60)!==run||Math.round(base.walk*60)!==walk||base.cycles!==cycles)return;
+let t={id:(pos+1)+". "+day};
+let diff=Math.abs(templateDate(t).getTime()-today.getTime());
+if(diff<bestDiff){bestDiff=diff;best=t;}
 });
-target=best;
-}
-}
-if(target){
-let b=document.querySelector('.tpl-btn[data-id="'+target.id+'"]');
+});
+if(best){
+let b=document.querySelector('.tpl-btn[data-id="'+best.id+'"]');
 if(b)b.classList.add("sel");
 }
 }
