@@ -122,7 +122,7 @@ function jump(){
 if(!running)return;
 if(jumping)return;
 jumping=true;
-vy=-9.5;
+vy=9.5;
 }
 
 function spawnObstacle(){
@@ -139,7 +139,7 @@ dist+=speed*dt;
 score+=speed*dt*0.6;
 speed=Math.min(4+dist*0.004,12);
 if(jumping){
-vy+=0.55;
+vy-=0.55;
 py+=vy;
 if(py<=0){py=0;vy=0;jumping=false;}
 }
