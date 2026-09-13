@@ -28,21 +28,19 @@
 <div class="app">
 
 <div class="menu-shell"><button class="menu-btn" id="menuBtn" aria-label="Меню"><span></span><span></span></button></div>
-<h1>Найди пару 🃏</h1>
+<h1 class="mem-head">Найди пару 🃏<button class="mem-reload" id="newGame" aria-label="Заново">↻</button></h1>
 
 <div class="card mem-card">
 <div class="mem-top">
-<div class="mem-box"><span class="mem-label">Время</span><span class="mem-val" id="time">0:00</span></div>
+<div class="mem-box mem-size-box">
+<span class="mem-label">Пар</span>
+<select class="mem-size" id="sizeSel">
+<option value="8">8</option>
+<option value="12">12</option>
+</select>
+</div>
 <div class="mem-box"><span class="mem-label">Ходы</span><span class="mem-val" id="moves">0</span></div>
 <div class="mem-box"><span class="mem-label">Рекорд</span><span class="mem-val" id="record">—</span></div>
-</div>
-<div class="mem-size-row">
-<label>Пар:</label>
-<select class="mem-size" id="sizeSel">
-<option value="8">8 пар</option>
-<option value="12">12 пар</option>
-</select>
-<button class="reset-btn mem-new" id="newGame">Заново</button>
 </div>
 <div class="mem-grid-wrap">
 <div class="mem-grid" id="grid"></div>
@@ -90,7 +88,7 @@ const $=id=>document.getElementById(id);
 const EMOJIS=["🏃","🏋️","🚴","🏊","🤸","⚽","🏀","🎾","🏓","🏐","🏸","⛳"];
 const REC_KEY="runtimer_memory_record";
 
-let size=8,pairs=[],moves=0,time=0,timer=null,firstFlip=true;
+let size=8,pairs=[],moves=0;
 let openCards=[],lock=false,remaining=0,done=false;
 let records={};
 
@@ -142,8 +140,7 @@ grid.appendChild(card);
 function newGame(n){
 size=n;
 pairs=buildDeck(n);
-moves=0;time=0;openCards=[];lock=false;done=false;firstFlip=true;
-if(timer){clearInterval(timer);timer=null;}
+moves=0;openCards=[];lock=false;done=false;
 if(confettiRaf)cancelAnimationFrame(confettiRaf);
 confettiRaf=null;
 $("confetti").classList.remove("active");
@@ -153,46 +150,28 @@ updateProgress();
 $("msg").classList.add("hidden");
 }
 
-function startTimer(){
-if(timer)return;
-timer=setInterval(()=>{time++;updateProgress();},1000);
-}
-function stopTimer(){
-if(timer){clearInterval(timer);timer=null;}
-}
-
 function updateProgress(){
-let m=Math.floor(time/60);
-let s=time%60;
-$("time").textContent=m+":"+String(s).padStart(2,"0");
 $("moves").textContent=moves;
 let rec=records[size];
-$("record").textContent=rec?rec.moves+" ход., "+rec.time+" сек":"—";
-}
-
-function formatTime(sec){
-let m=Math.floor(sec/60);
-let s=sec%60;
-return m+":"+String(s).padStart(2,"0");
+$("record").textContent=rec?rec.moves:"—";
 }
 
 function updateRecord(){
 let cur=records[size];
-if(!cur||moves<cur.moves||(moves===cur.moves&&time<cur.time)){
-records[size]={moves:moves,time:time};
+if(!cur||moves<cur.moves){
+records[size]={moves:moves};
 saveRecords();
 }
 }
 
 function win(){
 done=true;
-stopTimer();
 updateRecord();
 updateProgress();
 let rec=records[size];
-let isNew=rec.moves===moves&&rec.time===time;
+let isNew=rec.moves===moves;
 let msg=$("msg");
-msg.textContent="Готово! 🎉 "+moves+" ход., "+formatTime(time)+(isNew?" · Новый рекорд!":"");
+msg.textContent="Готово! 🎉 "+moves+" ход."+(isNew?" · Новый рекорд!":"");
 msg.classList.remove("hidden");
 confettiBurst();
 }
@@ -255,7 +234,6 @@ function flipCard(card){
 if(lock||done)return;
 if(card.dataset.flipped==="1")return;
 if(openCards.length>=2)return;
-if(firstFlip){firstFlip=false;startTimer();}
 card.dataset.flipped="1";
 card.classList.add("flipped");
 openCards.push(card);

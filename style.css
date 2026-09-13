@@ -156,7 +156,7 @@ body.light .drawer a:active{background:#e5e5e7}
 .score-label{display:block;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px}
 .score-val{font-size:22px;font-weight:700}
 .game-reset{flex:none;width:auto;margin-top:0;padding:10px 14px;font-size:14px}
-.board{position:relative;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:8px;background:#242428;border:1px solid #333;border-radius:14px;padding:8px;width:100%;max-width:400px;margin:0 auto;aspect-ratio:1}
+.board{position:relative;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:8px;background:#242428;border:1px solid #333;border-radius:14px;padding:8px;width:100%;max-width:400px;margin:0 auto;aspect-ratio:1;touch-action:none}
 .tile{background:#303033;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
 .tile-num{font-size:26px;font-weight:800;line-height:1}
 .tile-label{font-size:10px;font-weight:600;line-height:1.1;text-align:center}
@@ -181,14 +181,14 @@ body.light .game-hint{color:#666}
 
 /* Memory game */
 .mem-card{text-align:center}
+.mem-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.mem-reload{flex:none;width:44px;height:44px;border-radius:12px;border:0;background:#303033;color:#fff;font-size:20px;cursor:pointer;line-height:1}
+.mem-reload:active{background:#3a3a3d}
 .mem-top{display:flex;gap:10px;margin-bottom:14px}
 .mem-box{flex:1;background:#242428;border:1px solid #333;border-radius:12px;padding:8px 6px}
-.mem-label{display:block;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px}
-.mem-val{font-size:19px;font-weight:700;display:block;margin-top:2px;font-variant-numeric:tabular-nums}
-.mem-size-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:14px}
-.mem-size-row label{font-size:15px;color:#fff}
-.mem-size{background:#303033;border:1px solid #444;color:#fff;border-radius:11px;padding:10px;font-size:16px}
-.mem-new{flex:none;width:auto;margin-top:0;padding:10px 14px;font-size:14px}
+.mem-label{display:block;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.mem-val{font-size:19px;font-weight:700;display:block;font-variant-numeric:tabular-nums}
+.mem-size{width:100%;background:#303033;border:1px solid #444;color:#fff;border-radius:8px;padding:7px 6px;font-size:18px;text-align:center}
 .mem-grid{display:grid;gap:8px;width:100%;max-width:400px;margin:0 auto}
 .mem-tile{border:0;border-radius:12px;background:#303033;color:#fff;aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:background .15s,transform .1s}
 .mem-tile:active{transform:scale(.96)}
@@ -198,9 +198,10 @@ body.light .game-hint{color:#666}
 .mem-tile.matched{background:#34c759}
 .mem-tile.matched .mem-emoji{opacity:1}
 .mem-msg{min-height:40px;margin:14px 0 0;font-size:17px;font-weight:700;color:#34c759}
+body.light .mem-reload{background:#e8e8ec;color:#111}
+body.light .mem-reload:active{background:#d8d8dc}
 body.light .mem-top .mem-box{background:#f7f7f9;border-color:#e5e5e8}
 body.light .mem-top .mem-label{color:#999}
-body.light .mem-size-row label{color:#111}
 body.light .mem-size{background:#f2f2f5;border-color:#ddd;color:#111}
 body.light .mem-tile{background:#e8e8ec}
 body.light .mem-tile.flipped{background:#fff}
