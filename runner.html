@@ -36,11 +36,10 @@
 <div class="score-box"><span class="score-label">Счёт</span><span class="score-val" id="score">0</span></div>
 <div class="score-box"><span class="score-label">Рекорд</span><span class="score-val" id="best">0</span></div>
 </div>
-<div class="runner-hint" id="msg">Прыжок: кнопка ▲ или пробел / клик</div>
+<div class="runner-hint" id="msg">Прыжок: тап по экрану или пробел</div>
 <div class="runner-field" id="field">
 <canvas id="game" width="400" height="480"></canvas>
 </div>
-<button class="runner-jump" id="jumpBtn" aria-label="Прыжок">▲</button>
 </div>
 
 <div class="footer">
@@ -234,18 +233,9 @@ if(e.target&&e.target.closest&&e.target.closest("button,a,input,select"))return;
 if(running)jump();
 else start();
 }
-cv.addEventListener("pointerdown",tapAction);
-cv.addEventListener("touchstart",tapAction,{passive:true});
-cv.addEventListener("click",tapAction);
-let jumpBtn=$("jumpBtn");
-function btnAction(e){
-e.preventDefault();
-if(running)jump();
-else start();
-}
-jumpBtn.addEventListener("pointerdown",btnAction);
-jumpBtn.addEventListener("touchstart",btnAction,{passive:false});
-jumpBtn.addEventListener("click",btnAction);
+document.addEventListener("pointerdown",tapAction);
+document.addEventListener("touchstart",tapAction,{passive:true});
+document.addEventListener("click",tapAction);
 document.addEventListener("keydown",e=>{
 if(e.code==="Space"||e.code==="ArrowUp"){
 e.preventDefault();

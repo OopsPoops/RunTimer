@@ -219,8 +219,5 @@ body.light .mem-msg{color:#1d7a37}
 .runner-hint{min-height:22px;font-size:15px;font-weight:700;color:#fff;margin-bottom:10px}
 .runner-field{position:relative;width:100%;max-width:400px;margin:0 auto;border-radius:14px;overflow:hidden;background:#1d1d1f}
 .runner-field canvas{display:block;width:100%;height:auto;touch-action:none}
-.runner-jump{display:block;width:64px;height:64px;margin:12px auto 0;border:0;border-radius:50%;background:#34c759;color:#fff;font-size:26px;cursor:pointer;touch-action:manipulation}
-.runner-jump:active{background:#2a9e48}
 body.light .runner-field{background:#fff}
 body.light .runner-hint{color:#111}
-body.light .runner-jump{color:#fff}
