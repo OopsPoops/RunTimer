@@ -86,12 +86,20 @@ let best=0,score=0,running=false,raf=null,last=0;
 let speed=0,dist=0,obstacles=[],spawnTimer=0;
 let py=0,vy=0,jumping=false;
 let clouds=[];
+let stars=[];
+const CLOUD_EMOJI=["☁️","🌥️","⛅"];
+const SKY_CYCLE=600;
+const SKY_COLORS=["#7ec8e3","#9aa0a8","#f6b26b","#141b26"];
+
+function skyPhase(){return Math.floor(dist/SKY_CYCLE)%SKY_COLORS.length;}
 
 function initClouds(){
 clouds=[];
 for(let i=0;i<6;i++){
-clouds.push({x:Math.random()*W,y:30+Math.random()*90,s:0.6+Math.random()*0.7});
+clouds.push({x:Math.random()*W,y:40+Math.random()*110,s:0.6+Math.random()*0.7,emoji:CLOUD_EMOJI[Math.floor(Math.random()*CLOUD_EMOJI.length)]});
 }
+stars=[];
+for(let i=0;i<22;i++){stars.push({x:Math.random()*W,y:Math.random()*GROUND*0.5,s:Math.random()<0.5?10:14});}
 }
 
 function applyTheme(){
@@ -161,7 +169,7 @@ spawnTimer=1.2+Math.random()*0.8*(12/speed);
 }
 obstacles.forEach(o=>{o.x-=speed*dt*60;});
 obstacles=obstacles.filter(o=>o.x>-30);
-clouds.forEach(c=>{c.x-=speed*dt*60*0.5;if(c.x<-60){c.x=W+40;c.y=30+Math.random()*90;c.s=0.6+Math.random()*0.7;}});
+clouds.forEach(c=>{c.x-=speed*dt*60*0.5;if(c.x<-60){c.x=W+40;c.y=40+Math.random()*110;c.s=0.6+Math.random()*0.7;c.emoji=CLOUD_EMOJI[Math.floor(Math.random()*CLOUD_EMOJI.length)];}});
 let player={x:30,y:GROUND-py-40,w:34,h:40};
 for(let i=0;i<obstacles.length;i++){
 let o=obstacles[i];
@@ -180,6 +188,23 @@ ctx.clearRect(0,0,W,H);
 let light=document.body.classList.contains("light");
 let groundColor=light?"#d9d9de":"#333";
 let lineColor=light?"#bbb":"#555";
+let ph=skyPhase();
+ctx.fillStyle=SKY_COLORS[ph];
+ctx.fillRect(0,0,W,GROUND);
+if(ph===3){
+ctx.fillStyle="#fff";
+stars.forEach(st=>{ctx.font=st.s+"px serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("✨",st.x,st.y);});
+let full=Math.floor(dist/SKY_CYCLE)%2===0;
+let fs=36;
+ctx.font=fs+"px serif";ctx.textAlign="center";ctx.textBaseline="middle";
+ctx.fillText(full?"🌕":"🌙",W*0.82,64);
+}else if(ph===2){
+ctx.font="38px serif";ctx.textAlign="center";ctx.textBaseline="middle";
+ctx.fillText("🌇",W*0.78,74);
+}else if(ph===0){
+ctx.font="38px serif";ctx.textAlign="center";ctx.textBaseline="middle";
+ctx.fillText("☀️",W*0.82,62);
+}
 ctx.fillStyle=groundColor;
 ctx.fillRect(0,GROUND,W,H-GROUND);
 ctx.strokeStyle=lineColor;
@@ -196,7 +221,7 @@ let fs=34*c.s;
 ctx.font=fs+"px serif";
 ctx.textAlign="center";
 ctx.textBaseline="middle";
-ctx.fillText("☁️",c.x,c.y);
+ctx.fillText(c.emoji,c.x,c.y);
 });
 obstacles.forEach(o=>{
 let y=o.air?(GROUND-o.h-50):(GROUND-o.h);
