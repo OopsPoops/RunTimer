@@ -29,7 +29,7 @@
 <div class="app">
 
 <div class="menu-shell"><button class="menu-btn" id="menuBtn" aria-label="Меню"><span></span><span></span></button></div>
-<h1>Раннер 🏃</h1>
+<h1>Раннер <span class="run-emoji">🏃</span></h1>
 
 <div class="card runner-card">
 <div class="runner-top">
@@ -80,7 +80,7 @@ const $=id=>document.getElementById(id);
 const BEST_KEY="runtimer_game_runner_record";
 const cv=$("game"),ctx=cv.getContext("2d");
 const W=cv.width,H=cv.height;
-const GROUND=H-220;
+const GROUND=H-176;
 
 let best=0,score=0,running=false,raf=null,last=0;
 let speed=0,dist=0,obstacles=[],spawnTimer=0;
@@ -192,6 +192,7 @@ ctx.fillText(o.emoji,o.x+fs/2,y+o.h);
 let x=36,y=GROUND-py;
 ctx.save();
 ctx.translate(x+11,y);
+ctx.scale(-1,1);
 ctx.font="44px serif";
 ctx.textAlign="center";
 ctx.textBaseline="bottom";
