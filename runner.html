@@ -38,7 +38,7 @@
 </div>
 <div class="runner-hint" id="msg">Прыжок: пробел / клик / тап</div>
 <div class="runner-field" id="field">
-<canvas id="game" width="400" height="340"></canvas>
+<canvas id="game" width="400" height="460"></canvas>
 </div>
 </div>
 
@@ -236,16 +236,19 @@ else start();
 }
 });
 let fieldEl=$("field");
-fieldEl.addEventListener("touchstart",e=>{
+let lastTap=0;
+function tapAction(e){
+if(e.target.closest("button,a"))return;
+let now=Date.now();
+if(now-lastTap<300)return;
+lastTap=now;
 e.preventDefault();
 if(running)jump();
 else start();
-},{passive:false});
-fieldEl.addEventListener("click",e=>{
-if(e.target.closest("button,a"))return;
-if(running)jump();
-else start();
-});
+}
+fieldEl.addEventListener("pointerdown",tapAction);
+fieldEl.addEventListener("touchstart",tapAction,{passive:false});
+fieldEl.addEventListener("click",tapAction);
 
 // drawer
 let menuBtn=$("menuBtn"),drawer=$("drawer"),drawerOverlay=$("drawerOverlay"),drawerClose=$("drawerClose");
