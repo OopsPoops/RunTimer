@@ -211,3 +211,15 @@ body.light .mem-msg{color:#1d7a37}
 #confetti.active{display:block}
 .mem-grid-wrap{position:relative;max-width:400px;margin:0 auto}
 .mem-restart{width:auto;margin:8px auto 0;padding:12px 26px;font-size:16px}
+
+/* Runner game */
+.runner-card{text-align:center}
+.runner-top{display:flex;gap:10px;margin-bottom:14px}
+.runner-top .score-box{flex:1}
+.runner-field{position:relative;width:100%;max-width:400px;margin:0 auto;border-radius:14px;overflow:hidden;background:#1d1d1f}
+.runner-field canvas{display:block;width:100%;height:auto;touch-action:none}
+.runner-msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;font-size:16px;font-weight:700;color:#fff;background:rgba(0,0,0,.4);pointer-events:none}
+.runner-hint{font-size:13px;color:#888;margin-top:14px}
+body.light .runner-field{background:#fff}
+body.light .runner-msg{color:#111;background:rgba(0,0,0,.08)}
+body.light .runner-hint{color:#666}
