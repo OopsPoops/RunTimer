@@ -85,6 +85,14 @@ const GROUND=H-176;
 let best=0,score=0,running=false,raf=null,last=0;
 let speed=0,dist=0,obstacles=[],spawnTimer=0;
 let py=0,vy=0,jumping=false;
+let clouds=[];
+
+function initClouds(){
+clouds=[];
+for(let i=0;i<6;i++){
+clouds.push({x:Math.random()*W,y:30+Math.random()*90,s:0.6+Math.random()*0.7});
+}
+}
 
 function applyTheme(){
 let v="dark";
@@ -97,6 +105,7 @@ function saveBest(){try{if(best>0)localStorage.setItem(BEST_KEY,String(best));}c
 function reset(){
 score=0;dist=0;speed=4;obstacles=[];spawnTimer=0;
 py=0;vy=0;jumping=false;
+initClouds();
 }
 function start(){
 reset();
@@ -152,6 +161,7 @@ spawnTimer=1.2+Math.random()*0.8*(12/speed);
 }
 obstacles.forEach(o=>{o.x-=speed*dt*60;});
 obstacles=obstacles.filter(o=>o.x>-30);
+clouds.forEach(c=>{c.x-=speed*dt*60*0.5;if(c.x<-60){c.x=W+40;c.y=30+Math.random()*90;c.s=0.6+Math.random()*0.7;}});
 let player={x:30,y:GROUND-py-40,w:34,h:40};
 for(let i=0;i<obstacles.length;i++){
 let o=obstacles[i];
@@ -181,6 +191,13 @@ ctx.moveTo(x,GROUND-6);
 ctx.lineTo(x+30,GROUND-6);
 ctx.stroke();
 }
+clouds.forEach(c=>{
+let fs=34*c.s;
+ctx.font=fs+"px serif";
+ctx.textAlign="center";
+ctx.textBaseline="middle";
+ctx.fillText("☁️",c.x,c.y);
+});
 obstacles.forEach(o=>{
 let y=o.air?(GROUND-o.h-50):(GROUND-o.h);
 let fs=o.type==="barrier"?34:30;
