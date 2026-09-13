@@ -36,11 +36,10 @@
 <div class="score-box"><span class="score-label">Счёт</span><span class="score-val" id="score">0</span></div>
 <div class="score-box"><span class="score-label">Рекорд</span><span class="score-val" id="best">0</span></div>
 </div>
+<div class="runner-hint" id="msg">Прыжок: пробел / клик / тап</div>
 <div class="runner-field" id="field">
 <canvas id="game" width="400" height="240"></canvas>
-<div class="runner-msg hidden" id="msg">Прыжок: пробел / клик / тап</div>
 </div>
-<div class="runner-hint">Прыжок — пробел, клик или тап. Не задень барьеры и гантели!</div>
 </div>
 
 <div class="footer">
@@ -86,7 +85,6 @@ const GROUND=H-28;
 let best=0,score=0,running=false,raf=null,last=0;
 let speed=0,dist=0,obstacles=[],spawnTimer=0;
 let py=0,vy=0,jumping=false;
-let legPhase=0;
 
 function applyTheme(){
 let v="dark";
@@ -103,7 +101,7 @@ py=0;vy=0;jumping=false;
 function start(){
 reset();
 running=true;
-$("msg").classList.add("hidden");
+$("msg").textContent="Прыжок: пробел / клик / тап";
 $("score").textContent=0;
 $("best").textContent=best;
 last=performance.now();
@@ -117,7 +115,6 @@ $("best").textContent=best;
 $("score").textContent=Math.floor(score);
 let msg=$("msg");
 msg.textContent="Готово! Счёт "+Math.floor(score)+" · Рекорд "+best+" · нажми пробел/клик для рестарта";
-msg.classList.remove("hidden");
 }
 
 function jump(){
@@ -152,7 +149,7 @@ spawnTimer=1.2+Math.random()*0.8*(12/speed);
 }
 obstacles.forEach(o=>{o.x-=speed*dt*60;});
 obstacles=obstacles.filter(o=>o.x>-30);
-let player={x:36,y:GROUND-py-42,w:22,h:42};
+let player={x:30,y:GROUND-py-40,w:34,h:40};
 for(let i=0;i<obstacles.length;i++){
 let o=obstacles[i];
 let oy=o.air?(GROUND-o.h-40):(GROUND-o.h);
@@ -162,7 +159,6 @@ gameOver();
 return;
 }
 }
-legPhase+=dt*20*speed;
 }
 
 function draw(){
@@ -170,7 +166,6 @@ ctx.clearRect(0,0,W,H);
 let light=document.body.classList.contains("light");
 let groundColor=light?"#d9d9de":"#333";
 let lineColor=light?"#bbb":"#555";
-let runnerColor=light?"#111":"#fff";
 let obstacleColor=light?"#2e7d4f":"#34c759";
 let barColor=light?"#8a8a90":"#666";
 ctx.fillStyle=groundColor;
@@ -204,12 +199,10 @@ ctx.fillRect(o.x+15,y+5,5,18);
 }
 });
 let x=36,y=GROUND-py;
-ctx.fillStyle=runnerColor;
-ctx.beginPath();ctx.arc(x+11,y-38,8,0,Math.PI*2);ctx.fill();
-ctx.fillRect(x+6,y-30,10,12);
-let leg=Math.sin(legPhase)*8;
-ctx.fillRect(x+6,y-18,5,14+leg);
-ctx.fillRect(x+13,y-18,5,14-leg);
+ctx.font="44px serif";
+ctx.textAlign="center";
+ctx.textBaseline="bottom";
+ctx.fillText("🏃",x+11,y);
 }
 
 function loop(now){
@@ -230,7 +223,6 @@ loadBest();
 reset();
 draw();
 $("best").textContent=best;
-$("msg").classList.remove("hidden");
 
 document.addEventListener("keydown",e=>{
 if(e.code==="Space"||e.code==="ArrowUp"){
