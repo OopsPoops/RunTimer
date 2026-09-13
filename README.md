@@ -35,9 +35,9 @@
 
 - `index.html` — главная: таймер бега и шаблоны
 - `sila.html` — силовая тренировка
-- `game.html` — игра 2048
-- `memory.html` — игра «Найди пару»
-- `runner.html` — игра-раннер
+- `game_2048.html` — игра 2048
+- `game_memory.html` — игра «Найди пару»
+- `game_runner.html` — игра-раннер
 - `style.css` — общие стили (темы, навигация)
 - `icon.png` — иконка для главного экрана iPhone
 
@@ -45,4 +45,7 @@
 
 ## 🤝 Сотрудничество
 
-По вопросам сотрудничества: **avalarionov@gmail.com**
+По вопросам сотрудничества:
+
+- Почта: **avalarionov@gmail.com**
+- Telegram: **@larik_11**
