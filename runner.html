@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111">
+<title>Раннер · RunTimer</title>
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RunTimer">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<aside class="drawer" id="drawer">
+<button class="drawer-close" id="drawerClose" aria-label="Закрыть меню">✕</button>
+<a href="index.html" class="drawer-title">RunTimer</a>
+<a href="index.html" class="nav-1">Главная</a>
+<a href="index.html" class="nav-2">Бег</a>
+<a href="sila.html" class="nav-2">Силовая</a>
+<div class="nav-1 nav-label">Игры</div>
+<a href="memory.html" class="nav-2">Найди пару</a>
+<a href="game.html" class="nav-2">2048</a>
+<a href="runner.html" class="nav-2 active">Раннер</a>
+</aside>
+<div class="app">
+
+<div class="menu-shell"><button class="menu-btn" id="menuBtn" aria-label="Меню"><span></span><span></span></button></div>
+<h1>Раннер 🏃</h1>
+
+<div class="card runner-card">
+<div class="runner-top">
+<div class="score-box"><span class="score-label">Счёт</span><span class="score-val" id="score">0</span></div>
+<div class="score-box"><span class="score-label">Рекорд</span><span class="score-val" id="best">0</span></div>
+</div>
+<div class="runner-field" id="field">
+<canvas id="game" width="400" height="240"></canvas>
+<div class="runner-msg hidden" id="msg">Прыжок: пробел / клик / тап</div>
+</div>
+<div class="runner-hint">Прыжок — пробел, клик или тап. Не задень барьеры и гантели!</div>
+</div>
+
+<div class="footer">
+<div class="footer-left">
+<span>© 2026 RunTimer</span>
+<span class="sep">·</span>
+<a href="https://github.com/OopsPoops/RunTimer" target="_blank" rel="noopener">О приложении</a>
+<span class="sep">·</span>
+<a href="#" id="privacyLink">Политика</a>
+</div>
+<div class="footer-right">
+<a href="mailto:avalarionov@gmail.com" title="Написать на почту" aria-label="Почта">
+<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+</a>
+<a href="https://t.me/larik_11" target="_blank" rel="noopener" title="Telegram: larik_11" aria-label="Telegram">
+<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21.9 4.1 2.9 11.2c-1.1.4-1.1 1.5 0 1.9l4.7 1.5 1.8 5.6c.3.9 1.2.9 1.6.2l2.5-3.9 4.9 3.6c.7.5 1.6.2 1.8-.8l2.9-13.6c.2-1-.5-1.6-1.2-1.6Z"/></svg>
+</a>
+</div>
+</div>
+
+</div>
+
+<div class="modal" id="privacyModal">
+<div class="modal-card">
+<h2>Политика конфиденциальности</h2>
+<p><strong>RunTimer</strong> — это личный таймер для тренировок. Приложение не собирает и не передаёт никакие личные данные.</p>
+<p><strong>Хранение настроек.</strong> Ваши настройки хранятся локально в вашем браузере (localStorage) и никуда не отправляются.</p>
+<p><strong>Отсутствие трекеров и рекламы.</strong> Приложение не использует сторонние аналитику, трекеры и рекламу.</p>
+<p><strong>Сторонние сервисы.</strong> Приложение размещено на GitHub Pages (GitHub Inc.).</p>
+<p><strong>Контакты.</strong> По вопросам пишите на <a href="mailto:avalarionov@gmail.com" style="color:#7ab8ff">avalarionov@gmail.com</a>.</p>
+<button class="modal-close" id="privacyClose" aria-label="Закрыть">✕</button>
+</div>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const BEST_KEY="runtimer_game_runner_record";
+const cv=$("game"),ctx=cv.getContext("2d");
+const W=cv.width,H=cv.height;
+const GROUND=H-28;
+
+let best=0,score=0,running=false,raf=null,last=0;
+let speed=0,dist=0,obstacles=[],spawnTimer=0;
+let py=0,vy=0,jumping=false;
+let legPhase=0;
+
+function applyTheme(){
+let v="dark";
+try{let d=JSON.parse(localStorage.getItem("trenirovka_settings")||"{}");if(d.theme)v=d.theme;}catch(e){}
+document.body.classList.toggle("light",v==="light");
+}
+function loadBest(){try{best=parseInt(localStorage.getItem(BEST_KEY)||"0",10)||0;}catch(e){best=0;}}
+function saveBest(){try{if(best>0)localStorage.setItem(BEST_KEY,String(best));}catch(e){}}
+
+function reset(){
+score=0;dist=0;speed=4;obstacles=[];spawnTimer=0;
+py=0;vy=0;jumping=false;
+}
+function start(){
+reset();
+running=true;
+$("msg").classList.add("hidden");
+$("score").textContent=0;
+$("best").textContent=best;
+last=performance.now();
+raf=requestAnimationFrame(loop);
+}
+function gameOver(){
+running=false;
+cancelAnimationFrame(raf);
+if(Math.floor(score)>best){best=Math.floor(score);saveBest();}
+$("best").textContent=best;
+$("score").textContent=Math.floor(score);
+let msg=$("msg");
+msg.textContent="Готово! Счёт "+Math.floor(score)+" · Рекорд "+best+" · нажми пробел/клик для рестарта";
+msg.classList.remove("hidden");
+}
+
+function jump(){
+if(!running)return;
+if(jumping)return;
+jumping=true;
+vy=-9.5;
+}
+
+function spawnObstacle(){
+let air=Math.random()<0.5;
+if(air){
+obstacles.push({type:"dumbbell",x:W,air:true,h:36});
+}else{
+obstacles.push({type:"hurdle",x:W,air:false,h:34});
+}
+}
+
+function update(dt){
+dist+=speed*dt;
+score+=speed*dt*0.6;
+speed=Math.min(4+dist*0.004,12);
+if(jumping){
+vy+=0.55;
+py+=vy;
+if(py<=0){py=0;vy=0;jumping=false;}
+}
+spawnTimer-=dt;
+if(spawnTimer<=0){
+spawnObstacle();
+spawnTimer=1.2+Math.random()*0.8*(12/speed);
+}
+obstacles.forEach(o=>{o.x-=speed*dt*60;});
+obstacles=obstacles.filter(o=>o.x>-30);
+let player={x:36,y:GROUND-py-42,w:22,h:42};
+for(let i=0;i<obstacles.length;i++){
+let o=obstacles[i];
+let oy=o.air?(GROUND-o.h-40):(GROUND-o.h);
+let ob={x:o.x,y:oy,w:26,h:o.h};
+if(player.x<ob.x+ob.w&&player.x+player.w>ob.x&&player.y<ob.y+ob.h&&player.y+player.h>ob.y){
+gameOver();
+return;
+}
+}
+legPhase+=dt*20*speed;
+}
+
+function draw(){
+ctx.clearRect(0,0,W,H);
+let light=document.body.classList.contains("light");
+let groundColor=light?"#d9d9de":"#333";
+let lineColor=light?"#bbb":"#555";
+let runnerColor=light?"#111":"#fff";
+let obstacleColor=light?"#2e7d4f":"#34c759";
+let barColor=light?"#8a8a90":"#666";
+ctx.fillStyle=groundColor;
+ctx.fillRect(0,GROUND,W,H-GROUND);
+ctx.strokeStyle=lineColor;
+ctx.lineWidth=2;
+for(let i=0;i<8;i++){
+let x=(i*60-((dist*20)%60));
+ctx.beginPath();
+ctx.moveTo(x,GROUND-6);
+ctx.lineTo(x+30,GROUND-6);
+ctx.stroke();
+}
+obstacles.forEach(o=>{
+if(o.type==="hurdle"){
+let y=GROUND-o.h;
+ctx.fillStyle=barColor;
+ctx.fillRect(o.x+8,y,10,o.h);
+ctx.fillRect(o.x+2,y-4,22,5);
+ctx.fillStyle=obstacleColor;
+ctx.fillRect(o.x+4,y-8,18,4);
+}else{
+let y=GROUND-o.h-30;
+ctx.fillStyle=barColor;
+ctx.fillRect(o.x+8,y+14,10,16);
+ctx.fillRect(o.x+1,y,24,5);
+ctx.fillRect(o.x+1,y+28,24,5);
+ctx.fillStyle=obstacleColor;
+ctx.fillRect(o.x+4,y+5,5,18);
+ctx.fillRect(o.x+15,y+5,5,18);
+}
+});
+let x=36,y=GROUND-py;
+ctx.fillStyle=runnerColor;
+ctx.beginPath();ctx.arc(x+11,y-38,8,0,Math.PI*2);ctx.fill();
+ctx.fillRect(x+6,y-30,10,12);
+let leg=Math.sin(legPhase)*8;
+ctx.fillRect(x+6,y-18,5,14+leg);
+ctx.fillRect(x+13,y-18,5,14-leg);
+}
+
+function loop(now){
+let dt=Math.min((now-last)/1000,0.05);
+last=now;
+if(running){
+update(dt);
+draw();
+$("score").textContent=Math.floor(score);
+$("best").textContent=best;
+raf=requestAnimationFrame(loop);
+}
+}
+
+// init
+applyTheme();
+loadBest();
+reset();
+draw();
+$("best").textContent=best;
+$("msg").classList.remove("hidden");
+
+document.addEventListener("keydown",e=>{
+if(e.code==="Space"||e.code==="ArrowUp"){
+e.preventDefault();
+if(running)jump();
+else start();
+}
+});
+cv.addEventListener("pointerdown",e=>{
+e.preventDefault();
+if(running)jump();
+else start();
+});
+
+// drawer
+let menuBtn=$("menuBtn"),drawer=$("drawer"),drawerOverlay=$("drawerOverlay"),drawerClose=$("drawerClose");
+menuBtn.onclick=()=>{drawer.classList.add("open");drawerOverlay.classList.add("open");};
+drawerClose.onclick=()=>{drawer.classList.remove("open");drawerOverlay.classList.remove("open");};
+drawerOverlay.onclick=()=>{drawer.classList.remove("open");drawerOverlay.classList.remove("open");};
+
+// privacy modal
+let pLink=$("privacyLink"),pClose=$("privacyClose");
+pLink.onclick=(e)=>{e.preventDefault();$("privacyModal").classList.add("open");};
+pClose.onclick=()=>{$("privacyModal").classList.remove("open");};
+$("privacyModal").addEventListener("click",(e)=>{if(e.target===$("privacyModal"))$("privacyModal").classList.remove("open");});
+</script>
+</body>
+</html>
