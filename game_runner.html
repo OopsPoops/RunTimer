@@ -29,7 +29,7 @@
 <div class="app">
 
 <div class="menu-shell"><button class="menu-btn" id="menuBtn" aria-label="Меню"><span></span><span></span></button></div>
-<h1>Раннер <img class="run-emoji" src="runner.gif" alt="🏃‍♀️" style="height:30px;vertical-align:middle"></h1>
+<h1>Раннер <img class="run-emoji" src="runner_static.png" alt="🏃‍♀️" style="height:30px;vertical-align:middle"></h1>
 
 <div class="card runner-card">
 <div class="runner-top">
@@ -161,7 +161,7 @@ obstacles.push({type:"ball",emoji:emoji,x:W,air:air,h:28});
 
 function update(dt){
 dist+=speed*dt;
-runT+=dt*1000;
+if(!jumping)runT+=dt*1000;
 score+=speed*dt*0.6;
 speed=Math.min(4+dist*0.004,12);
 if(jumping){
