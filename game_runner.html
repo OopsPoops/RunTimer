@@ -83,6 +83,11 @@ const W=cv.width,H=cv.height;
 const GROUND=H-176;
 const runnerImg=new Image();
 runnerImg.src="runner.gif";
+runnerImg.style.position="absolute";
+runnerImg.style.left="-9999px";
+runnerImg.style.top="0";
+runnerImg.style.width="auto";
+document.body.appendChild(runnerImg);
 const RUN_W=0.80,RUN_FEET=0.93;
 
 let best=0,score=0,running=false,raf=null,last=0;
