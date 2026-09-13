@@ -80,7 +80,7 @@ const $=id=>document.getElementById(id);
 const BEST_KEY="runtimer_game_runner_record";
 const cv=$("game"),ctx=cv.getContext("2d");
 const W=cv.width,H=cv.height;
-const GROUND=H-28;
+const GROUND=H-220;
 
 let best=0,score=0,running=false,raf=null,last=0;
 let speed=0,dist=0,obstacles=[],spawnTimer=0;
@@ -156,7 +156,7 @@ let player={x:30,y:GROUND-py-40,w:34,h:40};
 for(let i=0;i<obstacles.length;i++){
 let o=obstacles[i];
 let oy=o.air?(GROUND-o.h-50):(GROUND-o.h);
-let ow=o.type==="barrier"?36:28;
+let ow=o.type==="barrier"?24:28;
 let ob={x:o.x,y:oy,w:ow,h:o.h};
 if(player.x<ob.x+ob.w&&player.x+player.w>ob.x&&player.y<ob.y+ob.h&&player.y+player.h>ob.y){
 gameOver();
@@ -183,7 +183,7 @@ ctx.stroke();
 }
 obstacles.forEach(o=>{
 let y=o.air?(GROUND-o.h-50):(GROUND-o.h);
-let fs=o.type==="barrier"?44:30;
+let fs=o.type==="barrier"?34:30;
 ctx.font=fs+"px serif";
 ctx.textAlign="center";
 ctx.textBaseline="bottom";
@@ -192,7 +192,6 @@ ctx.fillText(o.emoji,o.x+fs/2,y+o.h);
 let x=36,y=GROUND-py;
 ctx.save();
 ctx.translate(x+11,y);
-ctx.scale(-1,1);
 ctx.font="44px serif";
 ctx.textAlign="center";
 ctx.textBaseline="bottom";
