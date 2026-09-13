@@ -717,8 +717,9 @@ $("voiceHint").classList.toggle("hidden");
 });
 let rs=$("resetSettings");
 if(rs)rs.addEventListener("click",()=>{
-if(confirm("Сбросить все настройки к значениям по умолчанию?")){
-try{localStorage.removeItem(STORE_KEY);}catch(e){}
+if(confirm("Сбросить все настройки и данные игр к значениям по умолчанию?")){
+let keys=[STORE_KEY,"runtimer_game_2048_state","runtimer_game_2048_best","runtimer_memory_record","runtimer_game_runner_record"];
+keys.forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
 location.reload();
 }
 });
