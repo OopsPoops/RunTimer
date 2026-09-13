@@ -88,10 +88,11 @@ let py=0,vy=0,jumping=false;
 let clouds=[];
 let stars=[];
 const CLOUD_EMOJI=["☁️","🌥️","⛅"];
-const SKY_CYCLE=600;
+const SKY_CYCLE=400;
 const SKY_COLORS=["#7ec8e3","#9aa0a8","#f6b26b","#141b26"];
+let skyOffset=0;
 
-function skyPhase(){return Math.floor(dist/SKY_CYCLE)%SKY_COLORS.length;}
+function skyPhase(){return Math.floor((dist+skyOffset)/SKY_CYCLE)%SKY_COLORS.length;}
 
 function initClouds(){
 clouds=[];
@@ -113,6 +114,7 @@ function saveBest(){try{if(best>0)localStorage.setItem(BEST_KEY,String(best));}c
 function reset(){
 score=0;dist=0;speed=4;obstacles=[];spawnTimer=0;
 py=0;vy=0;jumping=false;
+skyOffset=Math.floor(Math.random()*SKY_COLORS.length)*SKY_CYCLE;
 initClouds();
 }
 function start(){
@@ -194,7 +196,7 @@ ctx.fillRect(0,0,W,GROUND);
 if(ph===3){
 ctx.fillStyle="#fff";
 stars.forEach(st=>{ctx.font=st.s+"px serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("✨",st.x,st.y);});
-let full=Math.floor(dist/SKY_CYCLE)%2===0;
+let full=Math.floor((dist+skyOffset)/SKY_CYCLE)%2===0;
 let fs=36;
 ctx.font=fs+"px serif";ctx.textAlign="center";ctx.textBaseline="middle";
 ctx.fillText(full?"🌕":"🌙",W*0.82,64);

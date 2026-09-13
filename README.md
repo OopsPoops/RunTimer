@@ -48,4 +48,4 @@
 По вопросам сотрудничества:
 
 - Почта: **avalarionov@gmail.com**
-- Telegram: **@larik_11**
+- Telegram: [**@larik_11**](https://t.me/larik_11)
