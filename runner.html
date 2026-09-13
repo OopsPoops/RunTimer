@@ -38,7 +38,7 @@
 </div>
 <div class="runner-hint" id="msg">Прыжок: пробел / клик / тап</div>
 <div class="runner-field" id="field">
-<canvas id="game" width="400" height="560"></canvas>
+<canvas id="game" width="400" height="480"></canvas>
 </div>
 </div>
 
@@ -228,6 +228,14 @@ reset();
 draw();
 $("best").textContent=best;
 
+function tapAction(e){
+if(e.target&&e.target.closest&&e.target.closest("button,a,input,select"))return;
+if(running)jump();
+else start();
+}
+cv.addEventListener("pointerdown",tapAction);
+cv.addEventListener("touchstart",tapAction,{passive:true});
+cv.addEventListener("click",tapAction);
 document.addEventListener("keydown",e=>{
 if(e.code==="Space"||e.code==="ArrowUp"){
 e.preventDefault();
@@ -235,19 +243,6 @@ if(running)jump();
 else start();
 }
 });
-let lastTap=0;
-function tapAction(e){
-if(e.target.closest("button,a,input,select"))return;
-let now=Date.now();
-if(now-lastTap<300)return;
-lastTap=now;
-e.preventDefault();
-if(running)jump();
-else start();
-}
-document.addEventListener("pointerdown",tapAction);
-document.addEventListener("touchstart",tapAction,{passive:false});
-document.addEventListener("click",tapAction);
 
 // drawer
 let menuBtn=$("menuBtn"),drawer=$("drawer"),drawerOverlay=$("drawerOverlay"),drawerClose=$("drawerClose");
