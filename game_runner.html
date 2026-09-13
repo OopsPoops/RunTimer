@@ -81,18 +81,14 @@ const BEST_KEY="runtimer_game_runner_record";
 const cv=$("game"),ctx=cv.getContext("2d");
 const W=cv.width,H=cv.height;
 const GROUND=H-176;
-const runnerImg=new Image();
-runnerImg.src="runner.gif";
-runnerImg.style.position="absolute";
-runnerImg.style.left="-9999px";
-runnerImg.style.top="0";
-runnerImg.style.width="auto";
-document.body.appendChild(runnerImg);
+const runnerSheet=new Image();
+runnerSheet.src="runner_sheet.png";
 const RUN_W=0.80,RUN_FEET=0.93;
+const RUN_SW=431,RUN_SH=498,RUN_FRAMES=24,RUN_FRAME=40;
 
 let best=0,score=0,running=false,raf=null,last=0;
 let speed=0,dist=0,obstacles=[],spawnTimer=0;
-let py=0,vy=0,jumping=false;
+let py=0,vy=0,jumping=false,runT=0;
 let clouds=[];
 let stars=[];
 const CLOUD_EMOJI=["☁️","🌥️","⛅"];
@@ -165,6 +161,7 @@ obstacles.push({type:"ball",emoji:emoji,x:W,air:air,h:28});
 
 function update(dt){
 dist+=speed*dt;
+runT+=dt*1000;
 score+=speed*dt*0.6;
 speed=Math.min(4+dist*0.004,12);
 if(jumping){
@@ -245,9 +242,10 @@ let x=36,y=GROUND-py;
 ctx.save();
 ctx.translate(x+11,y);
 ctx.scale(-1,1);
-if(runnerImg.complete&&runnerImg.naturalWidth>0){
+if(runnerSheet.complete&&runnerSheet.naturalWidth>0){
 let ih=48,iw=Math.round(ih*RUN_W);
-ctx.drawImage(runnerImg,-iw/2,-ih*RUN_FEET,iw,ih);
+let f=Math.floor(runT/RUN_FRAME)%RUN_FRAMES;
+ctx.drawImage(runnerSheet,f*RUN_SW,0,RUN_SW,RUN_SH,-iw/2,-ih*RUN_FEET,iw,ih);
 }
 ctx.restore();
 }
