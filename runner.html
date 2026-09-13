@@ -125,12 +125,15 @@ vy=9.5;
 }
 
 function spawnObstacle(){
-let air=Math.random()<0.5;
-if(air){
-obstacles.push({type:"dumbbell",x:W,air:true,h:36});
-}else{
-obstacles.push({type:"hurdle",x:W,air:false,h:34});
+let r=Math.random();
+if(r<0.3){
+obstacles.push({type:"barrier",emoji:"🚧",x:W,air:false,h:46});
+return;
 }
+const BALLS=["⚽","🏀","🎾","🏐","🏉","🥎","🏓"];
+let emoji=BALLS[Math.floor(Math.random()*BALLS.length)];
+let air=Math.random()<0.5;
+obstacles.push({type:"ball",emoji:emoji,x:W,air:air,h:28});
 }
 
 function update(dt){
@@ -152,8 +155,9 @@ obstacles=obstacles.filter(o=>o.x>-30);
 let player={x:30,y:GROUND-py-40,w:34,h:40};
 for(let i=0;i<obstacles.length;i++){
 let o=obstacles[i];
-let oy=o.air?(GROUND-o.h-40):(GROUND-o.h);
-let ob={x:o.x,y:oy,w:26,h:o.h};
+let oy=o.air?(GROUND-o.h-50):(GROUND-o.h);
+let ow=o.type==="barrier"?36:28;
+let ob={x:o.x,y:oy,w:ow,h:o.h};
 if(player.x<ob.x+ob.w&&player.x+player.w>ob.x&&player.y<ob.y+ob.h&&player.y+player.h>ob.y){
 gameOver();
 return;
@@ -166,8 +170,6 @@ ctx.clearRect(0,0,W,H);
 let light=document.body.classList.contains("light");
 let groundColor=light?"#d9d9de":"#333";
 let lineColor=light?"#bbb":"#555";
-let obstacleColor=light?"#2e7d4f":"#34c759";
-let barColor=light?"#8a8a90":"#666";
 ctx.fillStyle=groundColor;
 ctx.fillRect(0,GROUND,W,H-GROUND);
 ctx.strokeStyle=lineColor;
@@ -180,23 +182,12 @@ ctx.lineTo(x+30,GROUND-6);
 ctx.stroke();
 }
 obstacles.forEach(o=>{
-if(o.type==="hurdle"){
-let y=GROUND-o.h;
-ctx.fillStyle=barColor;
-ctx.fillRect(o.x+8,y,10,o.h);
-ctx.fillRect(o.x+2,y-4,22,5);
-ctx.fillStyle=obstacleColor;
-ctx.fillRect(o.x+4,y-8,18,4);
-}else{
-let y=GROUND-o.h-30;
-ctx.fillStyle=barColor;
-ctx.fillRect(o.x+8,y+14,10,16);
-ctx.fillRect(o.x+1,y,24,5);
-ctx.fillRect(o.x+1,y+28,24,5);
-ctx.fillStyle=obstacleColor;
-ctx.fillRect(o.x+4,y+5,5,18);
-ctx.fillRect(o.x+15,y+5,5,18);
-}
+let y=o.air?(GROUND-o.h-50):(GROUND-o.h);
+let fs=o.type==="barrier"?44:30;
+ctx.font=fs+"px serif";
+ctx.textAlign="center";
+ctx.textBaseline="bottom";
+ctx.fillText(o.emoji,o.x+fs/2,y+o.h);
 });
 let x=36,y=GROUND-py;
 ctx.save();
