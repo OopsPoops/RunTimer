@@ -36,7 +36,6 @@
 <div class="score-box"><span class="score-label">Счёт</span><span class="score-val" id="score">0</span></div>
 <div class="score-box"><span class="score-label">Рекорд</span><span class="score-val" id="best">0</span></div>
 </div>
-<div class="runner-hint" id="msg">Прыжок: тап по экрану или пробел</div>
 <div class="runner-field" id="field">
 <canvas id="game" width="400" height="480"></canvas>
 </div>
@@ -88,7 +87,7 @@ const RUN_SW=431,RUN_SH=498,RUN_FRAMES=24,RUN_FRAME=40;
 
 let best=0,score=0,running=false,raf=null,last=0;
 let speed=0,dist=0,obstacles=[],spawnTimer=0;
-let py=0,vy=0,jumping=false,runT=0;
+let py=0,vy=0,jumping=false,runT=0,over=false;
 let clouds=[];
 let stars=[];
 const CLOUD_EMOJI=["☁️","🌥️","⛅"];
@@ -117,14 +116,13 @@ function saveBest(){try{if(best>0)localStorage.setItem(BEST_KEY,String(best));}c
 
 function reset(){
 score=0;dist=0;speed=4;obstacles=[];spawnTimer=0;
-py=0;vy=0;jumping=false;
+py=0;vy=0;jumping=false;over=false;
 skyOffset=Math.floor(Math.random()*SKY_COLORS.length)*SKY_CYCLE;
 initClouds();
 }
 function start(){
 reset();
 running=true;
-$("msg").textContent="Прыжок: пробел / клик / тап";
 $("score").textContent=0;
 $("best").textContent=best;
 last=performance.now();
@@ -136,8 +134,8 @@ cancelAnimationFrame(raf);
 if(Math.floor(score)>best){best=Math.floor(score);saveBest();}
 $("best").textContent=best;
 $("score").textContent=Math.floor(score);
-let msg=$("msg");
-msg.textContent="Готово! Счёт "+Math.floor(score)+" · Рекорд "+best+" · нажми пробел/клик для рестарта";
+over=true;
+draw();
 }
 
 function jump(){
@@ -248,6 +246,23 @@ let f=Math.floor(runT/RUN_FRAME)%RUN_FRAMES;
 ctx.drawImage(runnerSheet,f*RUN_SW,0,RUN_SW,RUN_SH,-iw/2,-ih*RUN_FEET,iw,ih);
 }
 ctx.restore();
+if(over){
+ctx.fillStyle="rgba(110,110,120,0.55)";
+ctx.fillRect(0,0,W,H);
+ctx.textAlign="center";
+ctx.textBaseline="middle";
+ctx.fillStyle="#fff";
+ctx.font="700 30px -apple-system,sans-serif";
+ctx.fillText("Счёт "+Math.floor(score),W/2,H/2-22);
+ctx.fillText("Рекорд "+best,W/2,H/2+22);
+}
+if(!running){
+ctx.font="16px -apple-system,sans-serif";
+ctx.textAlign="center";
+ctx.textBaseline="middle";
+ctx.fillStyle=over?"#fff":(light?"#666":"#aaa");
+ctx.fillText("Тап чтобы продолжить",W/2,GROUND+(H-GROUND)/2);
+}
 }
 
 function loop(now){
