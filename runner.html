@@ -38,7 +38,7 @@
 </div>
 <div class="runner-hint" id="msg">Прыжок: пробел / клик / тап</div>
 <div class="runner-field" id="field">
-<canvas id="game" width="400" height="240"></canvas>
+<canvas id="game" width="400" height="340"></canvas>
 </div>
 </div>
 
@@ -199,10 +199,14 @@ ctx.fillRect(o.x+15,y+5,5,18);
 }
 });
 let x=36,y=GROUND-py;
+ctx.save();
+ctx.translate(x+11,y);
+ctx.scale(-1,1);
 ctx.font="44px serif";
 ctx.textAlign="center";
 ctx.textBaseline="bottom";
-ctx.fillText("🏃",x+11,y);
+ctx.fillText("🏃",0,0);
+ctx.restore();
 }
 
 function loop(now){
@@ -231,8 +235,14 @@ if(running)jump();
 else start();
 }
 });
-cv.addEventListener("pointerdown",e=>{
+let fieldEl=$("field");
+fieldEl.addEventListener("touchstart",e=>{
 e.preventDefault();
+if(running)jump();
+else start();
+},{passive:false});
+fieldEl.addEventListener("click",e=>{
+if(e.target.closest("button,a"))return;
 if(running)jump();
 else start();
 });
