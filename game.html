@@ -78,6 +78,7 @@
 const $=id=>document.getElementById(id);
 const SIZE=4;
 const BEST_KEY="runtimer_game_2048_best";
+const STATE_KEY="runtimer_game_2048_state";
 const LABELS={2:"Бег",4:"Отжимания",8:"Приседания",16:"Планка",32:"Бёрпи",64:"Скакалка",128:"Подтягивания",256:"Выпады",512:"Пресс",1024:"Интервалы",2048:"Марафон 🏆"};
 
 let grid=[],score=0,best=0,over=false,win=false;
@@ -89,6 +90,22 @@ document.body.classList.toggle("light",v==="light");
 }
 function loadBest(){try{best=parseInt(localStorage.getItem(BEST_KEY)||"0",10)||0;}catch(e){best=0;}}
 function saveBest(){try{if(best>0)localStorage.setItem(BEST_KEY,String(best));}catch(e){}}
+
+function saveState(){
+try{localStorage.setItem(STATE_KEY,JSON.stringify({grid:grid,score:score,over:over,win:win}));}catch(e){}
+}
+function loadState(){
+try{
+let s=JSON.parse(localStorage.getItem(STATE_KEY)||"null");
+if(!s||!Array.isArray(s.grid)||s.grid.length!==SIZE*SIZE)return false;
+grid=s.grid.slice();
+score=typeof s.score==="number"?s.score:0;
+over=!!s.over;
+win=!!s.win;
+return true;
+}catch(e){return false;}
+}
+function clearState(){try{localStorage.removeItem(STATE_KEY);}catch(e){}}
 
 function emptyGrid(){return new Array(SIZE*SIZE).fill(0);}
 
@@ -148,6 +165,7 @@ if(score>best){best=score;saveBest();}
 if(!win&&grid.indexOf(2048)!==-1){win=true;showMsg("Марафон пройден! 🏆");}
 spawn();
 if(gameOver()){over=true;showMsg("Нет ходов. Начните заново.");}
+saveState();
 render();
 return true;
 }
@@ -196,6 +214,7 @@ score=0;over=false;win=false;
 spawn();spawn();
 let msg=$("gameMsg");msg.classList.add("hidden");
 buildBoard();
+saveState();
 render();
 }
 
@@ -219,7 +238,14 @@ board.appendChild(tile);
 // init
 applyTheme();
 loadBest();
+if(!loadState()){
 newGame();
+}else{
+buildBoard();
+if(over)showMsg("Нет ходов. Нажмите «Новая».");
+else if(win)showMsg("Марафон пройден! 🏆");
+render();
+}
 
 // keyboard
 document.addEventListener("keydown",e=>{
