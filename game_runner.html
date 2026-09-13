@@ -81,6 +81,9 @@ const BEST_KEY="runtimer_game_runner_record";
 const cv=$("game"),ctx=cv.getContext("2d");
 const W=cv.width,H=cv.height;
 const GROUND=H-176;
+const runnerImg=new Image();
+runnerImg.src="runner.gif";
+const RUN_W=0.80,RUN_FEET=0.93;
 
 let best=0,score=0,running=false,raf=null,last=0;
 let speed=0,dist=0,obstacles=[],spawnTimer=0;
@@ -237,10 +240,10 @@ let x=36,y=GROUND-py;
 ctx.save();
 ctx.translate(x+11,y);
 ctx.scale(-1,1);
-ctx.font="44px serif";
-ctx.textAlign="center";
-ctx.textBaseline="bottom";
-ctx.fillText("🏃",0,0);
+if(runnerImg.complete&&runnerImg.naturalWidth>0){
+let ih=48,iw=Math.round(ih*RUN_W);
+ctx.drawImage(runnerImg,-iw/2,-ih*RUN_FEET,iw,ih);
+}
 ctx.restore();
 }
 
