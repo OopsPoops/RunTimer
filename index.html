@@ -18,13 +18,13 @@
 <aside class="drawer" id="drawer">
 <button class="drawer-close" id="drawerClose" aria-label="Закрыть меню">✕</button>
 <a href="index.html" class="drawer-title">RunTimer</a>
-<a href="index.html" class="nav-1">Главная</a>
-<a href="index.html" class="nav-2 active">Бег</a>
-<a href="sila.html" class="nav-2">Силовая</a>
-<div class="nav-1 nav-label">Игры</div>
-<a href="game_memory.html" class="nav-2">Найди пару</a>
+<a href="index.html" class="nav-1" data-i18n="common_navHome">Главная</a>
+<a href="index.html" class="nav-2 active" data-i18n="common_navRun">Бег</a>
+<a href="sila.html" class="nav-2" data-i18n="common_navStrength">Силовая</a>
+<div class="nav-1 nav-label" data-i18n="common_navGames">Игры</div>
+<a href="game_memory.html" class="nav-2" data-i18n="common_navMemory">Найди пару</a>
 <a href="game_2048.html" class="nav-2">2048</a>
-<a href="game_runner.html" class="nav-2">Раннер</a>
+<a href="game_runner.html" class="nav-2" data-i18n="common_navRunner">Раннер</a>
 </aside>
 <div class="app">
 
@@ -44,9 +44,9 @@
 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8Z"/></svg>
 </button>
 </div>
-<div class="phase" id="phase">Готов</div>
+<div class="phase" id="phase" data-i18n="home_ready">Готов</div>
 <div class="timer" id="timer">00:00</div>
-<div class="sub" id="round">Настрой параметры и нажми «Старт»</div>
+<div class="sub" id="round" data-i18n="home_roundIdle">Настрой параметры и нажми «Старт»</div>
 
 <div class="bar">
 <div class="fill" id="fill"></div>
@@ -73,12 +73,12 @@
 
 <div class="card settings">
 
-<button class="settings-toggle" id="settingsToggle" type="button"><span><span class="run-emoji">🏃</span> Тренировка</span><span class="settings-arrow" id="settingsArrow">▾</span></button>
+<button class="settings-toggle" id="settingsToggle" type="button"><span><span class="run-emoji">🏃</span> <span data-i18n="home_training">Тренировка</span></span><span class="settings-arrow" id="settingsArrow">▾</span></button>
 
 <div class="settings-body hidden" id="settingsBody">
 
 <div class="row">
-<label>Ходьба в начале</label>
+<label data-i18n="home_warmLabel">Ходьба в начале</label>
 <div class="input-wrap">
 <input id="warm" type="number" min="0" value="300" class="wi-hidden">
 <select class="picky" data-field="warm" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
@@ -86,7 +86,7 @@
 </div>
 
 <div class="row">
-<label>Быстрая ходьба</label>
+<label data-i18n="home_fastLabel">Быстрая ходьба</label>
 <div class="input-wrap">
 <input id="fast" type="number" min="0" value="300" class="wi-hidden">
 <select class="picky" data-field="fast" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
@@ -94,10 +94,10 @@
 </div>
 
 <div class="set-group">
-<div class="group-label">Подходы</div>
+<div class="group-label" data-i18n="home_setsLabel">Подходы</div>
 
 <div class="row">
-<label>Количество подходов</label>
+<label data-i18n="home_setsCount">Количество подходов</label>
 <div class="input-wrap">
 <input id="cycles" type="number" min="1" value="2" class="wi-hidden">
 <select class="picky" data-kind="count" data-field="cycles" data-min="1" data-max="10" data-step="1"></select>
@@ -105,7 +105,7 @@
 </div>
 
 <div class="row">
-<label>Бег в подходе</label>
+<label data-i18n="home_runLabel">Бег в подходе</label>
 <div class="input-wrap">
 <input id="run" type="number" min="0" value="3" class="wi-hidden">
 <select class="picky" data-field="run" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
@@ -113,7 +113,7 @@
 </div>
 
 <div class="row">
-<label>Ходьба в подходе</label>
+<label data-i18n="home_walkLabel">Ходьба в подходе</label>
 <div class="input-wrap">
 <input id="cycleWalk" type="number" min="0" value="3" class="wi-hidden">
 <select class="picky" data-field="cycleWalk" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
@@ -122,7 +122,7 @@
 </div>
 
 <div class="row">
-<label>Ходьба в конце</label>
+<label data-i18n="home_coolLabel">Ходьба в конце</label>
 <div class="input-wrap">
 <input id="cool" type="number" min="0" value="300" class="wi-hidden">
 <select class="picky" data-field="cool" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
@@ -136,10 +136,10 @@
 </div>
 
 <div class="card templates">
-<button class="settings-toggle" id="templatesToggle" type="button">📋 Шаблоны <span class="settings-arrow" id="templatesArrow">▾</span></button>
+<button class="settings-toggle" id="templatesToggle" type="button"><span data-i18n="home_templates">📋 Шаблоны</span> <span class="settings-arrow" id="templatesArrow">▾</span></button>
 <div class="settings-body hidden" id="templatesBody">
 <div class="tpl-switch">
-<span>Использовать шаблоны</span>
+<span data-i18n="home_useTemplates">Использовать шаблоны</span>
 <label class="switch">
 <input type="checkbox" id="templatesOn" checked>
 <span class="slider"></span>
@@ -150,11 +150,11 @@
 </div>
 
 <div class="card settings">
-<button class="settings-toggle" id="appSettingsToggle" type="button">⚙️ Настройки <span class="settings-arrow" id="appSettingsArrow">▾</span></button>
+<button class="settings-toggle" id="appSettingsToggle" type="button"><span data-i18n="home_settings">⚙️ Настройки</span> <span class="settings-arrow" id="appSettingsArrow">▾</span></button>
 <div class="settings-body hidden" id="appSettingsBody">
 
 <div class="row">
-<label for="startDate">Дата начала тренировок</label>
+<label for="startDate" data-i18n="home_startDate">Дата начала тренировок</label>
 <div class="input-wrap">
 <div class="date-wrap" id="dateWrap">
 <input type="date" id="startDate">
@@ -164,7 +164,7 @@
 </div>
 
 <div class="row">
-<label>Тема</label>
+<label data-i18n="home_theme">Тема</label>
 <div class="input-wrap">
 <input id="theme" type="text" value="dark" class="wi-hidden">
 <select class="picky" data-kind="theme" data-field="theme"></select>
@@ -172,15 +172,15 @@
 </div>
 
 <div class="row">
-<label>Голос <button type="button" class="voice-help" id="voiceHelp" aria-label="Справка">?</button></label>
+<label><span data-i18n="home_voice">Голос</span> <button type="button" class="voice-help" id="voiceHelp" aria-label="Справка">?</button></label>
 <div class="input-wrap">
 <input id="voiceSel" type="text" value="" class="wi-hidden">
 <select class="picky" id="voicePick" data-kind="voice" data-field="voiceSel"></select>
 </div>
 </div>
-<div class="voice-hint hidden" id="voiceHint">Голоса — стандартные системные. Доступный набор зависит от устройства и операционной системы.</div>
+<div class="voice-hint hidden" id="voiceHint" data-i18n="home_voiceHint">Голоса — стандартные системные. Доступный набор зависит от устройства и операционной системы.</div>
 
-<button type="button" class="reset-btn" id="resetSettings">Сбросить настройки</button>
+<button type="button" class="reset-btn" id="resetSettings" data-i18n="home_resetSettings">Сбросить настройки</button>
 
 </div>
 </div>
@@ -189,9 +189,9 @@
 <div class="footer-left">
 <span>© 2026 RunTimer</span>
 <span class="sep">·</span>
-<a href="https://github.com/OopsPoops/RunTimer" target="_blank" rel="noopener">О приложении</a>
+<a href="https://github.com/OopsPoops/RunTimer" target="_blank" rel="noopener" data-i18n="common_about">О приложении</a>
 <span class="sep">·</span>
-<a href="#" id="privacyLink">Политика</a>
+<a href="#" id="privacyLink" data-i18n="common_privacy">Политика</a>
 </div>
 <div class="footer-right">
 <a href="mailto:avalarionov@gmail.com" title="Написать на почту" aria-label="Почта">
@@ -201,28 +201,30 @@
 <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21.9 4.1 2.9 11.2c-1.1.4-1.1 1.5 0 1.9l4.7 1.5 1.8 5.6c.3.9 1.2.9 1.6.2l2.5-3.9 4.9 3.6c.7.5 1.6.2 1.8-.8l2.9-13.6c.2-1-.5-1.6-1.2-1.6Z"/></svg>
 </a>
 </div>
+<div class="footer-lang"><button type="button" class="lang-btn active" id="langRu">RU</button><span class="lang-sep">|</span><button type="button" class="lang-btn" id="langEn">EN</button></div>
 </div>
 
 </div>
 
 <div class="lock-overlay" id="lockOverlay">
 <button class="lock-icon" id="lockHold" aria-label="Разблокировать"><svg viewBox="0 0 24 24" width="44" height="44" fill="currentColor"><path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm0 2a3 3 0 0 1 3 3v3H9V7a3 3 0 0 1 3-3Z"/></svg></button>
-<div class="lock-label">Удержать 3 сек для разблокировки</div>
+<div class="lock-label" data-i18n="common_lockLabel">Удержать 3 сек для разблокировки</div>
 </div>
 
 <div class="modal" id="privacyModal">
 <div class="modal-card">
-<h2>Политика конфиденциальности</h2>
-<p><strong>RunTimer</strong> — это личный таймер для тренировок. Приложение не собирает и не передаёт никакие личные данные.</p>
-<p><strong>Хранение настроек.</strong> Ваши настройки (время этапов, выбранные шаблоны) хранятся локально в вашем браузере (localStorage) и никуда не отправляются. Очистка данных сайта в браузере удалит их.</p>
-<p><strong>Отсутствие трекеров и рекламы.</strong> Приложение не использует сторонние аналитику, трекеры и рекламу.</p>
-<p><strong>Звук и озвучка.</strong> Для голосовых подсказок и звуковых сигналов используются стандартные возможности браузера (SpeechSynthesis, Web Audio). Данные не передаются на сервер.</p>
-<p><strong>Сторонние сервисы.</strong> Приложение размещено на GitHub Pages (GitHub Inc.), который обрабатывает сетевые запросы в соответствии со своей политикой конфиденциальности.</p>
-<p><strong>Контакты.</strong> По вопросам, связанным с политикой конфиденциальности, пишите на <a href="mailto:avalarionov@gmail.com" style="color:#7ab8ff">avalarionov@gmail.com</a>.</p>
+<h2 data-i18n="privacy_title">Политика конфиденциальности</h2>
+<p data-i18n="privacy_p1"><strong>RunTimer</strong> — это личный таймер для тренировок. Приложение не собирает и не передаёт никакие личные данные.</p>
+<p data-i18n="privacy_p2"><strong>Хранение настроек.</strong> Ваши настройки (время этапов, выбранные шаблоны) хранятся локально в вашем браузере (localStorage) и никуда не отправляются. Очистка данных сайта в браузере удалит их.</p>
+<p data-i18n="privacy_p3"><strong>Отсутствие трекеров и рекламы.</strong> Приложение не использует сторонние аналитику, трекеры и рекламу.</p>
+<p data-i18n="privacy_p4"><strong>Звук и озвучка.</strong> Для голосовых подсказок и звуковых сигналов используются стандартные возможности браузера (SpeechSynthesis, Web Audio). Данные не передаются на сервер.</p>
+<p data-i18n="privacy_p5"><strong>Сторонние сервисы.</strong> Приложение размещено на GitHub Pages (GitHub Inc.), который обрабатывает сетевые запросы в соответствии со своей политикой конфиденциальности.</p>
+<p><span data-i18n="privacy_p6"><strong>Контакты.</strong> По вопросам, связанным с политикой конфиденциальности, пишите на</span> <a href="mailto:avalarionov@gmail.com" style="color:#7ab8ff">avalarionov@gmail.com</a>.</p>
 <button class="modal-close" id="privacyClose" aria-label="Закрыть">✕</button>
 </div>
 </div>
 
+<script src="i18n.js"></script>
 <script>
 let phases=[];
 let idx=0;
@@ -397,16 +399,19 @@ el.classList.add("blink");
 
 const ORDINALS=["первый","второй","третий","четвёртый","пятый","шестой","седьмой","восьмой","девятый","десятый"];
 
+function tp(name){
+let m={"Разминка":"home_phaseWarm","Быстрая ходьба":"home_phaseFast","Бег":"home_phaseRun","Ходьба":"home_phaseWalk","Заминка":"home_phaseCool"};
+return m[name]?t(m[name]):name;
+}
+
 function announce(phase){
 if(!phase)return;
 beep();
 blink();
-let text=phase.name;
-if(phase.name==="Бег")text="Бежим";
-else if(phase.name==="Ходьба")text="Идём";
-else if(phase.name==="Быстрая ходьба")text="Быстрым шагом";
-if(phase.name==="Бег"&&phase.cycle&&ORDINALS[phase.cycle-1]){
-text+=", подход "+ORDINALS[phase.cycle-1];
+let vm={"Бег":"home_voiceRun","Ходьба":"home_voiceWalk","Быстрая ходьба":"home_voiceFast"};
+let text=vm[phase.name]?t(vm[phase.name]):tp(phase.name);
+if(phase.name==="Бег"&&phase.cycle){
+text+=", "+t("home_approach")+" "+phase.cycle;
 }
 text+=". "+describeTime(phase.sec);
 speak(text);
@@ -416,24 +421,23 @@ function render(){
 let phase=phases[idx];
 if(!phase)
 return;
-$("phase").textContent=phase.name;
+$("phase").textContent=tp(phase.name);
 $("timer").textContent=format(remaining);
 if(phase.cycle){
 $("round").textContent=
-"Подход "+phase.cycle+" из "+value("cycles");
+t("home_roundSet").replace("{a}",phase.cycle).replace("{b}",value("cycles"));
 }else if(phase.final){
-$("round").textContent="Завершение";
+$("round").textContent=t("home_finish");
 }else{
-$("round").textContent="Подготовка";
+$("round").textContent=t("home_prepare");
 }
 let next=phases[idx+1];
 if(next){
 $("next").textContent=
-"Далее: "+next.name+
-(next.cycle?" (подход "+next.cycle+")":"");
+t("home_next")+tp(next.name)+
+(next.cycle?" ("+t("home_approach")+" "+next.cycle+")":"");
 }else{
-$("next").textContent=
-"После этого — конец";
+$("next").textContent=t("home_after");
 }
 let progress=100*(1-remaining/phase.sec);
 $("fill").style.width=progress+"%";
@@ -532,9 +536,9 @@ if("speechSynthesis" in window)speechSynthesis.cancel();
 $("timer").classList.remove("paused");
 idx=0;
 remaining=0;
-$("phase").textContent="Готов";
+$("phase").textContent=t("home_ready");
 $("timer").textContent="00:00";
-$("round").textContent="Настрой параметры и нажми «Старт»";
+$("round").textContent=t("home_roundIdle");
 $("next").textContent="—";
 $("fill").style.width="0%";
 $("status").textContent="";
@@ -573,14 +577,28 @@ const FINISH_PHRASES=[
 "Дистанция покорена. Отличный вклад в себя."
 ];
 
+const FINISH_EN=[
+"Great job! Another step forward.",
+"Nice! Workout done.",
+"Keep it up!",
+"Great pace! Keep going.",
+"Done! Another workout in the bank.",
+"Solid work. Be proud of yourself.",
+"One more workout behind you. Closer to the goal.",
+"You did it today — tomorrow will be even better.",
+"Workout complete. Great work.",
+"Another step toward the goal. Keep it up."
+];
+
 function finish(){
 running=false;
 cancelAnimationFrame(raf);
 $("timer").classList.remove("paused");
 beep();
-let phrase=FINISH_PHRASES[Math.floor(Math.random()*FINISH_PHRASES.length)];
+let arr=(window.__LANG__==="en")?FINISH_EN:FINISH_PHRASES;
+let phrase=arr[Math.floor(Math.random()*arr.length)];
 speak(phrase);
-$("phase").textContent="Готово 🎉";
+$("phase").textContent=t("home_readyDone");
 $("timer").textContent="00:00";
 $("round").textContent=phrase;
 $("next").textContent="";
@@ -660,6 +678,7 @@ return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2
 }
 
 function dayWord(n){
+if(window.__LANG__==="en")return n===1?"day":"days";
 let a=n%10,b=n%100;
 if(a===1&&b!==11)return "день";
 if(a>=2&&a<=4&&(b<12||b>14))return "дня";
@@ -672,10 +691,10 @@ if(!el)return;
 let diff=Math.floor((startOfToday()-START_DATE)/86400000);
 if(diff<0){
 let n=-diff;
-el.textContent="Осталось "+n+" "+dayWord(n)+" до начала тренировок.";
+el.textContent=t("home_daysLeft").replace("{n}",n).replace("{w}",dayWord(n));
 }else{
 let n=diff+1;
-el.textContent="Прошло "+n+" "+dayWord(n)+" с начала тренировок.";
+el.textContent=t("home_daysPast").replace("{n}",n).replace("{w}",dayWord(n));
 }
 }
 
@@ -686,10 +705,11 @@ let h=Math.floor(sec/3600);
 let m=Math.floor(sec%3600/60);
 let s=sec%60;
 let parts=[];
-if(h)parts.push(h+" ч");
-if(m)parts.push(m+" мин");
-if(s)parts.push(s+" сек");
-return parts.join(" ")||"0 сек";
+let en=window.__LANG__==="en";
+if(h)parts.push(h+(en?" h":" ч"));
+if(m)parts.push(m+(en?" min":" мин"));
+if(s)parts.push(s+(en?" s":" сек"));
+return parts.join(" ")||(en?"0 s":"0 сек");
 }
 
 function updateTotal(){
@@ -702,7 +722,7 @@ let walk=parseInt($("cycleWalk").value)||0;
 let cool=parseInt($("cool").value)||0;
 let cycles=parseInt($("cycles").value)||1;
 let total=warm+fast+cycles*(run+walk)+cool;
-el.textContent="Общее время: "+fmtTotal(total);
+el.textContent=t("home_totalTime").replace("{x}",fmtTotal(total));
 }
 
 function onSettingsEdit(){
@@ -725,7 +745,7 @@ $("voiceHint").classList.toggle("hidden");
 });
 let rs=$("resetSettings");
 if(rs)rs.addEventListener("click",()=>{
-if(confirm("Сбросить все настройки и данные игр к значениям по умолчанию?")){
+if(confirm(t("home_confirmReset"))){
 let keys=[STORE_KEY,"runtimer_game_2048_state","runtimer_game_2048_best","runtimer_memory_record","runtimer_game_runner_record"];
 keys.forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
 let u=new URL(location.href);
@@ -774,7 +794,7 @@ saveSettings();
 syncPickers();
 updateSelection();
 updateTotal();
-$("status").textContent="Шаблон "+t.id+": бег "+fmtNum(t.run)+" мин, ходьба "+(t.walk>0?fmtNum(t.walk)+" мин":"—")+", "+t.cycles+" подх.";
+$("status").textContent=t("home_statusTemplate").replace("{id}",t.id).replace("{run}",fmtNum(t.run)).replace("{walk}",(t.walk>0?fmtNum(t.walk)+(window.__LANG__==="en"?" min":" мин"):"—")).replace("{cycles}",t.cycles);
 }
 
 function buildTemplates(){
@@ -811,7 +831,8 @@ b.type="button";
 b.className="tpl-btn";
 b.dataset.id=t.id;
 let w=t.walk>0?fmtNum(t.walk):"—";
-b.textContent=(pos+1)+". "+day+" "+t.cycles+"х"+fmtNum(t.run)+"/"+w;
+let dispDay={"Пн":t("day_Mon"),"Чт":t("day_Thu"),"Сб":t("day_Sat")}[day]||day;
+b.textContent=(pos+1)+". "+dispDay+" "+t.cycles+"х"+fmtNum(t.run)+"/"+w;
 b.onclick=()=>applyTemplate(t,true);
 row.appendChild(b);
 });
@@ -1078,7 +1099,7 @@ updateToggle();
 }else{
 paused=true;
 $("timer").classList.add("paused");
-$("status").textContent="На паузе";
+$("status").textContent=t("home_paused");
 updateToggle();
 }
 };
@@ -1125,6 +1146,12 @@ if(running&&!paused){
 keepScreenOn();
 }
 });
+window.onLangChange=function(){
+if(typeof buildTemplates==="function"){buildTemplates();updateSelection();}
+if(typeof updateTotal==="function")updateTotal();
+if(typeof updateDays==="function")updateDays();
+if(typeof render==="function"&&phases.length>0)render();
+};
 // screen lock
 let lockOverlay=$("lockOverlay"),lockHold=$("lockHold");
 let lockTimer=null;
