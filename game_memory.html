@@ -18,27 +18,27 @@
 <aside class="drawer" id="drawer">
 <button class="drawer-close" id="drawerClose" aria-label="Закрыть меню">✕</button>
 <a href="index.html" class="drawer-title">RunTimer</a>
-<a href="index.html" class="nav-1" data-i18n="common_navHome">Главная</a>
-<a href="index.html" class="nav-2" data-i18n="common_navRun">Бег</a>
-<a href="sila.html" class="nav-2" data-i18n="common_navStrength">Силовая</a>
-<div class="nav-1 nav-label" data-i18n="common_navGames">Игры</div>
-<a href="game_memory.html" class="nav-2 active" data-i18n="common_navMemory">Найди пару</a>
+<a href="index.html" class="nav-1">Главная</a>
+<a href="index.html" class="nav-2">Бег</a>
+<a href="sila.html" class="nav-2">Силовая</a>
+<div class="nav-1 nav-label">Игры</div>
+<a href="game_memory.html" class="nav-2 active">Найди пару</a>
 <a href="game_2048.html" class="nav-2">2048</a>
-<a href="game_runner.html" class="nav-2" data-i18n="common_navRunner">Раннер</a>
+<a href="game_runner.html" class="nav-2">Раннер</a>
 </aside>
 <div class="app">
 
 <div class="menu-shell"><button class="menu-btn" id="menuBtn" aria-label="Меню"><span></span><span></span></button></div>
-<h1 data-i18n="gmem_title">Найди пару 🃏</h1>
+<h1>Найди пару 🃏</h1>
 
 <div class="card mem-card">
 <div class="mem-top">
 <div class="mem-box mem-size-box">
-<span class="mem-label" data-i18n="gmem_pairs">Пар</span>
+<span class="mem-label">Пар</span>
 <button type="button" class="mem-size" id="sizeSel">8</button>
 </div>
-<div class="mem-box"><span class="mem-label" data-i18n="gmem_moves">Ходы</span><span class="mem-val" id="moves">0</span></div>
-<div class="mem-box"><span class="mem-label" data-i18n="gmem_best">Рекорд</span><span class="mem-val" id="record">—</span></div>
+<div class="mem-box"><span class="mem-label">Ходы</span><span class="mem-val" id="moves">0</span></div>
+<div class="mem-box"><span class="mem-label">Рекорд</span><span class="mem-val" id="record">—</span></div>
 <button class="mem-reload" id="newGame" aria-label="Заново">↻</button>
 </div>
 <div class="mem-grid-wrap">
@@ -46,16 +46,16 @@
 <canvas id="confetti"></canvas>
 </div>
 <div class="mem-msg hidden" id="msg"></div>
-<button class="reset-btn mem-restart hidden" id="restartBtn" data-i18n="gmem_restart">Заново</button>
+<button class="reset-btn mem-restart hidden" id="restartBtn">Заново</button>
 </div>
 
 <div class="footer">
 <div class="footer-left">
 <span>© 2026 RunTimer</span>
 <span class="sep">·</span>
-<a href="https://github.com/OopsPoops/RunTimer" target="_blank" rel="noopener" data-i18n="common_about">О приложении</a>
+<a href="https://github.com/OopsPoops/RunTimer" target="_blank" rel="noopener">О приложении</a>
 <span class="sep">·</span>
-<a href="#" id="privacyLink" data-i18n="common_privacy">Политика</a>
+<a href="#" id="privacyLink">Политика</a>
 </div>
 <div class="footer-right">
 <a href="mailto:avalarionov@gmail.com" title="Написать на почту" aria-label="Почта">
@@ -65,24 +65,22 @@
 <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21.9 4.1 2.9 11.2c-1.1.4-1.1 1.5 0 1.9l4.7 1.5 1.8 5.6c.3.9 1.2.9 1.6.2l2.5-3.9 4.9 3.6c.7.5 1.6.2 1.8-.8l2.9-13.6c.2-1-.5-1.6-1.2-1.6Z"/></svg>
 </a>
 </div>
-<div class="footer-lang"><button type="button" class="lang-btn active" id="langRu">RU</button><span class="lang-sep">|</span><button type="button" class="lang-btn" id="langEn">EN</button></div>
 </div>
 
 </div>
 
 <div class="modal" id="privacyModal">
 <div class="modal-card">
-<h2 data-i18n="privacy_title">Политика конфиденциальности</h2>
-<p data-i18n="privacy_p1"><strong>RunTimer</strong> — это личный таймер для тренировок. Приложение не собирает и не передаёт никакие личные данные.</p>
-<p data-i18n="privacy_p2"><strong>Хранение настроек.</strong> Ваши настройки хранятся локально в вашем браузере (localStorage) и никуда не отправляются.</p>
-<p data-i18n="privacy_p3"><strong>Отсутствие трекеров и рекламы.</strong> Приложение не использует сторонние аналитику, трекеры и рекламу.</p>
-<p data-i18n="privacy_p5"><strong>Сторонние сервисы.</strong> Приложение размещено на GitHub Pages (GitHub Inc.).</p>
-<p><span data-i18n="privacy_p6"><strong>Контакты.</strong> По вопросам пишите на</span> <a href="mailto:avalarionov@gmail.com" style="color:#7ab8ff">avalarionov@gmail.com</a>.</p>
+<h2>Политика конфиденциальности</h2>
+<p><strong>RunTimer</strong> — это личный таймер для тренировок. Приложение не собирает и не передаёт никакие личные данные.</p>
+<p><strong>Хранение настроек.</strong> Ваши настройки хранятся локально в вашем браузере (localStorage) и никуда не отправляются.</p>
+<p><strong>Отсутствие трекеров и рекламы.</strong> Приложение не использует сторонние аналитику, трекеры и рекламу.</p>
+<p><strong>Сторонние сервисы.</strong> Приложение размещено на GitHub Pages (GitHub Inc.).</p>
+<p><strong>Контакты.</strong> По вопросам пишите на <a href="mailto:avalarionov@gmail.com" style="color:#7ab8ff">avalarionov@gmail.com</a>.</p>
 <button class="modal-close" id="privacyClose" aria-label="Закрыть">✕</button>
 </div>
 </div>
 
-<script src="i18n.js"></script>
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
@@ -173,7 +171,7 @@ updateProgress();
 let rec=records[size];
 let isNew=rec.moves===moves;
 let msg=$("msg");
-msg.textContent=t("gmem_done").replace("{m}",moves).replace("{r}",isNew?(" · "+t("gmem_newRecord")):"");
+msg.textContent="Готово! 🎉 "+moves+" ход."+(isNew?" · Новый рекорд!":"");
 msg.classList.remove("hidden");
 confettiBurst();
 }
@@ -285,10 +283,6 @@ let pLink=$("privacyLink"),pClose=$("privacyClose");
 pLink.onclick=(e)=>{e.preventDefault();$("privacyModal").classList.add("open");};
 pClose.onclick=()=>{$("privacyModal").classList.remove("open");};
 $("privacyModal").addEventListener("click",(e)=>{if(e.target===$("privacyModal"))$("privacyModal").classList.remove("open");});
-
-window.onLangChange=function(){
-if(done){let msg=$("msg");let rec=records[size];let isNew=rec&&rec.moves===moves;msg.textContent=t("gmem_done").replace("{m}",moves).replace("{r}",isNew?(" · "+t("gmem_newRecord")):"");}
-};
 </script>
 </body>
 </html>
