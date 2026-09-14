@@ -264,7 +264,7 @@ applyTheme();
 loadRecords();
 newGame(8);
 
-$("sizeSel").addEventListener("click",()=>{
+$("sizeSel").parentElement.addEventListener("click",()=>{
 let sizes=[8,12,18];
 let idx=(sizes.indexOf(size)+1)%sizes.length;
 newGame(sizes[idx]);
