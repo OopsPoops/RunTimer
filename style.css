@@ -132,6 +132,16 @@ body.light .modal-close{background:#e8e8ec;color:#111}
 body.light .voice-help{border-color:#888;color:#888}
 body.light .timer.blink{animation:timerBlinkLight .7s ease-in-out}
 
+/* Screen lock */
+.lock-overlay{position:fixed;inset:0;background:rgba(15,15,20,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:95;display:none;flex-direction:column;align-items:center;justify-content:center;gap:22px}
+.lock-overlay.open{display:flex}
+.lock-icon{width:100px;height:100px;border-radius:50%;border:0;background:#2c2c2e;color:#fff;font-size:46px;cursor:pointer;display:flex;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
+.lock-icon:active{background:#3a3a3d}
+.lock-label{color:#ddd;font-size:16px;text-align:center;padding:0 24px}
+body.light .lock-overlay{background:rgba(240,240,245,.6)}
+body.light .lock-icon{background:#e8e8ec;color:#111}
+body.light .lock-label{color:#444}
+
 /* Menu / drawer */
 .menu-shell{position:absolute;top:calc(env(safe-area-inset-top) + 43px);right:18px;z-index:40;pointer-events:auto}
 .menu-btn{width:44px;height:44px;border-radius:12px;border:0;background:#1d1d1f;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer}

@@ -37,6 +37,9 @@
 <svg class="snd-on" viewBox="0 0 24 24" width="20" height="20"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/><path d="M16 9a4 4 0 0 1 0 6M18.6 6.4a8 8 0 0 1 0 11.2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
 <svg class="snd-off" viewBox="0 0 24 24" width="20" height="20" style="display:none"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
 </button>
+<button class="corner-btn" id="lockBtn" title="Блокировка">
+<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm0 2a3 3 0 0 1 3 3v3H9V7a3 3 0 0 1 3-3Z"/></svg>
+</button>
 <button class="corner-btn" id="reset" title="Заново">
 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8Z"/></svg>
 </button>
@@ -125,6 +128,11 @@
 </div>
 </div>
 
+</div>
+
+<div class="lock-overlay" id="lockOverlay">
+<button class="lock-icon" id="lockHold" aria-label="Разблокировать">🔒</button>
+<div class="lock-label">Удержать 3 сек для разблокировки</div>
 </div>
 
 <div class="modal" id="privacyModal">
@@ -549,6 +557,17 @@ if(pClose)pClose.onclick=()=>{$("privacyModal").classList.remove("open");};
 if($("privacyModal"))$("privacyModal").addEventListener("click",(e)=>{if(e.target===$("privacyModal"))$("privacyModal").classList.remove("open");});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&running)keepScreenOn();});
 window.addEventListener("focus",()=>{if(running&&!paused)keepScreenOn();});
+// screen lock
+let lockOverlay=$("lockOverlay"),lockHold=$("lockHold");
+let lockTimer=null;
+$("lockBtn").onclick=()=>lockOverlay.classList.add("open");
+function lockStart(e){e.preventDefault();lockTimer=setTimeout(()=>{lockOverlay.classList.remove("open");lockTimer=null;},3000);}
+function lockEnd(){if(lockTimer){clearTimeout(lockTimer);lockTimer=null;}}
+lockHold.addEventListener("pointerdown",lockStart);
+lockHold.addEventListener("pointerup",lockEnd);
+lockHold.addEventListener("pointercancel",lockEnd);
+lockHold.addEventListener("pointerleave",lockEnd);
+lockHold.addEventListener("contextmenu",e=>e.preventDefault());
 </script>
 </body>
 </html>
