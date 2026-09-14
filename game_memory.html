@@ -35,11 +35,7 @@
 <div class="mem-top">
 <div class="mem-box mem-size-box">
 <span class="mem-label">Пар</span>
-<select class="mem-size" id="sizeSel">
-<option value="8">8</option>
-<option value="12">12</option>
-<option value="18">18</option>
-</select>
+<button type="button" class="mem-size" id="sizeSel">8</button>
 </div>
 <div class="mem-box"><span class="mem-label">Ходы</span><span class="mem-val" id="moves">0</span></div>
 <div class="mem-box"><span class="mem-label">Рекорд</span><span class="mem-val" id="record">—</span></div>
@@ -142,6 +138,7 @@ grid.appendChild(card);
 
 function newGame(n){
 size=n;
+$("sizeSel").textContent=n;
 pairs=buildDeck(n);
 moves=0;openCards=[];lock=false;done=false;
 if(confettiRaf)cancelAnimationFrame(confettiRaf);
@@ -267,7 +264,11 @@ applyTheme();
 loadRecords();
 newGame(8);
 
-$("sizeSel").addEventListener("change",e=>newGame(parseInt(e.target.value,10)));
+$("sizeSel").addEventListener("click",()=>{
+let sizes=[8,12,18];
+let idx=(sizes.indexOf(size)+1)%sizes.length;
+newGame(sizes[idx]);
+});
 $("newGame").addEventListener("click",()=>newGame(size));
 $("restartBtn").addEventListener("click",()=>newGame(size));
 
