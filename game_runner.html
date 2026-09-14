@@ -151,7 +151,7 @@ vy=9.5;
 function spawnObstacle(){
 let r=Math.random();
 if(r<0.3){
-obstacles.push({type:"barrier",emoji:"🚧",x:W,air:false,h:46});
+obstacles.push({type:"barrier",emoji:"🚧",x:W,air:false,h:34});
 return;
 }
 const BALLS=["⚽","🏀","🎾","🏐","🏉","🥎","🏓"];
@@ -182,7 +182,7 @@ let player={x:30,y:GROUND-py-40,w:34,h:40};
 for(let i=0;i<obstacles.length;i++){
 let o=obstacles[i];
 let oy=o.air?(GROUND-o.h-50):(GROUND-o.h);
-let ow=o.type==="barrier"?24:28;
+let ow=o.type==="barrier"?26:28;
 let ob={x:o.x,y:oy,w:ow,h:o.h};
 if(player.x<ob.x+ob.w&&player.x+player.w>ob.x&&player.y<ob.y+ob.h&&player.y+player.h>ob.y){
 gameOver();
@@ -234,10 +234,11 @@ ctx.fillText(c.emoji,c.x,c.y);
 obstacles.forEach(o=>{
 let y=o.air?(GROUND-o.h-50):(GROUND-o.h);
 let fs=o.type==="barrier"?34:30;
+let ow=o.type==="barrier"?26:28;
 ctx.font=fs+"px serif";
 ctx.textAlign="center";
 ctx.textBaseline="bottom";
-ctx.fillText(o.emoji,o.x+fs/2,y+o.h);
+ctx.fillText(o.emoji,o.x+ow/2,y+o.h);
 });
 let x=36,y=GROUND-py;
 ctx.save();
