@@ -794,7 +794,7 @@ saveSettings();
 syncPickers();
 updateSelection();
 updateTotal();
-$("status").textContent=t("home_statusTemplate").replace("{id}",t.id).replace("{run}",fmtNum(t.run)).replace("{walk}",(t.walk>0?fmtNum(t.walk)+(window.__LANG__==="en"?" min":" мин"):"—")).replace("{cycles}",t.cycles);
+$("status").textContent=window.t("home_statusTemplate").replace("{id}",t.id).replace("{run}",fmtNum(t.run)).replace("{walk}",(t.walk>0?fmtNum(t.walk)+(window.__LANG__==="en"?" min":" мин"):"—")).replace("{cycles}",t.cycles);
 }
 
 function buildTemplates(){
@@ -831,7 +831,7 @@ b.type="button";
 b.className="tpl-btn";
 b.dataset.id=t.id;
 let w=t.walk>0?fmtNum(t.walk):"—";
-let dispDay={"Пн":t("day_Mon"),"Чт":t("day_Thu"),"Сб":t("day_Sat")}[day]||day;
+let dispDay={"Пн":window.t("day_Mon"),"Чт":window.t("day_Thu"),"Сб":window.t("day_Sat")}[day]||day;
 b.textContent=(pos+1)+". "+dispDay+" "+t.cycles+"х"+fmtNum(t.run)+"/"+w;
 b.onclick=()=>applyTemplate(t,true);
 row.appendChild(b);
