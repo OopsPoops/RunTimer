@@ -789,19 +789,45 @@ weekSeq.forEach((weekNum,pos)=>{
 let row=document.createElement("div");
 row.className="tpl-row";
 let isBase=baseIdx[weekNum]===pos;
+// skip-insert button (only on real weeks)
+let sk=document.createElement("button");
+sk.type="button";
+sk.className="tpl-skip";
+sk.setAttribute("aria-label","Добавить неделю пропуска");
+if(weekNum>=1){
+sk.textContent="⏭";
+sk.onclick=()=>{weekSeq.splice(pos+1,0,0);saveSettings();buildTemplates();updateSelection();};
+}else{
+sk.disabled=true;
+}
+row.appendChild(sk);
 let tgl=document.createElement("button");
 tgl.type="button";
 tgl.className="tpl-toggle";
 tgl.setAttribute("aria-label",isBase?"Добавить неделю":"Удалить неделю");
-tgl.textContent=isBase?"+":"−";
-if(isBase){
+if(weekNum===0){
+tgl.textContent="−";
+tgl.onclick=()=>{weekSeq.splice(pos,1);saveSettings();buildTemplates();updateSelection();};
+}else if(isBase){
+tgl.textContent="+";
 let count=weekSeq.filter(w=>w===weekNum).length;
 if(count>=9){tgl.disabled=true;tgl.classList.add("tpl-toggle-off");}
 tgl.onclick=()=>{weekSeq.splice(pos+1,0,weekNum);saveSettings();buildTemplates();updateSelection();};
 }else{
+tgl.textContent="−";
 tgl.onclick=()=>{weekSeq.splice(pos,1);saveSettings();buildTemplates();updateSelection();};
 }
 row.appendChild(tgl);
+if(weekNum===0){
+DAYS.forEach(()=>{
+let b=document.createElement("button");
+b.type="button";
+b.className="tpl-btn skip";
+b.disabled=true;
+b.textContent="Пропуск";
+row.appendChild(b);
+});
+}else{
 DAYS.forEach(day=>{
 let base=TEMPLATES.find(x=>x.id===weekNum+". "+day);
 if(!base)return;
@@ -815,6 +841,7 @@ b.textContent=(pos+1)+". "+day+" "+t.cycles+"х"+fmtNum(t.run)+"/"+w;
 b.onclick=()=>applyTemplate(t,true);
 row.appendChild(b);
 });
+}
 grid.appendChild(row);
 });
 }
@@ -876,6 +903,7 @@ document.querySelectorAll(".tpl-btn").forEach(b=>b.classList.remove("done"));
 if(!templatesOn)return;
 let today=startOfToday();
 document.querySelectorAll(".tpl-btn").forEach(b=>{
+if(b.classList.contains("skip"))return;
 let t={id:b.dataset.id};
 if(templateDate(t).getTime()<today.getTime())b.classList.add("done");
 });
