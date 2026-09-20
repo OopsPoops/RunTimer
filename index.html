@@ -789,18 +789,8 @@ weekSeq.forEach((weekNum,pos)=>{
 let row=document.createElement("div");
 row.className="tpl-row";
 let isBase=baseIdx[weekNum]===pos;
-// skip-insert button (only on real weeks)
-let sk=document.createElement("button");
-sk.type="button";
-sk.className="tpl-skip";
-sk.setAttribute("aria-label","Добавить неделю пропуска");
-if(weekNum>=1){
-sk.textContent="⏭";
-sk.onclick=()=>{weekSeq.splice(pos+1,0,0);saveSettings();buildTemplates();updateSelection();};
-}else{
-sk.disabled=true;
-}
-row.appendChild(sk);
+let ctl=document.createElement("div");
+ctl.className="tpl-ctl";
 let tgl=document.createElement("button");
 tgl.type="button";
 tgl.className="tpl-toggle";
@@ -817,7 +807,19 @@ tgl.onclick=()=>{weekSeq.splice(pos+1,0,weekNum);saveSettings();buildTemplates()
 tgl.textContent="−";
 tgl.onclick=()=>{weekSeq.splice(pos,1);saveSettings();buildTemplates();updateSelection();};
 }
-row.appendChild(tgl);
+ctl.appendChild(tgl);
+let sk=document.createElement("button");
+sk.type="button";
+sk.className="tpl-skip";
+sk.setAttribute("aria-label","Добавить неделю пропуска");
+if(weekNum>=1){
+sk.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 4 L11 12 L3 20 Z"/><path d="M11 4 L19 12 L11 20 Z"/><rect x="20.5" y="4" width="1.5" height="16" rx="0.75"/></svg>';
+sk.onclick=()=>{weekSeq.splice(pos+1,0,0);saveSettings();buildTemplates();updateSelection();};
+}else{
+sk.disabled=true;
+}
+ctl.appendChild(sk);
+row.appendChild(ctl);
 if(weekNum===0){
 DAYS.forEach(()=>{
 let b=document.createElement("button");
