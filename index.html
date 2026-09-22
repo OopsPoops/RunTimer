@@ -673,10 +673,17 @@ let diff=Math.floor((startOfToday()-START_DATE)/86400000);
 if(diff<0){
 let n=-diff;
 el.textContent="Осталось "+n+" "+dayWord(n)+" до начала тренировок.";
-}else{
-let n=diff+1;
-el.textContent="Прошло "+n+" "+dayWord(n)+" с начала тренировок.";
+return;
 }
+// считаем только дни реальных (не пропущенных) недель
+let posToday=Math.floor(diff/7);
+let daysIn=diff%7;
+let count=0;
+for(let i=0;i<posToday&&i<weekSeq.length;i++){
+if(weekSeq[i]!==0)count+=7;
+}
+if(posToday<weekSeq.length&&weekSeq[posToday]!==0)count+=daysIn+1;
+el.textContent="Прошло "+count+" "+dayWord(count)+" с начала тренировок.";
 }
 
 loadSettings();
