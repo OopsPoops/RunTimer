@@ -18,10 +18,11 @@ body{position:fixed;inset:0;width:100%}
 .app{height:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;padding-bottom:4px}
 .card.m3-card{margin-top:8px;flex:0 0 auto}
 .game-top{margin-bottom:10px}
-.m3-board{display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);gap:4px;background:#242428;border:1px solid #333;border-radius:14px;padding:8px;width:min(400px,100%,calc(100dvh - 390px));aspect-ratio:1;margin:10px auto 0;touch-action:manipulation}
-.m3-cell{border:0;border-radius:8px;background:#303033;color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:transform .1s}
-.m3-cell:active{transform:scale(.9)}
+.m3-board{position:relative;overflow:hidden;background:#242428;border:1px solid #333;border-radius:14px;width:min(400px,100%,calc(100dvh - 410px));aspect-ratio:1;margin:28px auto 0;touch-action:manipulation}
+.m3-cell{position:absolute;top:0;left:0;box-sizing:border-box;border:0;border-radius:9px;background:#303033;color:#fff;font-size:28px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:transform .22s ease,opacity .18s ease;will-change:transform;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.m3-cell:active{filter:brightness(1.45)}
 .m3-cell.sel{box-shadow:inset 0 0 0 3px #fff}
+.m3-cell.pop{opacity:0}
 body.light .m3-board{background:#f0f0f3;border-color:#e5e5e8}
 body.light .m3-cell{background:#e2e2e6}
 body.light .m3-cell.sel{box-shadow:inset 0 0 0 3px #111}
@@ -50,11 +51,10 @@ body.light .m3-cell.sel{box-shadow:inset 0 0 0 3px #111}
 <div class="card m3-card">
 <div class="game-top">
 <div class="score-box"><span class="score-label">Счёт</span><span class="score-val" id="score">0</span></div>
-<button class="reset-btn game-reset" id="newGame">Новая</button>
+<button class="reset-btn game-reset" id="newGame">Новая<br>игра</button>
 <div class="score-box"><span class="score-label">Рекорд</span><span class="score-val" id="best">0</span></div>
 </div>
 <div class="m3-board" id="board"></div>
-<div class="game-hint">Свайпайте или тапайте две соседние плитки, чтобы собрать 3 в ряд</div>
 </div>
 
 <div class="footer">
@@ -93,11 +93,16 @@ body.light .m3-cell.sel{box-shadow:inset 0 0 0 3px #111}
 "use strict";
 const $=id=>document.getElementById(id);
 const BEST_KEY="runtimer_game_match3_best";
-const ROWS=8,COLS=8;
+const ROWS=7,COLS=7;
 const EMOJIS=["🏃","🏋️","🚴","⚽","🏀","🎾"];
+const PAD=6,GAP=2;
 
-let grid=[],score=0,best=0,selected=null;
+let grid=[],score=0,best=0,selected=null,busy=false;
 let startX=0,startY=0,startCell=null,suppressClick=false;
+let tileEls=[],cellSize=0;
+const board=$("board");
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 
 function applyTheme(){
 let v="dark";
@@ -135,7 +140,9 @@ let add=(r,c)=>{let k=r+","+c;if(set.indexOf(k)===-1)set.push(k);};
 for(let r=0;r<ROWS;r++){
 let c=0;
 while(c<COLS){
-let e=grid[r][c],k=c;
+let e=grid[r][c];
+if(e===null){c++;continue;}
+let k=c;
 while(k<COLS&&grid[r][k]===e)k++;
 if(k-c>=3)for(let x=c;x<k;x++)add(r,x);
 c=k;
@@ -144,7 +151,9 @@ c=k;
 for(let c=0;c<COLS;c++){
 let r=0;
 while(r<ROWS){
-let e=grid[r][c],k=r;
+let e=grid[r][c];
+if(e===null){r++;continue;}
+let k=r;
 while(k<ROWS&&grid[k][c]===e)k++;
 if(k-r>=3)for(let y=r;y<k;y++)add(y,c);
 r=k;
@@ -166,66 +175,46 @@ if(r+1<ROWS){swap(r,c,r+1,c);let ok=hasAnyMatch();swap(r,c,r+1,c);if(ok)return t
 return false;
 }
 
-function settle(){
-let m=matches();
-while(m.length>0){
-score+=m.length*10;
-m.forEach(key=>{let p=key.split(",");grid[+p[0]][+p[1]]=null;});
-for(let c=0;c<COLS;c++){
-let col=[];
-for(let r=ROWS-1;r>=0;r--){if(grid[r][c]!==null)col.push(grid[r][c]);}
-for(let r=ROWS-1;r>=0;r--){
-let idx=ROWS-1-r;
-grid[r][c]=idx<col.length?col[idx]:randEmoji();
+function layout(){
+cellSize=(board.clientWidth-PAD*2)/COLS;
 }
+function placeTile(el,r,c){
+el.style.width=(cellSize-GAP)+"px";
+el.style.height=(cellSize-GAP)+"px";
+el.style.transform="translate("+((PAD+GAP/2)+c*cellSize)+"px,"+((PAD+GAP/2)+r*cellSize)+"px)";
 }
-m=matches();
+function createTile(emoji,r,c){
+let el=document.createElement("div");
+el.className="m3-cell";
+el.textContent=emoji;
+el.dataset.r=r;el.dataset.c=c;
+el.onclick=()=>handleClick(+el.dataset.r,+el.dataset.c);
+board.appendChild(el);
+placeTile(el,r,c);
+return el;
 }
-if(score>best){best=score;saveBest();}
-updateScore();
-if(!hasPossibleMove()){
-do{initGrid();}while(!hasPossibleMove());
-}
-render();
-}
-
-function attemptSwap(r1,c1,r2,c2){
-if(!inBounds(r1,c1)||!inBounds(r2,c2))return;
-swap(r1,c1,r2,c2);
-if(matches().length>0){
-selected=null;
-settle();
-}else{
-swap(r1,c1,r2,c2);
-render();
-}
-}
-
-function handleClick(r,c){
-if(selected){
-let sr=selected[0],sc=selected[1];
-if(Math.abs(r-sr)+Math.abs(c-sc)===1){attemptSwap(sr,sc,r,c);}
-else{selected=[r,c];render();}
-}else{
-selected=[r,c];render();
-}
-}
-
-function render(){
-let board=$("board");
+function buildBoard(){
 board.innerHTML="";
+tileEls=[];
+layout();
 for(let r=0;r<ROWS;r++){
-for(let c=0;c<COLS;c++){
-let cell=document.createElement("button");
-cell.type="button";
-cell.className="m3-cell";
-cell.dataset.r=r;cell.dataset.c=c;
-cell.textContent=grid[r][c];
-if(selected&&selected[0]===r&&selected[1]===c)cell.classList.add("sel");
-cell.onclick=()=>{if(suppressClick)return;handleClick(r,c);};
-board.appendChild(cell);
+tileEls[r]=[];
+for(let c=0;c<COLS;c++)tileEls[r][c]=createTile(grid[r][c],r,c);
 }
 }
+
+function renderSelection(){
+for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+let el=tileEls[r][c];
+if(el)el.classList.toggle("sel",!!(selected&&selected[0]===r&&selected[1]===c));
+}
+}
+
+function animateSwap(r1,c1,r2,c2){
+let a=tileEls[r1][c1],b=tileEls[r2][c2];
+tileEls[r1][c1]=b;tileEls[r2][c2]=a;
+if(a){a.dataset.r=r2;a.dataset.c=c2;placeTile(a,r2,c2);}
+if(b){b.dataset.r=r1;b.dataset.c=c1;placeTile(b,r1,c1);}
 }
 
 function updateScore(){
@@ -233,11 +222,92 @@ $("score").textContent=score;
 $("best").textContent=best;
 }
 
+async function settle(){
+let m=matches();
+while(m.length>0){
+score+=m.length*10;
+for(const key of m){
+let p=key.split(","),el=tileEls[+p[0]][+p[1]];
+if(el){el.style.transform+=" scale(0.3)";el.classList.add("pop");}
+}
+updateScore();
+await sleep(200);
+for(const key of m){
+let p=key.split(","),r=+p[0],c=+p[1],el=tileEls[r][c];
+if(el)el.remove();
+tileEls[r][c]=null;grid[r][c]=null;
+}
+for(let c=0;c<COLS;c++){
+let rows=[];
+for(let r=ROWS-1;r>=0;r--){if(grid[r][c]!==null)rows.push(r);}
+let nr=ROWS-1;
+for(const or of rows){
+if(or!==nr){
+let el=tileEls[or][c];
+grid[nr][c]=grid[or][c];
+tileEls[nr][c]=el;tileEls[or][c]=null;
+el.dataset.r=nr;el.dataset.c=c;
+placeTile(el,nr,c);
+grid[or][c]=null;
+}
+nr--;
+}
+while(nr>=0){
+let e=randEmoji();
+grid[nr][c]=e;
+let el=createTile(e,-1,c);
+tileEls[nr][c]=el;
+(function(nr,c,el){
+requestAnimationFrame(function(){requestAnimationFrame(function(){el.dataset.r=nr;el.dataset.c=c;placeTile(el,nr,c);});});
+})(nr,c,el);
+nr--;
+}
+}
+await sleep(220);
+m=matches();
+}
+if(score>best){best=score;saveBest();}
+updateScore();
+if(!hasPossibleMove()){
+do{initGrid();}while(!hasPossibleMove());
+buildBoard();
+renderSelection();
+}
+busy=false;
+}
+
+function attemptSwap(r1,c1,r2,c2){
+if(!inBounds(r1,c1)||!inBounds(r2,c2))return;
+if(busy)return;
+swap(r1,c1,r2,c2);
+animateSwap(r1,c1,r2,c2);
+if(matches().length>0){
+selected=null;
+renderSelection();
+busy=true;
+settle();
+}else{
+swap(r1,c1,r2,c2);
+animateSwap(r1,c1,r2,c2);
+renderSelection();
+}
+}
+
+function handleClick(r,c){
+if(busy||suppressClick)return;
+if(selected){
+let sr=selected[0],sc=selected[1];
+if(Math.abs(r-sr)+Math.abs(c-sc)===1){attemptSwap(sr,sc,r,c);}
+else{selected=[r,c];renderSelection();}
+}else{selected=[r,c];renderSelection();}
+}
+
 function newGame(){
-score=0;selected=null;
+if(busy)return;
+score=0;selected=null;busy=false;
 do{initGrid();}while(!hasPossibleMove());
 updateScore();
-render();
+buildBoard();
 }
 
 function init(){
@@ -248,7 +318,6 @@ newGame();
 }
 
 // swipe
-let board=$("board");
 board.addEventListener("touchstart",e=>{
 if(e.touches.length!==1)return;
 startX=e.touches[0].clientX;startY=e.touches[0].clientY;
@@ -256,7 +325,7 @@ let el=document.elementFromPoint(startX,startY);
 startCell=(el&&el.dataset&&el.dataset.r!=null)?{r:+el.dataset.r,c:+el.dataset.c}:null;
 },{passive:true});
 board.addEventListener("touchend",e=>{
-if(!startCell)return;
+if(!startCell||busy)return;
 let t=e.changedTouches[0];
 let dx=t.clientX-startX,dy=t.clientY-startY;
 if(Math.max(Math.abs(dx),Math.abs(dy))>20){
