@@ -11,14 +11,16 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RunTimer">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=2">
 <style>
 html,body{height:100%;overflow:hidden}
 body{position:fixed;inset:0;width:100%}
 .app{height:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;padding-bottom:4px}
-.card.m3-card{flex:1;display:flex;flex-direction:column;justify-content:center;margin-top:8px;min-height:0}
-.game-top{margin-bottom:16px}
-.m3-board{position:relative;overflow:hidden;background:#242428;border:1px solid #333;border-radius:14px;width:min(100%,calc((100dvh - 230px) * 0.6));aspect-ratio:6/8;margin:0 auto;touch-action:manipulation}
+.card.m3-card{position:relative;flex:1;display:flex;flex-direction:column;justify-content:flex-start;margin-top:8px;min-height:0}
+.game-top{margin-bottom:14px}
+.m3-board{position:relative;overflow:hidden;background:#242428;border:1px solid #333;border-radius:14px;flex-shrink:0;width:min(100%,calc((100dvh - 250px) * 0.55));aspect-ratio:6/8;margin:0 auto;touch-action:manipulation}
+.m3-msg{min-height:0;margin:12px auto 0;text-align:center;font-size:16px;font-weight:700;color:#ffd60a;line-height:1.2}
+.m3-msg.hidden{display:none}
 .m3-cell{position:absolute;top:0;left:0;box-sizing:border-box;border:0;border-radius:9px;background:#303033;color:#fff;font-size:38px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:transform .22s ease,opacity .18s ease;will-change:transform;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
 .m3-cell:active{filter:brightness(1.45)}
 .m3-cell.sel{box-shadow:inset 0 0 0 3px #fff}
@@ -55,6 +57,7 @@ body.light .m3-cell.sel{box-shadow:inset 0 0 0 3px #111}
 <div class="score-box"><span class="score-label">Рекорд</span><span class="score-val" id="best">0</span></div>
 </div>
 <div class="m3-board" id="board"></div>
+<div class="m3-msg hidden" id="m3msg"></div>
 </div>
 
 <div class="footer">
@@ -94,7 +97,7 @@ body.light .m3-cell.sel{box-shadow:inset 0 0 0 3px #111}
 const $=id=>document.getElementById(id);
 const BEST_KEY="runtimer_game_match3_best";
 const ROWS=8,COLS=6;
-const EMOJIS=["🏃","🏋️","🚴","⚽","🏀","🎾"];
+const EMOJIS=["⚽","🏀","🎾","🏐","🎱","🏈"];
 const PAD=4,GAP=1;
 
 let grid=[],score=0,best=0,selected=null,busy=false;
@@ -253,6 +256,16 @@ $("score").textContent=score;
 $("best").textContent=best;
 }
 
+let msgTimer=null;
+function showMsg(t,ms){
+let el=$("m3msg");
+if(!el)return;
+el.textContent=t;
+el.classList.remove("hidden");
+if(msgTimer)clearTimeout(msgTimer);
+msgTimer=setTimeout(()=>{el.classList.add("hidden");},ms||1600);
+}
+
 async function settle(){
 let fm=findMatches();
 while(fm.set.length>0){
@@ -300,6 +313,7 @@ fm=findMatches();
 if(score>best){best=score;saveBest();}
 updateScore();
 if(!hasPossibleMove()){
+showMsg("Нет ходов — перемешиваем");
 do{initGrid();}while(!hasPossibleMove());
 buildBoard();
 renderSelection();
