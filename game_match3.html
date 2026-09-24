@@ -160,10 +160,25 @@ function inBounds(r,c){return r>=0&&r<ROWS&&c>=0&&c<COLS;}
 
 function runScore(L){return L*10*(L-2);} // 3->30, 4->80, 5->150, 6->240
 const SQUARE_SCORE=40;
+const LINE_BONUS_PER=10;
+function lineBonusCoords(horiz,r,c,L){
+let coords=[];
+if(horiz){
+let mc=c+Math.floor(L/2);
+if(L>=5){for(let rr=0;rr<ROWS;rr++)coords.push([rr,mc]);for(let cc=0;cc<COLS;cc++)coords.push([r,cc]);}
+else{for(let rr=0;rr<ROWS;rr++)coords.push([rr,mc]);}
+}else{
+let mr=r+Math.floor(L/2);
+if(L>=5){for(let cc=0;cc<COLS;cc++)coords.push([mr,cc]);for(let rr=0;rr<ROWS;rr++)coords.push([rr,c]);}
+else{for(let cc=0;cc<COLS;cc++)coords.push([mr,cc]);}
+}
+return coords;
+}
 function findMatches(){
 let set=[];
 let score=0;
 let add=(r,c)=>{let k=r+","+c;if(set.indexOf(k)===-1)set.push(k);};
+let addBonus=(coords)=>{coords.forEach(p=>{let k=p[0]+","+p[1];if(set.indexOf(k)===-1){set.push(k);score+=LINE_BONUS_PER;}});};
 for(let r=0;r<ROWS;r++){
 let c=0;
 while(c<COLS){
@@ -172,7 +187,7 @@ if(e===null){c++;continue;}
 let k=c;
 while(k<COLS&&grid[r][k]===e)k++;
 let L=k-c;
-if(L>=3){score+=runScore(L);for(let x=c;x<k;x++)add(r,x);}
+if(L>=3){score+=runScore(L);for(let x=c;x<k;x++)add(r,x);if(L>=4)addBonus(lineBonusCoords(true,r,c,L));}
 c=k;
 }
 }
@@ -184,7 +199,7 @@ if(e===null){r++;continue;}
 let k=r;
 while(k<ROWS&&grid[k][c]===e)k++;
 let L=k-r;
-if(L>=3){score+=runScore(L);for(let y=r;y<k;y++)add(y,c);}
+if(L>=3){score+=runScore(L);for(let y=r;y<k;y++)add(y,c);if(L>=4)addBonus(lineBonusCoords(false,r,c,L));}
 r=k;
 }
 }
