@@ -25,6 +25,8 @@ body{position:fixed;inset:0;width:100%}
 .m3-cell:active{filter:brightness(1.45)}
 .m3-cell.sel{box-shadow:inset 0 0 0 3px #fff}
 .m3-cell.pop{opacity:0}
+@keyframes m3pulse{0%,100%{box-shadow:inset 0 0 0 3px rgba(255,214,10,.35)}50%{box-shadow:inset 0 0 0 3px rgba(255,214,10,.95)}}
+.m3-cell.m3-hint{animation:m3pulse 1.1s ease-in-out infinite}
 body.light .m3-board{background:#f0f0f3;border-color:#e5e5e8}
 body.light .m3-cell{background:#e2e2e6}
 body.light .m3-cell.sel{box-shadow:inset 0 0 0 3px #111}
@@ -103,6 +105,7 @@ const PAD=4,GAP=1;
 let grid=[],score=0,best=0,selected=null,busy=false;
 let startX=0,startY=0,startCell=null,suppressClick=false;
 let tileEls=[],cellSize=0;
+let lastMove=Date.now(),hintCells=null;
 const board=$("board");
 
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
@@ -266,6 +269,32 @@ if(msgTimer)clearTimeout(msgTimer);
 msgTimer=setTimeout(()=>{el.classList.add("hidden");},ms||1600);
 }
 
+function findHint(){
+for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+if(c+1<COLS){swap(r,c,r,c+1);if(findMatches().set.length>0){swap(r,c,r,c+1);return [[r,c],[r,c+1]];}swap(r,c,r,c+1);}
+if(r+1<ROWS){swap(r,c,r+1,c);if(findMatches().set.length>0){swap(r,c,r+1,c);return [[r,c],[r+1,c]];}swap(r,c,r+1,c);}
+}
+return null;
+}
+function showHint(){
+if(busy)return;
+if(!hintCells)hintCells=findHint();
+if(!hintCells)return;
+let a=tileEls[hintCells[0][0]]&&tileEls[hintCells[0][0]][hintCells[0][1]];
+let b=tileEls[hintCells[1][0]]&&tileEls[hintCells[1][0]][hintCells[1][1]];
+if(a)a.classList.add("m3-hint");
+if(b)b.classList.add("m3-hint");
+}
+function clearHint(){
+if(hintCells){
+let a=tileEls[hintCells[0][0]]&&tileEls[hintCells[0][0]][hintCells[0][1]];
+let b=tileEls[hintCells[1][0]]&&tileEls[hintCells[1][0]][hintCells[1][1]];
+if(a)a.classList.remove("m3-hint");
+if(b)b.classList.remove("m3-hint");
+hintCells=null;
+}
+}
+
 async function settle(){
 let fm=findMatches();
 while(fm.set.length>0){
@@ -322,25 +351,32 @@ saveState();
 busy=false;
 }
 
-function attemptSwap(r1,c1,r2,c2){
+async function attemptSwap(r1,c1,r2,c2){
 if(!inBounds(r1,c1)||!inBounds(r2,c2))return;
 if(busy)return;
+clearHint();
+lastMove=Date.now();
+busy=true;
 swap(r1,c1,r2,c2);
 animateSwap(r1,c1,r2,c2);
 if(findMatches().set.length>0){
 selected=null;
 renderSelection();
-busy=true;
 settle();
 }else{
+await sleep(240);
 swap(r1,c1,r2,c2);
 animateSwap(r1,c1,r2,c2);
+await sleep(240);
 renderSelection();
+busy=false;
 }
 }
 
 function handleClick(r,c){
 if(busy||suppressClick)return;
+clearHint();
+lastMove=Date.now();
 if(selected){
 let sr=selected[0],sc=selected[1];
 if(Math.abs(r-sr)+Math.abs(c-sc)===1){attemptSwap(sr,sc,r,c);}
@@ -351,6 +387,8 @@ else{selected=[r,c];renderSelection();}
 function newGame(){
 if(busy)return;
 score=0;selected=null;busy=false;
+clearHint();
+lastMove=Date.now();
 do{initGrid();}while(!hasPossibleMove());
 updateScore();
 buildBoard();
@@ -365,6 +403,8 @@ if(!loadState()){
 newGame();
 }else{
 selected=null;busy=false;
+clearHint();
+lastMove=Date.now();
 buildBoard();
 updateScore();
 }
@@ -406,6 +446,12 @@ let pLink=$("privacyLink"),pClose=$("privacyClose");
 pLink.onclick=(e)=>{e.preventDefault();$("privacyModal").classList.add("open");};
 pClose.onclick=()=>{$("privacyModal").classList.remove("open");};
 $("privacyModal").addEventListener("click",(e)=>{if(e.target===$("privacyModal"))$("privacyModal").classList.remove("open");});
+
+// idle hint: после 30 сек бездействия подсвечиваем возможный ход
+setInterval(()=>{
+if(busy)return;
+if(Date.now()-lastMove>=30000)showHint();
+},5000);
 
 init();
 </script>
