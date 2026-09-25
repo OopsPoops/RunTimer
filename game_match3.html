@@ -18,9 +18,23 @@ body{position:fixed;inset:0;width:100%}
 .app{height:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;padding-bottom:4px}
 .card.m3-card{position:relative;flex:1;display:flex;flex-direction:column;justify-content:flex-start;margin-top:8px;min-height:0}
 .game-top{margin-bottom:14px}
-.m3-board{position:relative;overflow:hidden;background:#242428;border:1px solid #333;border-radius:14px;flex-shrink:0;width:min(100%,calc((100dvh - 250px) * 0.555));aspect-ratio:6/8;margin:0 auto;touch-action:manipulation}
+.m3-board{position:relative;overflow:hidden;background:#242428;border:1px solid #333;border-radius:14px;flex-shrink:0;width:min(100%,calc((100dvh - 250px) * 0.555));margin:0 auto;touch-action:manipulation}
 .m3-msg{min-height:0;margin:12px auto 0;text-align:center;font-size:16px;font-weight:700;color:#ffd60a;line-height:1.2}
 .m3-msg.hidden{display:none}
+.m3-size{display:flex;align-items:center;justify-content:center;gap:10px;margin:14px auto 0}
+.m3-size-label{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.m3-size-btn{background:#242428;border:1px solid #333;color:#fff;border-radius:12px;padding:10px 22px;font-size:18px;font-weight:700;cursor:pointer;line-height:1}
+.m3-size-btn:active{background:#3a3a3d}
+body.light .m3-size-btn{background:#f7f7f9;border-color:#e5e5e8;color:#111}
+.m3-over{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:50;display:flex;align-items:center;justify-content:center;padding:24px}
+.m3-over.hidden{display:none}
+.m3-over-card{background:#1d1d1f;border-radius:22px;padding:28px 30px;text-align:center;width:100%;max-width:340px}
+.m3-over-icon{font-size:52px;margin-bottom:8px}
+.m3-over-card h2{margin:0 0 6px;font-size:24px}
+.m3-over-score{font-size:18px;margin:8px 0 2px;color:#ddd}
+.m3-over-best{font-size:15px;margin:0 0 18px;color:#888}
+.m3-over-card .reset-btn{width:100%}
+body.light .m3-over-card{background:#fff}
 .m3-cell{position:absolute;top:0;left:0;box-sizing:border-box;border:0;border-radius:9px;background:#303033;color:#fff;font-size:38px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;transition:transform .22s ease,opacity .18s ease;will-change:transform;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
 .m3-cell:active{filter:brightness(1.45)}
 .m3-cell.sel{box-shadow:inset 0 0 0 3px #fff}
@@ -60,6 +74,7 @@ body.light .m3-cell.sel{box-shadow:inset 0 0 0 3px #111}
 </div>
 <div class="m3-board" id="board"></div>
 <div class="m3-msg hidden" id="m3msg"></div>
+<div class="m3-size"><span class="m3-size-label">Сетка</span><button type="button" class="m3-size-btn" id="sizeSel">6×8</button></div>
 </div>
 
 <div class="footer">
@@ -94,15 +109,28 @@ body.light .m3-cell.sel{box-shadow:inset 0 0 0 3px #111}
 </div>
 </div>
 
+<div class="m3-over hidden" id="m3over">
+<div class="m3-over-card">
+<div class="m3-over-icon">😕</div>
+<h2>Ходов нет</h2>
+<p class="m3-over-score">Ваш счёт: <b id="m3overScore">0</b></p>
+<p class="m3-over-best">Рекорд: <span id="m3overBest">0</span></p>
+<button type="button" class="reset-btn game-reset" id="m3overNew">Новая игра</button>
+</div>
+</div>
+
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
 const BEST_KEY="runtimer_game_match3_best";
-const ROWS=8,COLS=6;
+let ROWS=8,COLS=6;
+const SIZES=[[6,8],[5,7]];
+let gridSize=0;
+const SIZE_KEY="runtimer_game_match3_size";
 const EMOJIS=["⚽","🏀","🎾","🏐","🎱","🏈"];
 const PAD=4,GAP=1;
 
-let grid=[],score=0,best=0,selected=null,busy=false;
+let grid=[],score=0,best=0,selected=null,busy=false,over=false,session=0;
 let startX=0,startY=0,startCell=null,suppressClick=false;
 let tileEls=[],cellSize=0;
 let lastMove=Date.now(),hintCells=null;
@@ -310,7 +338,28 @@ hintCells=null;
 }
 }
 
+function loadSize(){try{gridSize=parseInt(localStorage.getItem(SIZE_KEY)||"0",10)||0;if(gridSize<0||gridSize>=SIZES.length)gridSize=0;}catch(e){gridSize=0;}}
+function saveSize(){try{localStorage.setItem(SIZE_KEY,String(gridSize));}catch(e){}}
+function applyGridSize(){
+let s=SIZES[gridSize];
+COLS=s[0];ROWS=s[1];
+board.style.aspectRatio=COLS+"/"+ROWS;
+let ss=$("sizeSel");
+if(ss)ss.textContent=COLS+"×"+ROWS;
+}
+function showGameOver(){
+over=true;
+$("m3overScore").textContent=score;
+$("m3overBest").textContent=best;
+$("m3over").classList.remove("hidden");
+}
+function hideGameOver(){
+over=false;
+$("m3over").classList.add("hidden");
+}
+
 async function settle(){
+const s=session;
 let fm=findMatches();
 while(fm.set.length>0){
 score+=fm.score;
@@ -320,6 +369,7 @@ if(el){el.style.transform+=" scale(0.3)";el.classList.add("pop");}
 }
 updateScore();
 await sleep(200);
+if(s!==session)return;
 for(const key of fm.set){
 let p=key.split(","),r=+p[0],c=+p[1],el=tileEls[r][c];
 if(el)el.remove();
@@ -352,17 +402,17 @@ nr--;
 }
 }
 await sleep(220);
+if(s!==session)return;
 fm=findMatches();
 }
 if(score>best){best=score;saveBest();}
 updateScore();
-if(!hasPossibleMove()){
-showMsg("Нет ходов — перемешиваем");
-do{initGrid();}while(!hasPossibleMove());
-buildBoard();
-renderSelection();
-}
 saveState();
+if(!hasPossibleMove()){
+busy=true;
+showGameOver();
+return;
+}
 busy=false;
 }
 
@@ -400,9 +450,11 @@ else{selected=[r,c];renderSelection();}
 }
 
 function newGame(){
-if(busy)return;
-score=0;selected=null;busy=false;
+session++;
+over=false;busy=false;
+score=0;selected=null;
 clearHint();
+hideGameOver();
 lastMove=Date.now();
 do{initGrid();}while(!hasPossibleMove());
 updateScore();
@@ -412,12 +464,14 @@ saveState();
 
 function init(){
 applyTheme();
+loadSize();
+applyGridSize();
 loadBest();
 $("best").textContent=best;
 if(!loadState()){
 newGame();
 }else{
-selected=null;busy=false;
+selected=null;busy=false;over=false;
 clearHint();
 lastMove=Date.now();
 buildBoard();
@@ -464,7 +518,7 @@ $("privacyModal").addEventListener("click",(e)=>{if(e.target===$("privacyModal")
 
 // idle hint: после 30 сек бездействия подсвечиваем возможный ход
 setInterval(()=>{
-if(busy)return;
+if(busy||over)return;
 if(Date.now()-lastMove>=30000)showHint();
 },5000);
 
@@ -475,6 +529,17 @@ layout();
 for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){let el=tileEls[r][c];if(el)placeTile(el,r,c);}
 renderSelection();
 });
+
+// переключение размера сетки
+$("sizeSel").addEventListener("click",()=>{
+gridSize=(gridSize+1)%SIZES.length;
+saveSize();
+applyGridSize();
+newGame();
+});
+
+// новая игра из оверлея «Ходов нет»
+$("m3overNew").addEventListener("click",()=>{newGame();});
 
 init();
 </script>
