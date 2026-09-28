@@ -143,7 +143,7 @@ function saveBest(){try{if(best>0)localStorage.setItem(BEST_KEY,String(best));}c
 
 const STATE_KEY="runtimer_game_match3_state";
 function saveState(){
-try{localStorage.setItem(STATE_KEY,JSON.stringify({grid:grid,score:score}));}catch(e){}
+try{localStorage.setItem(STATE_KEY,JSON.stringify({grid:grid,score:score,over:over}));}catch(e){}
 }
 function loadState(){
 try{
@@ -155,6 +155,7 @@ for(let c=0;c<COLS;c++)if(EMOJIS.indexOf(s.grid[r][c])===-1)return false;
 }
 grid=s.grid.map(row=>row.slice());
 score=typeof s.score==="number"?s.score:0;
+over=!!s.over;
 return true;
 }catch(e){return false;}
 }
@@ -347,6 +348,7 @@ over=true;
 $("m3overScore").textContent=score;
 $("m3overBest").textContent=best;
 $("m3over").classList.remove("hidden");
+saveState();
 }
 function hideGameOver(){
 over=false;
@@ -466,11 +468,12 @@ $("best").textContent=best;
 if(!loadState()){
 newGame();
 }else{
-selected=null;busy=false;over=false;
+selected=null;busy=false;
 clearHint();
 lastMove=Date.now();
 buildBoard();
 updateScore();
+if(over)showGameOver();
 }
 }
 
