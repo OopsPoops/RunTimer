@@ -70,6 +70,16 @@ body.light .log{background:#f7f7f9;color:#1a7f43}
 <div class="desc">Более заметный низкий тон + голос. Вариант сильнее теста 4.</div>
 <button data-i="5">Тест 5 — низкий тон + речь</button>
 </div>
+<div class="tech">
+<div class="name"><span class="badge b">6</span> Голосовой клип через Web Audio</div>
+<div class="desc">Заранее записанная фраза проигрывается через Web Audio (как бип из теста 2). Проверяем: голос через Web Audio НЕ паузит музыку?</div>
+<button class="alt" data-i="6">Тест 6 — клип через Web Audio</button>
+</div>
+<div class="tech">
+<div class="name"><span class="badge b">7</span> Голосовой клип через &lt;audio&gt;</div>
+<div class="desc">Та же фраза, но через обычный аудио-элемент. Сравним с тестом 6 (другой аудиосеанс).</div>
+<button class="alt" data-i="7">Тест 7 — клип через &lt;audio&gt;</button>
+</div>
 </div>
 
 <div class="log" id="log">Лог пока пуст. Нажимай кнопки.</div>
@@ -123,6 +133,23 @@ function t3(){ let c=ctx(); if(!c)return; silentLoop(c); speak(); log("Тест 
 function t4(){ let c=ctx(); if(!c)return; tone(c,40,0.0005); speak(); log("Тест 4: слабый тон(40Гц/0.0005)+речь. Что с музыкой?"); }
 // тест 5: низкий тон + речь
 function t5(){ let c=ctx(); if(!c)return; tone(c,60,0.02); speak(); log("Тест 5: низкий тон(60Гц/0.02)+речь. Что с музыкой?"); }
+// тест 6: голосовой клип через Web Audio
+function t6(){
+let c=ctx(); if(!c)return;
+fetch("voice_test.mp3").then(r=>r.arrayBuffer()).then(buf=>{
+return c.decodeAudioData(buf);
+}).then(ab=>{
+let src=c.createBufferSource(); src.buffer=ab;
+let g=c.createGain(); g.gain.value=1;
+src.connect(g); g.connect(c.destination); src.start();
+log("Тест 6: клип через Web Audio играет. Что с музыкой?");
+}).catch(e=>log("Тест 6 ошибка: "+e.message));
+}
+// тест 7: голосовой клип через <audio> элемент
+function t7(){
+let a=new Audio("voice_test.mp3");
+a.play().then(()=>log("Тест 7: клип через <audio> играет. Что с музыкой?")).catch(e=>log("Тест 7 ошибка: "+e.message));
+}
 
 function silentLoop(c){
 try{
@@ -148,7 +175,7 @@ o.start(); o.stop(c.currentTime+.16);
 }catch(e){log("ошибка бипа: "+e.message);}
 }
 
-const HANDLERS={0:t0,1:t1,2:t2,3:t3,4:t4,5:t5};
+const HANDLERS={0:t0,1:t1,2:t2,3:t3,4:t4,5:t5,6:t6,7:t7};
 document.querySelectorAll("button[data-i]").forEach(btn=>{
 btn.addEventListener("click",()=>{
 let i=btn.getAttribute("data-i");
