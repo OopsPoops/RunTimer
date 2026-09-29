@@ -367,18 +367,24 @@ btn.title="Без звука";
 }
 }
 
+let sharedAudio=null;
 function beep(){
 if(!soundOn)return;
 try{
-let Audio=window.AudioContext||window.webkitAudioContext;
-if(Audio){
-let audio=new Audio();
+let AC=window.AudioContext||window.webkitAudioContext;
+if(AC){
+if(!sharedAudio||sharedAudio.state==="closed")sharedAudio=new AC();
+let audio=sharedAudio;
+if(audio.state==="suspended"){
+try{audio.resume();}catch(e){}
+}
 let oscillator=audio.createOscillator();
 let gain=audio.createGain();
 oscillator.connect(gain);
 gain.connect(audio.destination);
 oscillator.frequency.value=880;
 gain.gain.value=.12;
+oscillator.onended=()=>{try{if(audio.state==="running")audio.suspend();}catch(e){}};
 oscillator.start();
 oscillator.stop(audio.currentTime+.16);
 }
