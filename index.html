@@ -406,6 +406,41 @@ navigator.vibrate([180,80,180]);
 }
 }
 
+// Голосовая озвучка клипами через Web Audio — не ставит фоновую музыку на паузу (iOS)
+let clipCache={};
+const CLIP_DIR="voice/";
+function clipKey(k){return CLIP_DIR+k+".mp3";}
+function loadClip(k){
+if(clipCache[k])return Promise.resolve(clipCache[k]);
+let ac=ensureAudio();
+if(!ac)return Promise.reject(new Error("no audio"));
+return fetch(clipKey(k)).then(r=>{if(!r.ok)throw new Error("fetch "+k);return r.arrayBuffer();})
+.then(buf=>ac.decodeAudioData(buf))
+.then(ab=>{clipCache[k]=ab;return ab;});
+}
+function playClips(keys){
+if(!soundOn)return;
+let ac=ensureAudio();
+if(!ac)return;
+Promise.all(keys.map(loadClip)).then(buffers=>{
+const gap=.09;
+let dur=0;buffers.forEach(b=>{dur+=b.duration;});
+dur+=gap*(buffers.length-1);
+let out=ac.createBuffer(1,Math.max(1,Math.ceil(dur*ac.sampleRate)),ac.sampleRate);
+let ch=out.getChannelData(0);
+let off=0;
+for(let b of buffers){
+let d=b.getChannelData(0);
+ch.set(d,Math.floor(off*ac.sampleRate));
+off+=b.duration+gap;
+}
+let src=ac.createBufferSource();src.buffer=out;
+let g=ac.createGain();g.gain.value=1;
+src.connect(g);g.connect(ac.destination);
+src.start();
+}).catch(()=>{});
+}
+
 function blink(){
 let el=$("timer");
 if(!el)return;
@@ -420,15 +455,20 @@ function announce(phase){
 if(!phase)return;
 beep();
 blink();
-let text=phase.name;
-if(phase.name==="Бег")text="Бежим";
-else if(phase.name==="Ходьба")text="Идём";
-else if(phase.name==="Быстрая ходьба")text="Быстрым шагом";
-if(phase.name==="Бег"&&phase.cycle&&ORDINALS[phase.cycle-1]){
-text+=", подход "+ORDINALS[phase.cycle-1];
+let keys=[];
+let n=phase.name;
+if(n==="Бег")keys.push("bezhim");
+else if(n==="Ходьба")keys.push("idem");
+else if(n==="Быстрая ходьба")keys.push("bystr");
+else keys.push("spok");
+if(n==="Бег"&&phase.cycle&&ORDINALS[phase.cycle-1]){
+keys.push("podkhod","ord_"+phase.cycle);
 }
-text+=". "+describeTime(phase.sec);
-speak(text);
+let sec=Math.max(0,Math.round(phase.sec));
+let m=Math.floor(sec/60),s=sec%60;
+if(m>0)keys.push("num_"+String(m).padStart(2,"0"),"min_"+plural(m,"1","2","5"));
+if(s>0)keys.push("num_"+String(s).padStart(2,"0"),"sec_"+plural(s,"1","2","5"));
+playClips(keys);
 }
 
 function render(){
@@ -597,8 +637,9 @@ running=false;
 cancelAnimationFrame(raf);
 $("timer").classList.remove("paused");
 beep();
-let phrase=FINISH_PHRASES[Math.floor(Math.random()*FINISH_PHRASES.length)];
-speak(phrase);
+let fi=Math.floor(Math.random()*FINISH_PHRASES.length);
+let phrase=FINISH_PHRASES[fi];
+playClips(["finish_"+String(fi+1).padStart(2,"0")]);
 $("phase").textContent="Готово 🎉";
 $("timer").textContent="00:00";
 $("round").textContent=phrase;
