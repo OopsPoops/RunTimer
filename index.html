@@ -172,15 +172,6 @@
 </div>
 </div>
 
-<div class="row">
-<label>Голос <button type="button" class="voice-help" id="voiceHelp" aria-label="Справка">?</button></label>
-<div class="input-wrap">
-<input id="voiceSel" type="text" value="" class="wi-hidden">
-<select class="picky" id="voicePick" data-kind="voice" data-field="voiceSel"></select>
-</div>
-</div>
-<div class="voice-hint hidden" id="voiceHint">Голоса — стандартные системные. Доступный набор зависит от устройства и операционной системы.</div>
-
 <button type="button" class="reset-btn" id="resetSettings">Сбросить настройки</button>
 
 </div>
@@ -217,7 +208,7 @@
 <p><strong>RunTimer</strong> — это личный таймер для тренировок. Приложение не собирает и не передаёт никакие личные данные.</p>
 <p><strong>Хранение настроек.</strong> Ваши настройки (время этапов, выбранные шаблоны) хранятся локально в вашем браузере (localStorage) и никуда не отправляются. Очистка данных сайта в браузере удалит их.</p>
 <p><strong>Отсутствие трекеров и рекламы.</strong> Приложение не использует сторонние аналитику, трекеры и рекламу.</p>
-<p><strong>Звук и озвучка.</strong> Для голосовых подсказок и звуковых сигналов используются стандартные возможности браузера (SpeechSynthesis, Web Audio). Данные не передаются на сервер.</p>
+<p><strong>Звук и озвучка.</strong> Для голосовых подсказок используются встроенные голосовые записи, для звуковых сигналов — Web Audio браузера. Данные не передаются на сервер.</p>
 <p><strong>Сторонние сервисы.</strong> Приложение размещено на GitHub Pages (GitHub Inc.), который обрабатывает сетевые запросы в соответствии со своей политикой конфиденциальности.</p>
 <p><strong>Контакты.</strong> По вопросам, связанным с политикой конфиденциальности, пишите на <a href="mailto:avalarionov@gmail.com" style="color:#7ab8ff">avalarionov@gmail.com</a>.</p>
 <button class="modal-close" id="privacyClose" aria-label="Закрыть">✕</button>
@@ -292,62 +283,7 @@ if(n10>=2&&n10<=4&&(n100<12||n100>14))return few;
 return many;
 }
 
-function describeTime(sec){
-sec=Math.max(0,Math.round(sec));
-let m=Math.floor(sec/60);
-let s=sec%60;
-let parts=[];
-if(m>0)parts.push(m+" "+plural(m,"минута","минуты","минут"));
-if(s>0)parts.push(s+" "+plural(s,"секунда","секунды","секунд"));
-return parts.join(" ")||"0 секунд";
-}
-
-let ruVoice=null;
-let voices=[];
-let voicePref="";
 let soundOn=true;
-function loadVoices(){
-try{
-let all=speechSynthesis.getVoices();
-voices=all.filter(v=>v.lang&&v.lang.toLowerCase().startsWith("ru"))||[];
-ruVoice=voices[0]||null;
-let sel=$("voicePick");
-if(sel){
-let cur=voicePref;
-sel.innerHTML="";
-selValues(sel).forEach(v=>{
-let o=document.createElement("option");
-o.value=v;
-o.textContent=selLabel(sel,v);
-sel.appendChild(o);
-});
-sel.value=cur;
-if(sel._disp)sel._disp.textContent=selDisplay(sel,cur);
-}
-let inp=$("voiceSel");
-if(inp)inp.value=voicePref;
-}catch(e){}
-}
-if("speechSynthesis" in window){
-loadVoices();
-speechSynthesis.onvoiceschanged=loadVoices;
-}
-
-function speak(text){
-if(!soundOn)return;
-if(!("speechSynthesis" in window))
-return;
-speechSynthesis.cancel();
-try{speechSynthesis.resume();}catch(e){}
-let utterance=new SpeechSynthesisUtterance(text);
-utterance.lang="ru-RU";
-let chosen=$("voiceSel")?$("voiceSel").value:"";
-let v=chosen?voices.find(x=>x.name===chosen):null;
-utterance.voice=v||ruVoice;
-utterance.rate=.95;
-utterance.pitch=1;
-speechSynthesis.speak(utterance);
-}
 
 function updateSound(){
 let btn=$("sound");
@@ -435,7 +371,7 @@ ch.set(d,Math.floor(off*ac.sampleRate));
 off+=b.duration+gap;
 }
 let src=ac.createBufferSource();src.buffer=out;
-let g=ac.createGain();g.gain.value=1.4;
+let g=ac.createGain();g.gain.value=1.8;
 src.connect(g);g.connect(ac.destination);
 src.start();
 }).catch(()=>{});
@@ -587,7 +523,6 @@ function stop(){
 running=false;
 paused=false;
 cancelAnimationFrame(raf);
-if("speechSynthesis" in window)speechSynthesis.cancel();
 $("timer").classList.remove("paused");
 idx=0;
 remaining=0;
@@ -685,7 +620,6 @@ if(data[id]!==undefined&&$(id))$(id).value=data[id];
 });
 if(data.start)START_DATE=new Date(data.start+"T00:00:00");
 if(data.sel)selectedTpl=data.sel;
-if(data.voice)voicePref=data.voice;
 if(data.tplOn!==undefined)templatesOn=!!data.tplOn;
 if(Array.isArray(data.weeks)&&data.weeks.length>0)weekSeq=data.weeks;
 }catch(e){}
@@ -704,7 +638,6 @@ if($(id))data[id]=$(id).value;
 });
 data.start=fmtDate(START_DATE);
 if(selectedTpl)data.sel=selectedTpl;
-data.voice=$("voiceSel")?$("voiceSel").value:voicePref;
 data.tplOn=templatesOn;
 data.weeks=weekSeq.slice();
 localStorage.setItem(STORE_KEY,JSON.stringify(data));
@@ -784,11 +717,6 @@ if(el){
 el.addEventListener("input",onSettingsEdit);
 el.addEventListener("change",onSettingsEdit);
 }
-});
-if("speechSynthesis" in window)loadVoices();
-let vh=$("voiceHelp");
-if(vh)vh.addEventListener("click",()=>{
-$("voiceHint").classList.toggle("hidden");
 });
 let rs=$("resetSettings");
 if(rs)rs.addEventListener("click",()=>{
@@ -1033,21 +961,18 @@ for(let v=1;v<=10;v++)a.push(v);
 return a;
 }
 if(sel.dataset.kind==="theme")return ["dark","light"];
-if(sel.dataset.kind==="voice")return ["",...voices.map(v=>v.name)];
 return TIME_VALUES;
 }
 
 function selLabel(sel,v){
 if(sel.dataset.kind==="count")return v+" шт";
 if(sel.dataset.kind==="theme")return v==="light"?"Светлая":"Тёмная";
-if(sel.dataset.kind==="voice")return v===""?"Авто":v;
 return fmtSeconds(v);
 }
 
 function selDisplay(sel,v){
 if(sel.dataset.kind==="count")return v+" шт";
 if(sel.dataset.kind==="theme")return v==="light"?"Светлая":"Тёмная";
-if(sel.dataset.kind==="voice")return v===""?"Авто":v;
 return fmtDisplay(v);
 }
 
@@ -1074,7 +999,7 @@ sel._disp=disp;
 function upd(){
 let idx=sel.selectedIndex;
 let raw=(idx>=0&&sel.options[idx])?sel.options[idx].value:(sel.value||"");
-let v=(sel.dataset.kind==="theme"||sel.dataset.kind==="voice")?raw:(parseInt(raw)||0);
+let v=(sel.dataset.kind==="theme")?raw:(parseInt(raw)||0);
 disp.textContent=selDisplay(sel,v);
 }
 upd();
@@ -1084,9 +1009,6 @@ if(inp)inp.value=sel.value;
 if(sel.dataset.kind==="theme"){
 saveSettings();
 applyTheme();
-}else if(sel.dataset.kind==="voice"){
-voicePref=sel.value;
-saveSettings();
 }else{
 onSettingsEdit();
 }
@@ -1100,7 +1022,7 @@ document.querySelectorAll(".pick-overlay").forEach(sel=>{
 let inp=document.getElementById(sel.dataset.field);
 if(!inp)return;
 let values=selValues(sel);
-let isStr=sel.dataset.kind==="theme"||sel.dataset.kind==="voice";
+let isStr=sel.dataset.kind==="theme";
 let v=isStr?inp.value:parseInt(inp.value);
 if(v===""||(!isStr&&isNaN(v)))v=values[0];
 let snapped=values[0],best=Infinity;
