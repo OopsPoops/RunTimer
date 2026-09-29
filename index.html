@@ -368,23 +368,35 @@ btn.title="Без звука";
 }
 
 let sharedAudio=null;
+function ensureAudio(){
+let AC=window.AudioContext||window.webkitAudioContext;
+if(!AC)return null;
+if(!sharedAudio||sharedAudio.state==="closed"){
+sharedAudio=new AC();
+if(sharedAudio.state==="suspended"){try{sharedAudio.resume();}catch(e){}}
+// тихий фоновый цикл: держит аудиосессию «смешивающей», чтобы озвучка не ставила музыку на паузу
+try{
+let buf=sharedAudio.createBuffer(1,Math.max(1,Math.floor(sharedAudio.sampleRate)),sharedAudio.sampleRate);
+let src=sharedAudio.createBufferSource();
+src.buffer=buf;src.loop=true;
+let g=sharedAudio.createGain();g.gain.value=0;
+src.connect(g);g.connect(sharedAudio.destination);
+src.start();
+}catch(e){}
+}
+return sharedAudio;
+}
 function beep(){
 if(!soundOn)return;
 try{
-let AC=window.AudioContext||window.webkitAudioContext;
-if(AC){
-if(!sharedAudio||sharedAudio.state==="closed")sharedAudio=new AC();
-let audio=sharedAudio;
-if(audio.state==="suspended"){
-try{audio.resume();}catch(e){}
-}
+let audio=ensureAudio();
+if(audio){
 let oscillator=audio.createOscillator();
 let gain=audio.createGain();
 oscillator.connect(gain);
 gain.connect(audio.destination);
 oscillator.frequency.value=880;
 gain.gain.value=.12;
-oscillator.onended=()=>{try{if(audio.state==="running")audio.suspend();}catch(e){}};
 oscillator.start();
 oscillator.stop(audio.currentTime+.16);
 }
