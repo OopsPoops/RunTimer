@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111">
+<title>Тест озвучки · RunTimer</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Тест озвучки">
+<style>
+:root{--bg:#111;--card:#1d1d1f;--line:#2a2a2e;--txt:#f2f2f7;--mut:#98989f;--acc:#34c759;--warn:#ffcc00}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+body.light{--bg:#f2f2f7;--card:#fff;--line:#e2e2e7;--txt:#111;--mut:#666}
+.app{max-width:480px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:8px 0 4px}
+.hint{color:var(--mut);font-size:14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px}
+.tech{padding:12px 0;border-bottom:1px solid var(--line)}
+.tech:last-child{border-bottom:0}
+.tech .name{font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px}
+.tech .desc{color:var(--mut);font-size:13px;margin:4px 0 10px}
+button{width:100%;padding:14px;border:0;border-radius:12px;background:var(--acc);color:#fff;font-size:16px;font-weight:700;cursor:pointer;touch-action:manipulation}
+button.alt{background:#3478f6}
+button.pressed{opacity:.5}
+.log{margin-top:14px;background:#0b0b0d;border:1px solid var(--line);border-radius:12px;padding:10px;font:12px/1.5 ui-monospace,Menlo,monospace;color:#7fd0a0;white-space:pre-wrap;min-height:60px}
+body.light .log{background:#f7f7f9;color:#1a7f43}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700}
+.badge.b{background:#3478f6}
+.badge.s{background:#5856d6}
+.badge.i{background:#ff9500}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>Тест озвучки 🎤</h1>
+<p class="hint">1) Включи музыку в Яндекс Музыке.<br>2) Нажимай кнопки ниже по одной (сначала — «Как в приложении»).<br>3) После каждого теста смотри: музыка <b style="color:var(--acc)">затихает и продолжается</b> (идеал) или <b style="color:#ff3b30">паузится</b>.<br>4) Запиши, какие номера сработали, и напиши мне.</p>
+
+<div class="card" id="tests">
+<div class="tech">
+<div class="name"><span class="badge b">0</span> Как в приложении (тихий цикл + бип + речь)</div>
+<div class="desc">Точно повторяет текущую озвучку этапа. Ожидаемо: музыка паузится — это исходный баг.</div>
+<button class="alt" data-i="0">Тест 0 — как сейчас</button>
+</div>
+<div class="tech">
+<div class="name"><span class="badge s">1</span> Только речь (без Web Audio)</div>
+<div class="desc">Никакого звукового фона, только голос. Проверяет: речь сама по себе паузит музыку?</div>
+<button data-i="1">Тест 1 — только речь</button>
+</div>
+<div class="tech">
+<div class="name"><span class="badge s">2</span> Только бип (Web Audio, без речи)</div>
+<div class="desc">Короткий звук 880 Гц, голоса нет. Проверяет: сам бип паузит музыку на iOS 27?</div>
+<button data-i="2">Тест 2 — только бип</button>
+</div>
+<div class="tech">
+<div class="name"><span class="badge i">3</span> Тихий цикл gain=0 + речь</div>
+<div class="desc">Тихий бесшумный цикл (как сейчас) и голос. Отдельно от бипа: помогает ли сам цикл?</div>
+<button data-i="3">Тест 3 — тихий цикл + речь</button>
+</div>
+<div class="tech">
+<div class="name"><span class="badge i">4</span> Неслышимый тон + речь</div>
+<div class="desc">Очень слабый тон (почти неслышимый) держит сессию активной + голос. Главная гипотеза.</div>
+<button data-i="4">Тест 4 — слабый тон + речь</button>
+</div>
+<div class="tech">
+<div class="name"><span class="badge i">5</span> Низкий тон + речь</div>
+<div class="desc">Более заметный низкий тон + голос. Вариант сильнее теста 4.</div>
+<button data-i="5">Тест 5 — низкий тон + речь</button>
+</div>
+</div>
+
+<div class="log" id="log">Лог пока пуст. Нажимай кнопки.</div>
+</div>
+
+<script>
+"use strict";
+const PHRASE="Бежим, подход второй. Двадцать секунд.";
+let logEl=document.getElementById("log");
+let active=[]; // список созданных контекстов, держим живыми
+
+function log(msg){
+let t=new Date().toTimeString().slice(0,8);
+logEl.textContent="["+t+"] "+msg+"\n"+logEl.textContent;
+}
+
+function speak(){
+if(!("speechSynthesis" in window)){log("Нет speechSynthesis");return;}
+speechSynthesis.cancel();
+try{speechSynthesis.resume();}catch(e){}
+let u=new SpeechSynthesisUtterance(PHRASE);
+u.lang="ru-RU";
+u.rate=.95;
+speechSynthesis.speak(u);
+}
+
+function ctx(){
+let AC=window.AudioContext||window.webkitAudioContext;
+if(!AC){log("Нет AudioContext");return null;}
+let c=new AC();
+if(c.state==="suspended"){try{c.resume();}catch(e){}}
+active.push(c); // держим живым
+return c;
+}
+
+// тест 0: как в приложении — тихий цикл gain=0 + бип + речь
+function t0(){
+let c=ctx(); if(!c)return;
+silentLoop(c);
+beepOn(c);
+speak();
+log("Тест 0: тихий цикл(gain=0)+бип+речь. Что с музыкой?");
+}
+// тест 1: только речь
+function t1(){ speak(); log("Тест 1: только речь. Что с музыкой?"); }
+// тест 2: только бип
+function t2(){ let c=ctx(); if(!c)return; beepOn(c); log("Тест 2: только бип. Что с музыкой?"); }
+// тест 3: тихий цикл gain=0 + речь
+function t3(){ let c=ctx(); if(!c)return; silentLoop(c); speak(); log("Тест 3: тихий цикл(gain=0)+речь. Что с музыкой?"); }
+// тест 4: неслышимый тон + речь
+function t4(){ let c=ctx(); if(!c)return; tone(c,40,0.0005); speak(); log("Тест 4: слабый тон(40Гц/0.0005)+речь. Что с музыкой?"); }
+// тест 5: низкий тон + речь
+function t5(){ let c=ctx(); if(!c)return; tone(c,60,0.02); speak(); log("Тест 5: низкий тон(60Гц/0.02)+речь. Что с музыкой?"); }
+
+function silentLoop(c){
+try{
+let buf=c.createBuffer(1,Math.max(1,Math.floor(c.sampleRate)),c.sampleRate);
+let src=c.createBufferSource(); src.buffer=buf; src.loop=true;
+let g=c.createGain(); g.gain.value=0;
+src.connect(g); g.connect(c.destination); src.start();
+}catch(e){log("ошибка тихого цикла: "+e.message);}
+}
+function tone(c,freq,gainVal){
+try{
+let o=c.createOscillator(); let g=c.createGain();
+o.type="sine"; o.frequency.value=freq; g.gain.value=gainVal;
+o.connect(g); g.connect(c.destination); o.start();
+}catch(e){log("ошибка тона: "+e.message);}
+}
+function beepOn(c){
+try{
+let o=c.createOscillator(); let g=c.createGain();
+o.connect(g); g.connect(c.destination);
+o.frequency.value=880; g.gain.value=.12;
+o.start(); o.stop(c.currentTime+.16);
+}catch(e){log("ошибка бипа: "+e.message);}
+}
+
+const HANDLERS={0:t0,1:t1,2:t2,3:t3,4:t4,5:t5};
+document.querySelectorAll("button[data-i]").forEach(btn=>{
+btn.addEventListener("click",()=>{
+let i=btn.getAttribute("data-i");
+(HANDLERS[i]||function(){}).call(null);
+logEl.scrollTop=0;
+});
+});
+</script>
+</body>
+</html>
