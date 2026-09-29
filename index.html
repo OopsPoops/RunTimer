@@ -435,7 +435,7 @@ ch.set(d,Math.floor(off*ac.sampleRate));
 off+=b.duration+gap;
 }
 let src=ac.createBufferSource();src.buffer=out;
-let g=ac.createGain();g.gain.value=1;
+let g=ac.createGain();g.gain.value=1.4;
 src.connect(g);g.connect(ac.destination);
 src.start();
 }).catch(()=>{});
