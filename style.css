@@ -1,6 +1,6 @@
 *{box-sizing:border-box}
 :root{--top-inset:0px}
-@media (display-mode: standalone){:root{--top-inset:env(safe-area-inset-top)}}
+html.standalone{--top-inset:60px}
 body{margin:0;background:#111;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
 .app{max-width:520px;margin:auto;padding:calc(var(--top-inset) + 48px) 18px 32px;position:relative}
 h1{font-size:27px;margin:4px 0 18px}
