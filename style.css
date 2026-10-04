@@ -1,6 +1,8 @@
 *{box-sizing:border-box}
+:root{--top-inset:0px}
+@media (display-mode: standalone){:root{--top-inset:env(safe-area-inset-top)}}
 body{margin:0;background:#111;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
-.app{max-width:520px;margin:auto;padding:calc(env(safe-area-inset-top) + 48px) 18px 32px;position:relative}
+.app{max-width:520px;margin:auto;padding:calc(var(--top-inset) + 48px) 18px 32px;position:relative}
 h1{font-size:27px;margin:4px 0 18px}
 .run-emoji{display:inline-block;transform:scaleX(-1)}
 .card{background:#1d1d1f;border-radius:22px;padding:18px;margin-bottom:14px}
@@ -153,7 +155,7 @@ body.light .lock-icon{background:#e8e8ec;color:#111}
 body.light .lock-label{color:#444}
 
 /* Menu / drawer */
-.menu-shell{position:absolute;top:calc(env(safe-area-inset-top) + 43px);right:18px;z-index:40;pointer-events:auto}
+.menu-shell{position:absolute;top:calc(var(--top-inset) + 43px);right:18px;z-index:40;pointer-events:auto}
 .menu-btn{width:44px;height:44px;border-radius:12px;border:0;background:#1d1d1f;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer}
 .menu-btn span{display:block;width:20px;height:2.5px;border-radius:2px;background:currentColor}
 body.light .menu-shell .menu-btn{background:#fff;color:#111}
