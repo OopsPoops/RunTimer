@@ -210,7 +210,7 @@
 <p><strong>RunTimer</strong> — это личный таймер для тренировок. Приложение не собирает и не передаёт никакие личные данные без вашего ведома.</p>
 <p><strong>Хранение настроек.</strong> Ваши настройки (время этапов, выбранные шаблоны) хранятся локально в вашем браузере.</p>
 <p><strong>Отсутствие трекеров и рекламы.</strong> Приложение не использует стороннюю аналитику, трекеры и рекламу.</p>
-<p><strong>Звук и озвучка.</strong> Для голосовых подсказок используется встроенный механизм браузера Web Speech API, без загрузки сторонних файлов.</p>
+<p><strong>Звук и озвучка.</strong> Голосовые подсказки воспроизводятся из записей, встроенных в приложение. При недоступности записей используется встроенный механизм браузера Web Speech API.</p>
 <p><strong>Сторонние сервисы.</strong> Приложение размещено на GitHub Pages (GitHub Inc.), который обрабатывает сетевые запросы, необходимые для загрузки сайта.</p>
 <p><strong>Контакты.</strong> По вопросам, связанным с политикой конфиденциальности, пишите на <a href="mailto:avalarionov@gmail.com">avalarionov@gmail.com</a>.</p>
 <button class="modal-close" id="privacyClose" aria-label="Закрыть">✕</button>
@@ -375,20 +375,55 @@ if(s>0) words.push(String(s)+" секунд");
 return words.join(". ");
 }
 
-function playClips(keys){
+let clipCache={};
+const CLIP_DIR="voice/";
+function loadClip(key){
+if(clipCache[key])return Promise.resolve(clipCache[key]);
+let audio=ensureAudio();
+if(!audio)return Promise.reject(new Error("Web Audio is unavailable"));
+return fetch(CLIP_DIR+key+".mp3").then(response=>{
+if(!response.ok)throw new Error("Voice clip "+key+" returned "+response.status);
+return response.arrayBuffer();
+}).then(buffer=>audio.decodeAudioData(buffer)).then(decoded=>{
+clipCache[key]=decoded;
+return decoded;
+});
+}
+
+function playClips(keys,fallbackText=""){
 if(!soundOn)return;
 if(!keys||!keys.length)return;
-let text=[];
-if(keys.includes("bezhim")) text.push("Бежим");
-if(keys.includes("idem")) text.push("Идём");
-if(keys.includes("bystr")) text.push("Быстрая ходьба");
-if(keys.includes("spok")) text.push("Спокойная ходьба");
-let ordKey=keys.find(k=>k.startsWith("ord_"));
-if(ordKey){
-let n=ordKey.split("_")[1];
-text.push("подход "+(ORDINALS[Number(n)-1]||n));
+let text=keys.filter(key=>/^(bezhim|idem|bystr|spok|ord_\d+)$/.test(key)).map(key=>{
+if(key.startsWith("ord_")){
+let n=Number(key.split("_")[1]);
+return "подход "+(ORDINALS[n-1]||n);
 }
-if(text.length) speakText(text.join(". "));
+return {bezhim:"Бежим",idem:"Идём",bystr:"Быстрая ходьба",spok:"Спокойная ходьба"}[key];
+});
+Promise.all(keys.map(loadClip)).then(buffers=>{
+if(!soundOn)return;
+let audio=ensureAudio();
+if(!audio)throw new Error("Web Audio is unavailable");
+const gap=.09;
+let duration=buffers.reduce((total,buffer)=>total+buffer.duration,0)+gap*(buffers.length-1);
+let output=audio.createBuffer(1,Math.max(1,Math.ceil(duration*audio.sampleRate)),audio.sampleRate);
+let channel=output.getChannelData(0);
+let offset=0;
+for(let buffer of buffers){
+channel.set(buffer.getChannelData(0),Math.floor(offset*audio.sampleRate));
+offset+=buffer.duration+gap;
+}
+let source=audio.createBufferSource();
+let gain=audio.createGain();
+source.buffer=output;
+gain.gain.value=1.8;
+source.connect(gain);
+gain.connect(audio.destination);
+source.start();
+}).catch(error=>{
+console.error("Не удалось воспроизвести голосовую подсказку:",error);
+if(soundOn)speakText(fallbackText||text.join(". "));
+});
 }
 
 function blink(){
@@ -405,8 +440,19 @@ function announce(phase){
 if(!phase)return;
 beep();
 blink();
-let text=buildSpeechText(phase);
-if(text) speakText(text);
+let keys=[];
+if(phase.name==="Бег")keys.push("bezhim");
+else if(phase.name==="Ходьба")keys.push("idem");
+else if(phase.name==="Быстрая ходьба")keys.push("bystr");
+else keys.push("spok");
+if(phase.name==="Бег"&&phase.cycle&&ORDINALS[phase.cycle-1]){
+keys.push("podkhod","ord_"+phase.cycle);
+}
+let seconds=Math.max(0,Math.round(phase.sec));
+let minutes=Math.floor(seconds/60),remainder=seconds%60;
+if(minutes>0)keys.push("num_"+String(minutes).padStart(2,"0"),"min_"+plural(minutes,"1","2","5"));
+if(remainder>0)keys.push("num_"+String(remainder).padStart(2,"0"),"sec_"+plural(remainder,"1","2","5"));
+playClips(keys,buildSpeechText(phase));
 }
 
 function render(){
@@ -576,7 +622,7 @@ $("timer").classList.remove("paused");
 beep();
 let fi=Math.floor(Math.random()*FINISH_PHRASES.length);
 let phrase=FINISH_PHRASES[fi];
-speakText(phrase);
+playClips(["finish_"+String(fi+1).padStart(2,"0")],phrase);
 $("phase").textContent="Готово 🎉";
 $("timer").textContent="00:00";
 $("round").textContent=phrase;
