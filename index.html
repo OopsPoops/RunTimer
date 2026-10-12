@@ -378,6 +378,23 @@ src.start();
 }).catch(()=>{});
 }
 
+function allClipKeys(){
+let keys=["bezhim","idem","bystr","spok","podkhod","min_1","min_2","min_5","sec_1","sec_2","sec_5"];
+for(let i=1;i<=10;i++)keys.push("ord_"+i);
+for(let n=0;n<=59;n++)keys.push("num_"+String(n).padStart(2,"0"));
+for(let i=1;i<=26;i++)keys.push("finish_"+String(i).padStart(2,"0"));
+return keys;
+}
+async function preloadAll(){
+let ac=ensureAudio();
+if(!ac)return;
+const keys=allClipKeys().filter(k=>!clipCache[k]);
+const CONC=8;
+for(let i=0;i<keys.length;i+=CONC){
+await Promise.allSettled(keys.slice(i,i+CONC).map(loadClip));
+}
+}
+
 function blink(){
 let el=$("timer");
 if(!el)return;
@@ -1039,6 +1056,7 @@ sel._disp.textContent=selDisplay(sel,snapped);
 buildPickers();
 syncPickers();
 updateTotal();
+preloadAll();
 
 $("templatesToggle").onclick=()=>{
 let body=$("templatesBody");
