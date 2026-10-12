@@ -173,6 +173,14 @@
 </div>
 </div>
 
+<div class="row">
+<label>Озвучка</label>
+<div class="input-wrap">
+<span id="voiceStatus" style="font-size:13px;color:#aaa;line-height:1.3">Загружается…</span>
+<button type="button" id="voiceReload" class="reset-btn" style="width:auto;padding:8px 14px;font-size:13px;margin-top:8px">Перезагрузить</button>
+</div>
+</div>
+
 <button type="button" class="reset-btn" id="resetSettings">Сбросить настройки</button>
 
 </div>
@@ -391,8 +399,32 @@ if(!ac)return;
 const keys=allClipKeys().filter(k=>!clipCache[k]);
 const CONC=8;
 for(let i=0;i<keys.length;i+=CONC){
-await Promise.allSettled(keys.slice(i,i+CONC).map(loadClip));
+await Promise.allSettled(keys.slice(i,i+CONC).map(k=>loadClip(k).then(()=>{voiceLoaded++;updateVoiceStatus();})));
 }
+updateVoiceStatus();
+}
+
+let voiceLoaded=0;
+const voiceTotal=allClipKeys().length;
+function updateVoiceStatus(){
+let el=$("voiceStatus");
+if(!el)return;
+if(voiceLoaded>=voiceTotal){
+el.textContent="Загружена ("+voiceLoaded+"/"+voiceTotal+")";
+el.style.color="#34c759";
+}else if(voiceLoaded>0){
+el.textContent="Загружается… ("+voiceLoaded+"/"+voiceTotal+")";
+el.style.color="#aaa";
+}else{
+el.textContent="Загружается…";
+el.style.color="#aaa";
+}
+}
+function reloadVoice(){
+clipCache={};
+voiceLoaded=0;
+updateVoiceStatus();
+preloadAll();
 }
 
 function blink(){
@@ -1056,7 +1088,9 @@ sel._disp.textContent=selDisplay(sel,snapped);
 buildPickers();
 syncPickers();
 updateTotal();
+updateVoiceStatus();
 preloadAll();
+$("voiceReload").onclick=reloadVoice;
 
 $("templatesToggle").onclick=()=>{
 let body=$("templatesBody");
