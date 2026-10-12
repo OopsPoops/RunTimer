@@ -165,9 +165,11 @@ btn.title="Без звука";
 }
 let sharedAudio=null;
 function setTransientAudioSession(){
-try{
-if(navigator.audioSession)navigator.audioSession.type="transient";
-}catch(e){}
+  try{
+    if(navigator.audioSession){
+      navigator.audioSession.type="ambient";
+    }
+  }catch(e){}
 }
 function ensureAudio(){
 setTransientAudioSession();
