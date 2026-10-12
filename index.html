@@ -38,12 +38,8 @@
 <svg class="snd-on" viewBox="0 0 24 24" width="20" height="20"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/><path d="M16 9a4 4 0 0 1 0 6M18.6 6.4a8 8 0 0 1 0 11.2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
 <svg class="snd-off" viewBox="0 0 24 24" width="20" height="20" style="display:none"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
 </button>
-<button class="corner-btn" id="lockBtn" title="Блокировка">
-<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm0 2a3 3 0 0 1 3 3v3H9V7a3 3 0 0 1 3-3Z"/></svg>
-</button>
-<button class="corner-btn" id="reset" title="Заново">
-<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8Z"/></svg>
-</button>
+<button class="corner-btn" id="lockBtn" title="Блокировка"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm0 2a3 3 0 0 1 3 3v3H9V7a3 3 0 0 1 3-3Z"/></svg></button>
+<button class="corner-btn" id="reset" title="Заново"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8Z"/></svg></button>
 </div>
 <div class="phase" id="phase">Готов</div>
 <div class="timer" id="timer">00:00</div>
@@ -51,16 +47,12 @@
 <div class="bar"><div class="fill" id="fill"></div></div>
 <div class="next" id="next">—</div>
 <div class="player">
-<button class="pbtn side" id="back" title="Назад" disabled>
-<svg viewBox="0 0 24 24" width="20" height="20"><rect x="4" y="4" width="3" height="16" rx="1" fill="currentColor"/><path d="M17 5.5 8 12 17 18.5Z" fill="currentColor"/></svg>
-</button>
+<button class="pbtn side" id="back" title="Назад" disabled><svg viewBox="0 0 24 24" width="20" height="20"><rect x="4" y="4" width="3" height="16" rx="1" fill="currentColor"/><path d="M17 5.5 8 12 17 18.5Z" fill="currentColor"/></svg></button>
 <button class="pbtn main" id="toggle" title="Старт/Пауза">
 <svg class="play" viewBox="0 0 24 24" width="30" height="30"><path d="M7 3.5 22 12 7 20.5Z" fill="currentColor"/></svg>
 <svg class="pause" viewBox="0 0 24 24" width="30" height="30" style="display:none"><rect x="6" y="6" width="4.5" height="12" rx="1.5" fill="currentColor"/><rect x="13.5" y="6" width="4.5" height="12" rx="1.5" fill="currentColor"/></svg>
 </button>
-<button class="pbtn side" id="skip" title="Пропустить" disabled>
-<svg viewBox="0 0 24 24" width="20" height="20"><path d="M7 5.5 16 12 7 18.5Z" fill="currentColor"/><rect x="17" y="4" width="3" height="16" rx="1" fill="currentColor"/></svg>
-</button>
+<button class="pbtn side" id="skip" title="Пропустить" disabled><svg viewBox="0 0 24 24" width="20" height="20"><path d="M7 5.5 16 12 7 18.5Z" fill="currentColor"/><rect x="17" y="4" width="3" height="16" rx="1" fill="currentColor"/></svg></button>
 </div>
 <div class="days" id="daysPassed"></div>
 </div>
@@ -68,104 +60,38 @@
 <div class="card settings">
 <button class="settings-toggle" id="settingsToggle" type="button"><span><span class="run-emoji">🏃</span> Тренировка</span><span class="settings-arrow" id="settingsArrow">▾</span></button>
 <div class="settings-body hidden" id="settingsBody">
-<div class="row">
-<label>Ходьба в начале</label>
-<div class="input-wrap">
-<input id="warm" type="number" min="0" value="300" class="wi-hidden">
-<select class="picky" data-field="warm" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
-</div>
-</div>
-<div class="row">
-<label>Быстрая ходьба</label>
-<div class="input-wrap">
-<input id="fast" type="number" min="0" value="300" class="wi-hidden">
-<select class="picky" data-field="fast" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
-</div>
-</div>
+<div class="row"><label>Ходьба в начале</label><div class="input-wrap"><input id="warm" type="number" min="0" value="300" class="wi-hidden"><select class="picky" data-field="warm" data-kind="time" data-min="0" data-max="1200" data-step="5"></select></div></div>
+<div class="row"><label>Быстрая ходьба</label><div class="input-wrap"><input id="fast" type="number" min="0" value="300" class="wi-hidden"><select class="picky" data-field="fast" data-kind="time" data-min="0" data-max="1200" data-step="5"></select></div></div>
 <div class="set-group">
 <div class="group-label">Подходы</div>
-<div class="row">
-<label>Количество подходов</label>
-<div class="input-wrap">
-<input id="cycles" type="number" min="1" value="2" class="wi-hidden">
-<select class="picky" data-kind="count" data-field="cycles" data-min="1" data-max="10" data-step="1"></select>
+<div class="row"><label>Количество подходов</label><div class="input-wrap"><input id="cycles" type="number" min="1" value="2" class="wi-hidden"><select class="picky" data-kind="count" data-field="cycles" data-min="1" data-max="10" data-step="1"></select></div></div>
+<div class="row"><label>Бег в подходе</label><div class="input-wrap"><input id="run" type="number" min="0" value="3" class="wi-hidden"><select class="picky" data-field="run" data-kind="time" data-min="0" data-max="1200" data-step="5"></select></div></div>
+<div class="row"><label>Ходьба в подходе</label><div class="input-wrap"><input id="cycleWalk" type="number" min="0" value="3" class="wi-hidden"><select class="picky" data-field="cycleWalk" data-kind="time" data-min="0" data-max="1200" data-step="5"></select></div></div>
 </div>
-</div>
-<div class="row">
-<label>Бег в подходе</label>
-<div class="input-wrap">
-<input id="run" type="number" min="0" value="3" class="wi-hidden">
-<select class="picky" data-field="run" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
-</div>
-</div>
-<div class="row">
-<label>Ходьба в подходе</label>
-<div class="input-wrap">
-<input id="cycleWalk" type="number" min="0" value="3" class="wi-hidden">
-<select class="picky" data-field="cycleWalk" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
-</div>
-</div>
-</div>
-<div class="row">
-<label>Ходьба в конце</label>
-<div class="input-wrap">
-<input id="cool" type="number" min="0" value="300" class="wi-hidden">
-<select class="picky" data-field="cool" data-kind="time" data-min="0" data-max="1200" data-step="5"></select>
-</div>
-</div>
+<div class="row"><label>Ходьба в конце</label><div class="input-wrap"><input id="cool" type="number" min="0" value="300" class="wi-hidden"><select class="picky" data-field="cool" data-kind="time" data-min="0" data-max="1200" data-step="5"></select></div></div>
 <div class="total-time" id="totalTime"></div>
 </div>
 </div>
 <div class="card templates">
 <button class="settings-toggle" id="templatesToggle" type="button">📋 Шаблоны <span class="settings-arrow" id="templatesArrow">▾</span></button>
 <div class="settings-body hidden" id="templatesBody">
-<div class="tpl-switch">
-<span>Использовать шаблоны</span>
-<label class="switch">
-<input type="checkbox" id="templatesOn" checked>
-<span class="slider"></span>
-</label>
-</div>
+<div class="tpl-switch"><span>Использовать шаблоны</span><label class="switch"><input type="checkbox" id="templatesOn" checked><span class="slider"></span></label></div>
 <div class="tpl-grid" id="tplGrid"></div>
 </div>
 </div>
 <div class="card settings">
 <button class="settings-toggle" id="appSettingsToggle" type="button">⚙️ Настройки <span class="settings-arrow" id="appSettingsArrow">▾</span></button>
 <div class="settings-body hidden" id="appSettingsBody">
-<div class="row">
-<label for="startDate">Дата начала тренировок</label>
-<div class="input-wrap">
-<div class="date-wrap" id="dateWrap">
-<input type="date" id="startDate">
-<div class="date-value" id="startDateVal">—</div>
-</div>
-</div>
-</div>
-<div class="row">
-<label>Тема</label>
-<div class="input-wrap">
-<input id="theme" type="text" value="dark" class="wi-hidden">
-<select class="picky" data-kind="theme" data-field="theme"></select>
-</div>
-</div>
+<div class="row"><label for="startDate">Дата начала тренировок</label><div class="input-wrap"><div class="date-wrap" id="dateWrap"><input type="date" id="startDate"><div class="date-value" id="startDateVal">—</div></div></div></div>
+<div class="row"><label>Тема</label><div class="input-wrap"><input id="theme" type="text" value="dark" class="wi-hidden"><select class="picky" data-kind="theme" data-field="theme"></select></div></div>
 <button type="button" class="reset-btn" id="resetSettings">Сбросить настройки</button>
 </div>
 </div>
 <div class="footer">
-<div class="footer-left">
-<span>© 2026 RunTimer</span>
-<span class="sep">·</span>
-<a href="https://github.com/OopsPoops/RunTimer" target="_blank" rel="noopener">О приложении</a>
-<span class="sep">·</span>
-<a href="#" id="privacyLink">Политика</a>
-</div>
+<div class="footer-left"><span>© 2026 RunTimer</span><span class="sep">·</span><a href="https://github.com/OopsPoops/RunTimer" target="_blank" rel="noopener">О приложении</a><span class="sep">·</span><a href="#" id="privacyLink">Политика</a></div>
 <div class="footer-right">
-<a href="mailto:avalarionov@gmail.com" title="Написать на почту" aria-label="Почта">
-<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
-</a>
-<a href="https://t.me/larik_11" target="_blank" rel="noopener" title="Telegram: larik_11" aria-label="Telegram">
-<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21.9 4.1 2.9 11.2c-1.1.4-1.1 1.5 0 1.9l4.7 1.5 1.8 5.6c.3.9 1.2.9 1.6.2l2.5-3.9 4.9 3.6c.7.5 1.6.2 1.8-.8l2.9-13.6c.2-1-.5-1.6-1.2-1.6Z"/></svg>
-</a>
+<a href="mailto:avalarionov@gmail.com" title="Написать на почту" aria-label="Почта"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></a>
+<a href="https://t.me/larik_11" target="_blank" rel="noopener" title="Telegram: larik_11" aria-label="Telegram"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M21.9 4.1 2.9 11.2c-1.1.4-1.1 1.5 0 1.9l4.7 1.5 1.8 5.6c.3.9 1.2.9 1.6.2l2.5-3.9 4.9 3.6c.7.5 1.6.2 1.8-.8l2.9-13.6c.2-1-.5-1.6-1.2-1.6Z"/></svg></a>
 </div>
 </div>
 </div>
@@ -179,7 +105,7 @@
 <p><strong>RunTimer</strong> — это личный таймер для тренировок. Приложение не собирает и не передаёт никакие личные данные.</p>
 <p><strong>Хранение настроек.</strong> Ваши настройки (время этапов, выбранные шаблоны) хранятся локально в вашем браузере (localStorage) и никуда не отправляются. Очистка данных сайта в браузере удалит их.</p>
 <p><strong>Отсутствие трекеров и рекламы.</strong> Приложение не использует сторонние аналитику, трекеры и рекламу.</p>
-<p><strong>Звук и озвучка.</strong> Для голосовых подсказок используется встроенный синтез речи браузера, если доступен соответствующий голос; для звуковых сигналов — Web Audio браузера. Офлайн-работа зависит от наличия установленного голосового пакета.</p>
+<p><strong>Звук и озвучка.</strong> Для голосовых подсказок используется встроенный системный синтез речи iOS, для звуковых сигналов — Web Audio браузера. Для офлайн-озвучки русский голос должен быть доступен на устройстве. Данные не передаются на сервер.</p>
 <p><strong>Сторонние сервисы.</strong> Приложение размещено на GitHub Pages (GitHub Inc.), который обрабатывает сетевые запросы в соответствии со своей политикой конфиденциальности.</p>
 <p><strong>Контакты.</strong> По вопросам, связанным с политикой конфиденциальности, пишите на <a href="mailto:avalarionov@gmail.com" style="color:#7ab8ff">avalarionov@gmail.com</a>.</p>
 <button class="modal-close" id="privacyClose" aria-label="Закрыть">✕</button>
@@ -195,9 +121,7 @@ let last=0;
 let raf;
 let wakeLockRef=null;
 const $=id=>document.getElementById(id);
-function value(id){
-return Math.max(0,parseInt($(id).value)||0);
-}
+function value(id){return Math.max(0,parseInt($(id).value)||0);}
 function build(){
 let cycles=Math.max(1,value("cycles"));
 phases=[];
@@ -240,20 +164,39 @@ btn.title="Без звука";
 }
 }
 let sharedAudio=null;
+function setTransientAudioSession(){
+try{
+if(navigator.audioSession)navigator.audioSession.type="transient";
+}catch(e){}
+}
 function ensureAudio(){
-const AC=window.AudioContext||window.webkitAudioContext;
+setTransientAudioSession();
+let AC=window.AudioContext||window.webkitAudioContext;
 if(!AC)return null;
-if(!sharedAudio||sharedAudio.state==="closed")sharedAudio=new AC();
-if(sharedAudio.state==="suspended")sharedAudio.resume().catch(()=>{});
+if(!sharedAudio||sharedAudio.state==="closed"){
+sharedAudio=new AC();
+if(sharedAudio.state==="suspended"){try{sharedAudio.resume();}catch(e){}}
+try{
+let buf=sharedAudio.createBuffer(1,Math.max(1,Math.floor(sharedAudio.sampleRate)),sharedAudio.sampleRate);
+let src=sharedAudio.createBufferSource();
+src.buffer=buf;
+src.loop=true;
+let g=sharedAudio.createGain();
+g.gain.value=0;
+src.connect(g);
+g.connect(sharedAudio.destination);
+src.start();
+}catch(e){}
+}
 return sharedAudio;
 }
 function beep(){
 if(!soundOn)return;
 try{
-const audio=ensureAudio();
+let audio=ensureAudio();
 if(audio){
-const oscillator=audio.createOscillator();
-const gain=audio.createGain();
+let oscillator=audio.createOscillator();
+let gain=audio.createGain();
 oscillator.connect(gain);
 gain.connect(audio.destination);
 oscillator.frequency.value=880;
@@ -264,37 +207,28 @@ oscillator.stop(audio.currentTime+.16);
 }catch(e){}
 if(navigator.vibrate)navigator.vibrate([180,80,180]);
 }
-function blink(){
-let el=$("timer");
-if(!el)return;
-el.classList.remove("blink");
-void el.offsetWidth;
-el.classList.add("blink");
-}
-const ORDINALS=["первый","второй","третий","четвёртый","пятый","шестой","седьмой","восьмой","девятый","десятый"];
 let speechVoice=null;
 let speechQueue=[];
 let speechBusy=false;
 let speechGeneration=0;
 function findRussianVoice(){
 if(!("speechSynthesis" in window))return null;
-const voices=window.speechSynthesis.getVoices();
-const russian=voices.filter(v=>/^ru(?:-|$)/i.test(v.lang));
+let voices=window.speechSynthesis.getVoices();
+let russian=voices.filter(v=>/^ru(?:-|$)/i.test(v.lang));
 return russian.find(v=>v.localService&&/ru[-_]RU/i.test(v.lang))
 ||russian.find(v=>v.localService)
 ||russian.find(v=>/ru[-_]RU/i.test(v.lang))
 ||russian[0]
 ||null;
 }
-function refreshSpeechVoice(){
-speechVoice=findRussianVoice();
-}
+function refreshSpeechVoice(){speechVoice=findRussianVoice();}
 if("speechSynthesis" in window){
 refreshSpeechVoice();
 window.speechSynthesis.addEventListener("voiceschanged",refreshSpeechVoice);
 }
 function speakText(text){
 if(!soundOn||!text||!("speechSynthesis" in window))return;
+setTransientAudioSession();
 speechQueue.push(text);
 runSpeechQueue();
 }
@@ -302,26 +236,29 @@ function runSpeechQueue(){
 if(speechBusy||!speechQueue.length||!soundOn)return;
 refreshSpeechVoice();
 if(!speechVoice)return;
-const text=speechQueue.shift();
-const generation=speechGeneration;
-const utterance=new SpeechSynthesisUtterance(text);
+let text=speechQueue.shift();
+let generation=speechGeneration;
+let utterance=new SpeechSynthesisUtterance(text);
 utterance.lang=speechVoice.lang||"ru-RU";
 utterance.voice=speechVoice;
 utterance.rate=1;
 utterance.pitch=1;
 utterance.volume=1;
 speechBusy=true;
-const finish=()=>{
+let done=()=>{
 if(generation!==speechGeneration)return;
 speechBusy=false;
+setTransientAudioSession();
 runSpeechQueue();
 };
-utterance.onend=finish;
-utterance.onerror=finish;
+utterance.onend=done;
+utterance.onerror=done;
 try{
+setTransientAudioSession();
 window.speechSynthesis.speak(utterance);
 }catch(e){
 speechBusy=false;
+runSpeechQueue();
 }
 }
 function cancelSpeech(){
@@ -333,31 +270,35 @@ try{window.speechSynthesis.cancel();}catch(e){}
 }
 }
 function numberText(n){
-const units=["ноль","одна","две","три","четыре","пять","шесть","семь","восемь","девять"];
+const ones=["ноль","одна","две","три","четыре","пять","шесть","семь","восемь","девять"];
 const teens=["десять","одиннадцать","двенадцать","тринадцать","четырнадцать","пятнадцать","шестнадцать","семнадцать","восемнадцать","девятнадцать"];
-const tens=["","","двадцать","тридцать","сорок","пятьдесят"];
-if(n<10)return units[n];
+const tens=["","","двадцать","тридцать","сорок","пятьдесят","шестьдесят","семьдесят","восемьдесят","девяносто"];
+if(n<10)return ones[n];
 if(n<20)return teens[n-10];
-return (tens[Math.floor(n/10)]+" "+(n%10?units[n%10]:"")).trim();
+if(n<100)return tens[Math.floor(n/10)]+(n%10?" "+ones[n%10]:"");
+return String(n);
 }
+function blink(){
+let el=$("timer");
+if(!el)return;
+el.classList.remove("blink");
+void el.offsetWidth;
+el.classList.add("blink");
+}
+const ORDINALS=["первый","второй","третий","четвёртый","пятый","шестой","седьмой","восьмой","девятый","десятый"];
 function announce(phase){
 if(!phase)return;
 beep();
 blink();
-const parts=[];
-if(phase.name==="Бег"){
-parts.push("Бег");
-if(phase.cycle)parts.push("подход "+(ORDINALS[phase.cycle-1]||numberText(phase.cycle)));
-}else if(phase.name==="Быстрая ходьба"){
-parts.push("Быстрая ходьба");
-}else if(phase.name==="Ходьба"){
-parts.push("Ходьба");
-}else{
-parts.push("Спокойная ходьба");
-}
-const sec=Math.max(0,Math.round(phase.sec));
-const m=Math.floor(sec/60);
-const s=sec%60;
+let parts=[];
+let n=phase.name;
+if(n==="Бег")parts.push("Бежим");
+else if(n==="Ходьба")parts.push("Идём");
+else if(n==="Быстрая ходьба")parts.push("Быстрая ходьба");
+else parts.push("Спокойная ходьба");
+if(n==="Бег"&&phase.cycle&&ORDINALS[phase.cycle-1])parts.push(ORDINALS[phase.cycle-1]+" подход");
+let sec=Math.max(0,Math.round(phase.sec));
+let m=Math.floor(sec/60),s=sec%60;
 if(m>0)parts.push(numberText(m)+" "+plural(m,"минута","минуты","минут"));
 if(s>0)parts.push(numberText(s)+" "+plural(s,"секунда","секунды","секунд"));
 speakText(parts.join(". ")+".");
@@ -367,29 +308,24 @@ let phase=phases[idx];
 if(!phase)return;
 $("phase").textContent=phase.name;
 $("timer").textContent=format(remaining);
-if(phase.cycle){
-$("round").textContent="Подход "+phase.cycle+" из "+value("cycles");
-}else if(phase.final){
-$("round").textContent="Завершение";
-}else{
-$("round").textContent="Подготовка";
-}
+if(phase.cycle)$("round").textContent="Подход "+phase.cycle+" из "+value("cycles");
+else if(phase.final)$("round").textContent="Завершение";
+else $("round").textContent="Подготовка";
 let next=phases[idx+1];
-if(next){
-$("next").textContent="Далее: "+next.name+(next.cycle?" (подход "+next.cycle+")":"");
-}else{
-$("next").textContent="После этого — конец";
-}
+if(next)$("next").textContent="Далее: "+next.name+(next.cycle?" (подход "+next.cycle+")":"");
+else $("next").textContent="После этого — конец";
 let progress=phase.sec>0?100*(1-remaining/phase.sec):100;
-$("fill").style.width=Math.max(0,Math.min(100,progress))+"%";
+$("fill").style.width=progress+"%";
 }
 function start(){
 build();
 if(!phases.length){
-$("status").textContent="Укажи длительность хотя бы одного этапа.";
+$("status").textContent="Укажи время хотя бы для одного этапа.";
 return;
 }
 cancelSpeech();
+setTransientAudioSession();
+ensureAudio();
 idx=0;
 remaining=phases[0].sec;
 running=true;
@@ -398,12 +334,10 @@ $("timer").classList.remove("paused");
 $("skip").disabled=false;
 $("back").disabled=false;
 updateToggle();
-ensureAudio();
 announce(phases[0]);
 render();
 keepScreenOn();
 last=performance.now();
-cancelAnimationFrame(raf);
 raf=requestAnimationFrame(tick);
 }
 function tick(now){
@@ -416,19 +350,14 @@ if(remaining<=0){
 let advanced=false;
 while(remaining<=0){
 idx++;
-if(idx>=phases.length){
-finish();
-return;
-}
+if(idx>=phases.length){finish();return;}
 remaining+=phases[idx].sec;
 advanced=true;
 }
 if(advanced)announce(phases[idx]);
 }
 render();
-}else{
-last=now;
-}
+}else last=now;
 raf=requestAnimationFrame(tick);
 }
 let lastBack=0;
@@ -442,10 +371,7 @@ pause.style.display=playing?"":"none";
 function skip(){
 if(!running)return;
 idx++;
-if(idx>=phases.length){
-finish();
-return;
-}
+if(idx>=phases.length){finish();return;}
 remaining=phases[idx].sec;
 announce(phases[idx]);
 render();
@@ -454,23 +380,18 @@ last=performance.now();
 function back(){
 if(!running)return;
 let now=Date.now();
-if(now-lastBack<800){
-lastBack=0;
-idx--;
-if(idx<0)idx=0;
-}else{
-lastBack=now;
-}
+if(now-lastBack<800){lastBack=0;idx--;if(idx<0)idx=0;}
+else lastBack=now;
 remaining=phases[idx].sec;
 announce(phases[idx]);
 render();
 last=performance.now();
 }
 function stop(){
-cancelSpeech();
 running=false;
 paused=false;
 cancelAnimationFrame(raf);
+cancelSpeech();
 $("timer").classList.remove("paused");
 idx=0;
 remaining=0;
@@ -486,32 +407,7 @@ updateToggle();
 releaseScreenLock();
 }
 const FINISH_PHRASES=[
-"Отличная работа! Ещё один шаг вперёд.",
-"Красиво! Тренировка сделана.",
-"Так держать!",
-"Отличный темп! Продолжай в том же духе.",
-"Готово! Ещё одна тренировка в копилке.",
-"Сильная работа. Гордись собой.",
-"Ещё одна тренировка позади. Ещё ближе к цели.",
-"Сегодня получилось — завтра получится ещё лучше.",
-"Тренировка завершена. Отличная работа.",
-"Ещё один шаг к цели. Так держать.",
-"Хорошая работа. Продолжай в том же духе.",
-"Ещё одна тренировка в копилке.",
-"Сильный финиш. Заслуженный результат.",
-"Дело сделано. Можно собой гордиться.",
-"Сегодняшняя работа обязательно даст результат.",
-"Главное — продолжать. Ты на правильном пути.",
-"Ещё один день, ещё одна победа.",
-"Мощный финиш! Отличная работа сегодня.",
-"Километры позади, гордость впереди.",
-"Характер сильнее лени. Прекрасная пробежка.",
-"План выполнен на все сто. Горжусь твоим упорством.",
-"Каждый шаг приближает к цели. Лучший день для бега.",
-"Тело скажет тебе спасибо.",
-"Это было мощно и красиво. Браво.",
-"Ты сегодня быстрее своих оправданий. Так держать.",
-"Дистанция покорена. Отличный вклад в себя."
+"Отличная работа! Ещё один шаг вперёд.","Красиво! Тренировка сделана.","Так держать!","Отличный темп! Продолжай в том же духе.","Готово! Ещё одна тренировка в копилке.","Сильная работа. Гордись собой.","Ещё одна тренировка позади. Ещё ближе к цели.","Сегодня получилось — завтра получится ещё лучше.","Тренировка завершена. Отличная работа.","Ещё один шаг к цели. Так держать.","Хорошая работа. Продолжай в том же духе.","Ещё одна тренировка в копилке.","Сильный финиш. Заслуженный результат.","Дело сделано. Можно собой гордиться.","Сегодняшняя работа обязательно даст результат.","Главное — продолжать. Ты на правильном пути.","Ещё один день, ещё одна победа.","Мощный финиш! Отличная работа сегодня.","Километры позади, гордость впереди.","Характер сильнее лени. Прекрасная пробежка.","План выполнен на все сто. Горжусь твоим упорством.","Каждый шаг приближает к цели. Лучший день для бега.","Тело скажет тебе спасибо.","Это было мощно и красиво. Браво.","Ты сегодня быстрее своих оправданий. Так держать.","Дистанция покорена. Отличный вклад в себя."
 ];
 function finish(){
 running=false;
@@ -544,10 +440,7 @@ if(running&&!paused)keepScreenOn();
 }catch(e){}
 }
 function releaseScreenLock(){
-if(wakeLockRef){
-try{wakeLockRef.release();}catch(e){}
-wakeLockRef=null;
-}
+if(wakeLockRef){try{wakeLockRef.release();}catch(e){}wakeLockRef=null;}
 }
 const STORE_KEY="trenirovka_settings";
 let START_DATE=new Date(2026,8,7);
@@ -558,9 +451,7 @@ let weekSeq=[1,2,3,4,5,6,7,8];
 function loadSettings(){
 try{
 let data=JSON.parse(localStorage.getItem(STORE_KEY)||"{}");
-["warm","fast","run","cycleWalk","cycles","cool","theme"].forEach(id=>{
-if(data[id]!==undefined&&$(id))$(id).value=data[id];
-});
+["warm","fast","run","cycleWalk","cycles","cool","theme"].forEach(id=>{if(data[id]!==undefined&&$(id))$(id).value=data[id];});
 if(data.start)START_DATE=new Date(data.start+"T00:00:00");
 if(data.sel)selectedTpl=data.sel;
 if(data.tplOn!==undefined)templatesOn=!!data.tplOn;
@@ -574,9 +465,7 @@ document.body.classList.toggle("light",v==="light");
 function saveSettings(){
 try{
 let data={};
-["warm","fast","run","cycleWalk","cycles","cool","theme"].forEach(id=>{
-if($(id))data[id]=$(id).value;
-});
+["warm","fast","run","cycleWalk","cycles","cool","theme"].forEach(id=>{if($(id))data[id]=$(id).value;});
 data.start=fmtDate(START_DATE);
 if(selectedTpl)data.sel=selectedTpl;
 data.tplOn=templatesOn;
@@ -584,43 +473,34 @@ data.weeks=weekSeq.slice();
 localStorage.setItem(STORE_KEY,JSON.stringify(data));
 }catch(e){}
 }
-function fmtDate(d){
-return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-}
-function fmtRu(d){
-return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."+d.getFullYear()+" г.";
-}
+function fmtDate(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function fmtRu(d){return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."+d.getFullYear()+" г.";}
 function dayWord(n){
 let a=n%10,b=n%100;
 if(a===1&&b!==11)return "день";
 if(a>=2&&a<=4&&(b<12||b>14))return "дня";
 return "дней";
 }
+function startOfToday(){
+let n=new Date();
+return new Date(n.getFullYear(),n.getMonth(),n.getDate());
+}
 function updateDays(){
 let el=$("daysPassed");
 if(!el)return;
 let diff=Math.floor((startOfToday()-START_DATE)/86400000);
-if(diff<0){
-let n=-diff;
-el.textContent="Осталось "+n+" "+dayWord(n)+" до начала тренировок.";
-return;
-}
+if(diff<0){let n=-diff;el.textContent="Осталось "+n+" "+dayWord(n)+" до начала тренировок.";return;}
 let posToday=Math.floor(diff/7);
 let daysIn=diff%7;
 let count=0;
-for(let i=0;i<posToday&&i<weekSeq.length;i++){
-if(weekSeq[i]!==0)count+=7;
-}
+for(let i=0;i<posToday&&i<weekSeq.length;i++){if(weekSeq[i]!==0)count+=7;}
 if(posToday<weekSeq.length&&weekSeq[posToday]!==0)count+=daysIn+1;
 el.textContent="Прошло "+count+" "+dayWord(count)+" с начала тренировок.";
 }
 loadSettings();
 applyTheme();
 function fmtTotal(sec){
-let h=Math.floor(sec/3600);
-let m=Math.floor(sec%3600/60);
-let s=sec%60;
-let parts=[];
+let h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=sec%60,parts=[];
 if(h)parts.push(h+" ч");
 if(m)parts.push(m+" мин");
 if(s)parts.push(s+" сек");
@@ -629,14 +509,8 @@ return parts.join(" ")||"0 сек";
 function updateTotal(){
 let el=$("totalTime");
 if(!el)return;
-let warm=parseInt($("warm").value)||0;
-let fast=parseInt($("fast").value)||0;
-let run=parseInt($("run").value)||0;
-let walk=parseInt($("cycleWalk").value)||0;
-let cool=parseInt($("cool").value)||0;
-let cycles=parseInt($("cycles").value)||1;
-let total=warm+fast+cycles*(run+walk)+cool;
-el.textContent="Общее время: "+fmtTotal(total);
+let warm=parseInt($("warm").value)||0,fast=parseInt($("fast").value)||0,run=parseInt($("run").value)||0,walk=parseInt($("cycleWalk").value)||0,cool=parseInt($("cool").value)||0,cycles=parseInt($("cycles").value)||1;
+el.textContent="Общее время: "+fmtTotal(warm+fast+cycles*(run+walk)+cool);
 }
 function onSettingsEdit(){
 selectedTpl=null;
@@ -646,10 +520,7 @@ updateTotal();
 }
 ["warm","fast","run","cycleWalk","cycles","cool"].forEach(id=>{
 let el=$(id);
-if(el){
-el.addEventListener("input",onSettingsEdit);
-el.addEventListener("change",onSettingsEdit);
-}
+if(el){el.addEventListener("input",onSettingsEdit);el.addEventListener("change",onSettingsEdit);}
 });
 let rs=$("resetSettings");
 if(rs)rs.addEventListener("click",()=>{
@@ -663,34 +534,16 @@ location.replace(u.toString());
 }
 });
 const TEMPLATES=[
-{id:"1. Пн",run:1,walk:1.5,cycles:6},
-{id:"1. Чт",run:1,walk:1.5,cycles:6},
-{id:"1. Сб",run:1,walk:2,cycles:5},
-{id:"2. Пн",run:1.5,walk:2,cycles:6},
-{id:"2. Чт",run:2,walk:2,cycles:5},
-{id:"2. Сб",run:1,walk:2,cycles:6},
-{id:"3. Пн",run:2,walk:2,cycles:6},
-{id:"3. Чт",run:3,walk:2,cycles:5},
-{id:"3. Сб",run:2,walk:2,cycles:5},
-{id:"4. Пн",run:3,walk:2,cycles:5},
-{id:"4. Чт",run:4,walk:2,cycles:4},
-{id:"4. Сб",run:3,walk:2,cycles:5},
-{id:"5. Пн",run:5,walk:2,cycles:3},
-{id:"5. Чт",run:6,walk:2,cycles:3},
-{id:"5. Сб",run:4,walk:2,cycles:4},
-{id:"6. Пн",run:8,walk:2,cycles:2},
-{id:"6. Чт",run:10,walk:2,cycles:2},
-{id:"6. Сб",run:6,walk:2,cycles:3},
-{id:"7. Пн",run:12,walk:3,cycles:2},
-{id:"7. Чт",run:15,walk:0,cycles:1},
-{id:"7. Сб",run:8,walk:2,cycles:2},
-{id:"8. Пн",run:15,walk:3,cycles:2},
-{id:"8. Чт",run:20,walk:0,cycles:1},
-{id:"8. Сб",run:5,walk:2,cycles:3}
+{id:"1. Пн",run:1,walk:1.5,cycles:6},{id:"1. Чт",run:1,walk:1.5,cycles:6},{id:"1. Сб",run:1,walk:2,cycles:5},
+{id:"2. Пн",run:1.5,walk:2,cycles:6},{id:"2. Чт",run:2,walk:2,cycles:5},{id:"2. Сб",run:1,walk:2,cycles:6},
+{id:"3. Пн",run:2,walk:2,cycles:6},{id:"3. Чт",run:3,walk:2,cycles:5},{id:"3. Сб",run:2,walk:2,cycles:5},
+{id:"4. Пн",run:3,walk:2,cycles:5},{id:"4. Чт",run:4,walk:2,cycles:4},{id:"4. Сб",run:3,walk:2,cycles:5},
+{id:"5. Пн",run:5,walk:2,cycles:3},{id:"5. Чт",run:6,walk:2,cycles:3},{id:"5. Сб",run:4,walk:2,cycles:4},
+{id:"6. Пн",run:8,walk:2,cycles:2},{id:"6. Чт",run:10,walk:2,cycles:2},{id:"6. Сб",run:6,walk:2,cycles:3},
+{id:"7. Пн",run:12,walk:3,cycles:2},{id:"7. Чт",run:15,walk:0,cycles:1},{id:"7. Сб",run:8,walk:2,cycles:2},
+{id:"8. Пн",run:15,walk:3,cycles:2},{id:"8. Чт",run:20,walk:0,cycles:1},{id:"8. Сб",run:5,walk:2,cycles:3}
 ];
-function fmtNum(n){
-return String(n).replace(".",",");
-}
+function fmtNum(n){return String(n).replace(".",",");}
 function applyTemplate(t,explicit){
 if(explicit)selectedTpl=t.id;
 $("run").value=Math.round(t.run*60);
@@ -739,20 +592,11 @@ sk.setAttribute("aria-label","Добавить неделю пропуска");
 if(weekNum>=1){
 sk.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 4 L11 12 L3 20 Z"/><path d="M11 4 L19 12 L11 20 Z"/><rect x="20.5" y="4" width="1.5" height="16" rx="0.75"/></svg>';
 sk.onclick=()=>{weekSeq.splice(pos+1,0,0);saveSettings();buildTemplates();updateSelection();};
-}else{
-sk.disabled=true;
-}
+}else sk.disabled=true;
 ctl.appendChild(sk);
 row.appendChild(ctl);
 if(weekNum===0){
-DAYS.forEach(()=>{
-let b=document.createElement("button");
-b.type="button";
-b.className="tpl-btn skip";
-b.disabled=true;
-b.textContent="Пропуск";
-row.appendChild(b);
-});
+DAYS.forEach(()=>{let b=document.createElement("button");b.type="button";b.className="tpl-btn skip";b.disabled=true;b.textContent="Пропуск";row.appendChild(b);});
 }else{
 DAYS.forEach(day=>{
 let base=TEMPLATES.find(x=>x.id===weekNum+". "+day);
@@ -773,10 +617,6 @@ grid.appendChild(row);
 }
 const DAY_LABELS={1:"Пн",4:"Чт",6:"Сб"};
 const DAY_OFFSET={Пн:0,Чт:3,Сб:5};
-function startOfToday(){
-let n=new Date();
-return new Date(n.getFullYear(),n.getMonth(),n.getDate());
-}
 function templateDate(t){
 let parts=t.id.split(" ");
 let week=parseInt(parts[0]);
@@ -796,8 +636,7 @@ if(!base)return null;
 return {id:pos+". "+label,run:base.run,walk:base.walk,cycles:base.cycles};
 }
 function nextTemplate(){
-let today=startOfToday();
-let best=null,bestDiff=Infinity;
+let today=startOfToday(),best=null,bestDiff=Infinity;
 weekSeq.forEach((weekNum,pos)=>{
 const DAYS=["Пн","Чт","Сб"];
 DAYS.forEach(day=>{
@@ -829,9 +668,7 @@ if(selectedTpl){
 let b=document.querySelector('.tpl-btn[data-id="'+selectedTpl+'"]');
 if(b){b.classList.add("sel");return;}
 }
-let run=parseInt($("run").value)||0;
-let walk=parseInt($("cycleWalk").value)||0;
-let cycles=parseInt($("cycles").value)||0;
+let run=parseInt($("run").value)||0,walk=parseInt($("cycleWalk").value)||0,cycles=parseInt($("cycles").value)||0;
 let best=null,bestDiff=Infinity;
 weekSeq.forEach((weekNum,pos)=>{
 const DAYS=["Пн","Чт","Сб"];
@@ -856,24 +693,18 @@ for(let v=120;v<=300;v+=30)TIME_VALUES.push(v);
 for(let v=360;v<=1200;v+=60)TIME_VALUES.push(v);
 function fmtSeconds(v){
 if(v<60)return v+" сек";
-let m=Math.floor(v/60);
-let s=v%60;
+let m=Math.floor(v/60),s=v%60;
 if(v>=300)return m+" мин";
 return m+" мин "+String(s).padStart(2,"0")+" сек";
 }
 function fmtDisplay(v){
 if(v<60)return v+" сек";
-let m=Math.floor(v/60);
-let s=v%60;
+let m=Math.floor(v/60),s=v%60;
 if(s===0)return m+" мин";
 return m+" мин "+s+" сек";
 }
 function selValues(sel){
-if(sel.dataset.kind==="count"){
-let a=[];
-for(let v=1;v<=10;v++)a.push(v);
-return a;
-}
+if(sel.dataset.kind==="count"){let a=[];for(let v=1;v<=10;v++)a.push(v);return a;}
 if(sel.dataset.kind==="theme")return ["dark","light"];
 return TIME_VALUES;
 }
@@ -889,15 +720,9 @@ return fmtDisplay(v);
 }
 function buildPickers(){
 document.querySelectorAll(".picky").forEach(sel=>{
-let field=sel.dataset.field;
-let values=selValues(sel);
+let field=sel.dataset.field,values=selValues(sel);
 sel.innerHTML="";
-values.forEach(v=>{
-let o=document.createElement("option");
-o.value=v;
-o.textContent=selLabel(sel,v);
-sel.appendChild(o);
-});
+values.forEach(v=>{let o=document.createElement("option");o.value=v;o.textContent=selLabel(sel,v);sel.appendChild(o);});
 let wrap=document.createElement("div");
 wrap.className="picker";
 let disp=document.createElement("div");
@@ -910,19 +735,15 @@ sel._disp=disp;
 function upd(){
 let idx=sel.selectedIndex;
 let raw=(idx>=0&&sel.options[idx])?sel.options[idx].value:(sel.value||"");
-let v=(sel.dataset.kind==="theme")?raw:(parseInt(raw)||0);
+let v=sel.dataset.kind==="theme"?raw:(parseInt(raw)||0);
 disp.textContent=selDisplay(sel,v);
 }
 upd();
 sel.addEventListener("change",()=>{
 let inp=document.getElementById(field);
 if(inp)inp.value=sel.value;
-if(sel.dataset.kind==="theme"){
-saveSettings();
-applyTheme();
-}else{
-onSettingsEdit();
-}
+if(sel.dataset.kind==="theme"){saveSettings();applyTheme();}
+else onSettingsEdit();
 upd();
 });
 });
@@ -931,15 +752,11 @@ function syncPickers(){
 document.querySelectorAll(".pick-overlay").forEach(sel=>{
 let inp=document.getElementById(sel.dataset.field);
 if(!inp)return;
-let values=selValues(sel);
-let isStr=sel.dataset.kind==="theme";
+let values=selValues(sel),isStr=sel.dataset.kind==="theme";
 let v=isStr?inp.value:parseInt(inp.value);
 if(v===""||(!isStr&&isNaN(v)))v=values[0];
 let snapped=values[0],best=Infinity;
-values.forEach(x=>{
-let d=isStr?(x===v?0:1):Math.abs(v-x);
-if(d<best){best=d;snapped=x;}
-});
+values.forEach(x=>{let d=isStr?(x===v?0:1):Math.abs(v-x);if(d<best){best=d;snapped=x;}});
 inp.value=snapped;
 sel.value=snapped;
 if(sel._disp)sel._disp.textContent=selDisplay(sel,snapped);
@@ -949,8 +766,7 @@ buildPickers();
 syncPickers();
 updateTotal();
 $("templatesToggle").onclick=()=>{
-let body=$("templatesBody");
-body.classList.toggle("hidden");
+$("templatesBody").classList.toggle("hidden");
 $("templatesArrow").classList.toggle("open");
 };
 buildTemplates();
@@ -963,20 +779,13 @@ updateSelection();
 $("startDate").value=fmtDate(START_DATE);
 $("startDateVal").textContent=fmtRu(START_DATE);
 updateDays();
-if(templatesOn){
-selectedTpl=null;
-selectTodayTemplate();
-}else if(selectedTpl){
-let t=TEMPLATES.find(x=>x.id===selectedTpl);
-if(t)applyTemplate(t,true);
-}
+if(templatesOn){selectedTpl=null;selectTodayTemplate();}
+else if(selectedTpl){let t=TEMPLATES.find(x=>x.id===selectedTpl);if(t)applyTemplate(t,true);}
 updateSelection();
 $("startDate").addEventListener("click",()=>{
 let inp=$("startDate");
 if(!inp)return;
-if(inp.showPicker){
-try{inp.showPicker();return;}catch(e){}
-}
+if(inp.showPicker){try{inp.showPicker();return;}catch(e){}}
 inp.click();
 });
 $("startDate").addEventListener("change",()=>{
@@ -991,9 +800,8 @@ saveSettings();
 updateSelection();
 });
 $("toggle").onclick=()=>{
-if(!running){
-start();
-}else if(paused){
+if(!running)start();
+else if(paused){
 paused=false;
 $("timer").classList.remove("paused");
 blink();
@@ -1015,54 +823,33 @@ soundOn=!soundOn;
 if(!soundOn)cancelSpeech();
 updateSound();
 };
-$("privacyLink").onclick=(e)=>{
-e.preventDefault();
-$("privacyModal").classList.add("open");
-};
-$("privacyClose").onclick=()=>{
-$("privacyModal").classList.remove("open");
-};
-$("privacyModal").addEventListener("click",(e)=>{
-if(e.target===$("privacyModal"))$("privacyModal").classList.remove("open");
-});
+$("privacyLink").onclick=e=>{e.preventDefault();$("privacyModal").classList.add("open");};
+$("privacyClose").onclick=()=>$("privacyModal").classList.remove("open");
+$("privacyModal").addEventListener("click",e=>{if(e.target===$("privacyModal"))$("privacyModal").classList.remove("open");});
 $("settingsToggle").onclick=()=>{
-let body=$("settingsBody");
-body.classList.toggle("hidden");
+$("settingsBody").classList.toggle("hidden");
 $("settingsArrow").classList.toggle("open");
 };
 $("appSettingsToggle").onclick=()=>{
-let body=$("appSettingsBody");
-body.classList.toggle("hidden");
+$("appSettingsBody").classList.toggle("hidden");
 $("appSettingsArrow").classList.toggle("open");
 };
 let menuBtn=$("menuBtn"),drawer=$("drawer"),drawerOverlay=$("drawerOverlay"),drawerClose=$("drawerClose");
 if(menuBtn)menuBtn.onclick=()=>{drawer.classList.add("open");drawerOverlay.classList.add("open");};
 if(drawerClose)drawerClose.onclick=()=>{drawer.classList.remove("open");drawerOverlay.classList.remove("open");};
 if(drawerOverlay)drawerOverlay.onclick=()=>{drawer.classList.remove("open");drawerOverlay.classList.remove("open");};
-document.addEventListener("visibilitychange",()=>{
-if(document.visibilityState==="visible"&&running)keepScreenOn();
-});
-window.addEventListener("focus",()=>{
-if(running&&!paused)keepScreenOn();
-});
-let lockOverlay=$("lockOverlay"),lockHold=$("lockHold");
-let lockTimer=null;
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&running)keepScreenOn();});
+window.addEventListener("focus",()=>{if(running&&!paused)keepScreenOn();});
+let lockOverlay=$("lockOverlay"),lockHold=$("lockHold"),lockTimer=null;
 $("lockBtn").onclick=()=>lockOverlay.classList.add("open");
-function lockStart(e){
-e.preventDefault();
-lockTimer=setTimeout(()=>{
-lockOverlay.classList.remove("open");
-lockTimer=null;
-},3000);
-}
-function lockEnd(){
-if(lockTimer){clearTimeout(lockTimer);lockTimer=null;}
-}
+function lockStart(e){e.preventDefault();lockTimer=setTimeout(()=>{lockOverlay.classList.remove("open");lockTimer=null;},3000);}
+function lockEnd(){if(lockTimer){clearTimeout(lockTimer);lockTimer=null;}}
 lockHold.addEventListener("pointerdown",lockStart);
 lockHold.addEventListener("pointerup",lockEnd);
 lockHold.addEventListener("pointercancel",lockEnd);
 lockHold.addEventListener("pointerleave",lockEnd);
 lockHold.addEventListener("contextmenu",e=>e.preventDefault());
+setTransientAudioSession();
 </script>
 </body>
 </html>
