@@ -748,7 +748,8 @@ if(weekNum===0)return;
 DAYS.forEach(day=>{
 let base=TEMPLATES.find(x=>x.id===weekNum+". "+day);
 if(!base)return;
-let d=templateDate({id:weekNum+". "+day});
+let d=new Date(START_DATE);
+d.setDate(d.getDate()+pos*7+DAY_OFFSET[day]);
 if(d.getTime()<=today.getTime())total+=base.run*base.cycles;
 });
 });
