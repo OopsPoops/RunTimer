@@ -728,7 +728,29 @@ for(let i=0;i<posToday&&i<weekSeq.length;i++){
 if(weekSeq[i]!==0)count+=7;
 }
 if(posToday<weekSeq.length&&weekSeq[posToday]!==0)count+=daysIn+1;
-el.textContent="Прошло "+count+" "+dayWord(count)+" с начала тренировок.";
+let text="Прошло "+count+" "+dayWord(count)+" с начала тренировок.";
+if(templatesOn){
+let runMin=totalRunMinutes();
+if(runMin>0)text+=" · Пробежано "+fmtTotal(Math.round(runMin)*60);
+}
+el.textContent=text;
+}
+
+function totalRunMinutes(){
+let today=startOfToday();
+if(today<START_DATE)return 0;
+let total=0;
+const DAYS=["Пн","Чт","Сб"];
+weekSeq.forEach((weekNum,pos)=>{
+if(weekNum===0)return;
+DAYS.forEach(day=>{
+let base=TEMPLATES.find(x=>x.id===weekNum+". "+day);
+if(!base)return;
+let d=templateDate({id:(pos+1)+". "+day});
+if(d.getTime()<=today.getTime())total+=base.run;
+});
+});
+return total;
 }
 
 loadSettings();
