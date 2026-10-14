@@ -69,6 +69,7 @@
 </button>
 </div>
 <div class="days" id="daysPassed"></div>
+<div class="days" id="runPassed"></div>
 </div>
 
 <div class="status" id="status"></div>
@@ -714,6 +715,8 @@ return "дней";
 function updateDays(){
 let el=$("daysPassed");
 if(!el)return;
+let runEl=$("runPassed");
+if(runEl)runEl.textContent="";
 let diff=Math.floor((startOfToday()-START_DATE)/86400000);
 if(diff<0){
 let n=-diff;
@@ -728,12 +731,11 @@ for(let i=0;i<posToday&&i<weekSeq.length;i++){
 if(weekSeq[i]!==0)count+=7;
 }
 if(posToday<weekSeq.length&&weekSeq[posToday]!==0)count+=daysIn+1;
-let text="Прошло "+count+" "+dayWord(count)+" с начала тренировок.";
-if(templatesOn){
+el.textContent="Прошло "+count+" "+dayWord(count)+" с начала тренировок.";
+if(templatesOn&&runEl){
 let runMin=totalRunMinutes();
-if(runMin>0)text+=" · Пробежано "+fmtTotal(Math.round(runMin)*60);
+if(runMin>0)runEl.textContent="Уже пробежали "+fmtTotal(Math.round(runMin)*60);
 }
-el.textContent=text;
 }
 
 function totalRunMinutes(){
