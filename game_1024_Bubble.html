@@ -22,7 +22,7 @@ header small{display:block;margin-top:5px;color:var(--mute);font-size:12px;font-
 .board{position:relative;border-radius:30px;overflow:hidden;padding:0;border:1px solid var(--line);box-shadow:0 30px 80px #02031088,0 0 0 6px #ffffff06,inset 0 1px #ffffff30}
 canvas{display:block;width:100%;height:auto;aspect-ratio:420/590;touch-action:none;outline:none;cursor:grab}
 .board:has(canvas:focus-visible){outline:3px solid #b7a4ff;outline-offset:3px}
-.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0 4px}
+.bar{display:flex;align-items:center;justify-content:center;gap:12px;margin:16px 0 4px}
 .ladder{display:flex;align-items:center;gap:7px}
 .o{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff 0,var(--a) 22%,var(--b) 62%,var(--c));opacity:.2;filter:grayscale(.8);transition:.4s}
 .o.on{opacity:1;filter:none;box-shadow:0 0 12px -1px var(--b)}
@@ -30,7 +30,7 @@ canvas{display:block;width:100%;height:auto;aspect-ratio:420/590;touch-action:no
 .o.goal{width:30px;height:30px;display:grid;place-items:center;font-size:13px;color:#4a2c00}
 button{font:700 14px var(--body);color:#fff;background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:11px 16px;cursor:pointer;transition:transform .15s,background .2s;box-shadow:inset 0 1px #ffffff22}
 button:hover{background:#ffffff22}button:active{transform:scale(.95)}button:focus-visible{outline:3px solid #b7a4ff}
-#restart{padding:6px 10px;font-size:18px;border-radius:10px;background:var(--vio);border-color:#ffffff30;box-shadow:0 4px 12px #6a4cf066;margin-left:6px}
+#restart{height:36px;display:flex;align-items:center;justify-content:center;padding:0 10px;font-size:18px;border-radius:10px;background:var(--vio);border-color:#ffffff30;box-shadow:0 4px 12px #6a4cf066;margin-left:6px}
 .hint{text-align:center;color:#7f84b0;font-size:12.5px;line-height:1.7;margin:10px 0 0}
 .overlay{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;text-align:center;padding:25px;background:radial-gradient(circle at 50% 40%,#2a2370cc,#0a0c22ee);backdrop-filter:blur(10px);animation:fade .35s}
 .overlay[hidden]{display:none}@keyframes fade{from{opacity:0}}
@@ -42,7 +42,7 @@ button:hover{background:#ffffff22}button:active{transform:scale(.95)}button:focu
 .overlay h2{margin:18px 0 6px;font:800 28px var(--disp);letter-spacing:-1px}.overlay p{margin:0 0 14px;color:#c4c8e8;max-width:28ch}
 .overlay button{margin:5px;padding:13px 24px;font-size:15px}#again{background:linear-gradient(135deg,#8c6cf5,#5b6cf5);border-color:#ffffff40;box-shadow:0 8px 24px #6a4cf066,inset 0 1px #ffffff55}
 /* меню / дроуэр (общая концепция приложения) */
-.menu-btn{flex:0 0 auto;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--glass);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;box-shadow:inset 0 1px #ffffff22;margin-left:6px;padding:0}
+.menu-btn{flex:0 0 auto;width:40px;height:36px;border-radius:12px;border:1px solid var(--line);background:var(--glass);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;box-shadow:inset 0 1px #ffffff22;margin-left:6px;padding:0}
 .menu-btn span{display:block;width:18px;height:2.5px;border-radius:2px;background:currentColor}
 .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:60}
 .drawer-overlay.open{opacity:1;pointer-events:auto}
@@ -89,7 +89,6 @@ button:hover{background:#ffffff22}button:active{transform:scale(.95)}button:focu
 <div class="board"><canvas id="game" aria-label="Игровое поле. Выбери место и отпусти шарик. Стрелки и пробел тоже работают." tabindex="0"></canvas>
 <div class="overlay" id="overlay" hidden><div class="badge" id="icon"></div><h2 id="title"></h2><p id="message"></p><div><button id="again">Играть ещё</button><button id="continue" hidden>Продолжить</button></div></div></div>
 <div class="bar"><div class="ladder" id="ladder" aria-label="Цель: собрать шарик 1024"></div></div>
-<p class="hint">Веди пальцем и отпусти шарик.<br>Одинаковые числа сливаются. Не пересекай пунктир.</p>
 <div class="footer">
 <div><span>© 2026 RunTimer</span><span class="sep"> · </span><a href="https://github.com/OopsPoops/RunTimer" target="_blank" rel="noopener">О приложении</a><span class="sep"> · </span><a href="#" id="privacyLink">Политика</a></div>
 <div class="footer-right">
