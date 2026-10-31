@@ -14,7 +14,6 @@ main{position:relative;width:min(100%,470px);padding:16px 16px 14px}
 header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 h1{margin:0;font:800 34px/1 var(--disp);letter-spacing:-2px;background:linear-gradient(100deg,#7ff3f0,#b9a2ff 55%,#ffd23f);-webkit-background-clip:text;background-clip:text;color:transparent}
 header small{display:block;margin-top:5px;color:var(--mute);font-size:12px;font-weight:500}
-.head-left{display:flex;align-items:center}
 .stats{display:flex;gap:8px}
 .stat{min-width:76px;padding:8px 13px 9px;text-align:center;background:var(--glass);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(10px);box-shadow:inset 0 1px #ffffff22}
 .stat label{display:block;font-size:11px;color:var(--mute);margin-bottom:2px}
@@ -43,7 +42,7 @@ button:hover{background:#ffffff22}button:active{transform:scale(.95)}button:focu
 .overlay h2{margin:18px 0 6px;font:800 28px var(--disp);letter-spacing:-1px}.overlay p{margin:0 0 14px;color:#c4c8e8;max-width:28ch}
 .overlay button{margin:5px;padding:13px 24px;font-size:15px}#again{background:linear-gradient(135deg,#8c6cf5,#5b6cf5);border-color:#ffffff40;box-shadow:0 8px 24px #6a4cf066,inset 0 1px #ffffff55}
 /* меню / дроуэр (общая концепция приложения) */
-.menu-btn{flex:0 0 auto;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--glass);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;box-shadow:inset 0 1px #ffffff22;margin-right:12px;padding:0}
+.menu-btn{flex:0 0 auto;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--glass);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;box-shadow:inset 0 1px #ffffff22;margin-left:6px;padding:0}
 .menu-btn span{display:block;width:18px;height:2.5px;border-radius:2px;background:currentColor}
 .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:60}
 .drawer-overlay.open{opacity:1;pointer-events:auto}
@@ -77,16 +76,16 @@ button:hover{background:#ffffff22}button:active{transform:scale(.95)}button:focu
 <a href="index.html" class="nav-2">Бег</a>
 <a href="sila.html" class="nav-2">Силовая</a>
 <div class="nav-1 nav-label">Игры</div>
-<a href="game_memory.html" class="nav-2">Найди пару</a>
 <a href="game_2048.html" class="nav-2">2048</a>
 <a href="game_1024_Bubble.html" class="nav-2 active">1024 Bubble</a>
+<a href="game_memory.html" class="nav-2">Найди пару</a>
 <a href="game_runner.html" class="nav-2">Раннер</a>
 <a href="game_match3.html" class="nav-2">Три в ряд</a>
 </aside>
 <div class="aur a1"></div><div class="aur a2"></div>
 <main>
-<header><div class="head-left"><button class="menu-btn" id="menuBtn" aria-label="Меню"><span></span><span></span></button><div><h1>1024</h1><small>bubble 3D</small></div></div>
-<div class="stats"><div class="stat"><label>счёт</label><b id="score">0</b></div><div class="stat"><label>рекорд</label><b id="best">0</b></div><button id="restart" aria-label="Начать новую игру">↻</button></div></header>
+<header><div><h1>1024</h1><small>bubble 3D</small></div>
+<div class="stats"><div class="stat"><label>счёт</label><b id="score">0</b></div><div class="stat"><label>рекорд</label><b id="best">0</b></div><button id="restart" aria-label="Начать новую игру">↻</button><button class="menu-btn" id="menuBtn" aria-label="Меню"><span></span><span></span></button></div></header>
 <div class="board"><canvas id="game" aria-label="Игровое поле. Выбери место и отпусти шарик. Стрелки и пробел тоже работают." tabindex="0"></canvas>
 <div class="overlay" id="overlay" hidden><div class="badge" id="icon"></div><h2 id="title"></h2><p id="message"></p><div><button id="again">Играть ещё</button><button id="continue" hidden>Продолжить</button></div></div></div>
 <div class="bar"><div class="ladder" id="ladder" aria-label="Цель: собрать шарик 1024"></div></div>
