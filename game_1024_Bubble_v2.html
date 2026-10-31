@@ -33,7 +33,6 @@ canvas{display:block;width:100%;height:auto;aspect-ratio:420/590;touch-action:no
 .o.on{opacity:1;filter:none;box-shadow:0 0 12px -1px var(--b)}
 .o.new{animation:pop .7s cubic-bezier(.2,2,.4,1)}@keyframes pop{0%{transform:scale(.3)}100%{transform:scale(1)}}
 .o.goal{width:26px;height:26px;display:grid;place-items:center;font-size:12px;color:#4a2c00}
-.statusline{text-align:center;color:var(--mute);font-size:12px;margin:6px 0 0;min-height:16px}
 button{font:700 13px var(--body);color:#fff;background:var(--glass);border:1px solid var(--line);border-radius:13px;padding:10px 15px;cursor:pointer;transition:transform .15s,background .2s;box-shadow:inset 0 1px #ffffff22}
 button:hover{background:#ffffff22}button:active{transform:scale(.95)}button:focus-visible{outline:3px solid #b7a4ff}
 #restart{height:34px;display:flex;align-items:center;justify-content:center;padding:0 9px;font-size:16px;border-radius:9px;background:var(--vio);border-color:#ffffff30;box-shadow:0 4px 12px #6a4cf066;margin-left:2px}
@@ -75,7 +74,7 @@ button:hover{background:#ffffff22}button:active{transform:scale(.95)}button:focu
 .stat{min-width:56px;padding:6px 8px}.stat b{font-size:14px}.stat label{font-size:9px}
 h1{font-size:27px}header small{font-size:10px}
 .o{width:15px;height:15px}.o.goal{width:21px;height:21px;font-size:10px}.ladder{gap:4px}
-.rescue{width:38px;height:38px;top:8px;left:8px;font-size:16px}.statusline{font-size:11px}
+.rescue{width:38px;height:38px;top:8px;left:8px;font-size:16px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
@@ -101,7 +100,6 @@ h1{font-size:27px}header small{font-size:10px}
 <div class="board"><canvas id="game" aria-label="Игровое поле. Выбери место и отпусти шарик. Стрелки, пробел и Enter работают." tabindex="0"></canvas><button class="rescue off" id="rescueBtn" aria-label="Удалить шарик (спасение)">🧲<b id="rescueCount">0</b></button>
 <div class="overlay" id="overlay" hidden><div class="badge" id="icon"></div><h2 id="title"></h2><p id="message"></p><div><button id="again">Играть ещё</button><button id="continue" hidden>Продолжить</button></div></div></div>
 <div class="bar"><div class="ladder" id="ladder" aria-label="Цель: собрать шарик 1024"></div></div>
-<p class="statusline" id="statusline">Бросок готов</p>
 <div class="footer">
 <div><span>© 2026 RunTimer</span><span class="sep"> · </span><a href="https://github.com/OopsPoops/RunTimer" target="_blank" rel="noopener">О приложении</a><span class="sep"> · </span><a href="#" id="privacyLink">Политика</a></div>
 <div class="footer-right">
@@ -127,16 +125,16 @@ const canvas=document.querySelector('canvas'),ctx=canvas.getContext('2d'),DPR=Ma
 canvas.width=420*DPR;canvas.height=590*DPR;
 // ---- конфигурация баланса (все параметры в одном месте) ----
 const CFG={
-  W:420,H:590,line:134,dropY:76,aimMin:35,aimMax:385,
+  W:420,H:590,line:200,dropY:514,aimMin:35,aimMax:385, // перевёрнуто: шар летит вверх, линия опасности внизу
   grav:760,
   radiusBase:19.5,radiusStep:3.3,
-  launchVy:320,          // начальная скорость вниз, чтобы шар сразу падал
+  launchVy:320,          // начальная скорость вверх
   settleWait:0.03,maxWait:0.1,calmSpeed:62,
   comboBonusStep:1.0,    // бонус = v*(номерСлияния-1)*шаг
   chainChargeAt:3,       // сколько слияний за бросок даёт заряд
   maxCharges:2,
   comboMultMax:4,        // макс. комбо-умножитель очков
-  specialChance:0.07,    // шанс выпадения спец-шарика
+  specialChance:0.18,    // шанс выпадения спец-шарика (чаще)
   specialRadius:24,
   bombRadius:92,         // радиус взрыва бомбы
   starBonus:40,          // очки за звезду
@@ -192,27 +190,22 @@ for(const [x0,x1] of [[0,14],[CFG.W,CFG.W-14]]){q=g.createLinearGradient(x0,0,x1
 document.fonts?.load('800 20px Unbounded').then(()=>cache.clear()).catch(()=>{});document.fonts?.ready.then(()=>cache.clear());
 function bump(el){el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}
 function updateScore(grow){const s=document.querySelector('#score');s.textContent=score;if(grow)bump(s);if(score>best){best=score;const b=document.querySelector('#best');b.textContent=best;if(grow)bump(b);try{localStorage.setItem('bubble1024v2-best',best)}catch{}}}
-function updateHud(){const rc=document.getElementById('rescueCount');if(rc)rc.textContent=charges;const rb=document.getElementById('rescueBtn');if(rb){rb.classList.toggle('off',charges<=0);rb.classList.toggle('active',choosing)}const st=document.getElementById('statusline');if(!st)return;
-if(over)st.textContent='Партия окончена. Счёт: '+score;
-else if(choosing)st.textContent='Выбери шарик для удаления (нажми мимо — отмена)';
-else if(!ready)st.textContent=chain>=2?'Цепочка ×'+chain+'…':'Бросок…';
-else st.textContent=(mult>1?'×'+mult+' · ':'')+(charges>0?'Бросок готов · спасение '+charges+'/'+CFG.maxCharges:'Бросок готов');
-}
+function updateHud(){const rc=document.getElementById('rescueCount');if(rc)rc.textContent=charges;const rb=document.getElementById('rescueBtn');if(rb){rb.classList.toggle('off',charges<=0);rb.classList.toggle('active',choosing)}}
 function reset(){balls=[];particles=[];rings=[];floats=[];score=0;maxV=0;chain=0;shake=0;mult=1;flash=0;current=rollValue();next=rollValue();ready=true;throwActive=false;choosing=false;charges=0;chargeAwarded=false;suppressChain=false;over=false;won=false;paused=false;danger=0;settled=0;document.querySelector('#overlay').hidden=true;updateScore();refreshLadder();updateHud()}
 function sound(v){try{if(!audio)return;const o=audio.createOscillator(),g=audio.createGain();if(v<0){o.type=v===BOMB?'sawtooth':'triangle';o.frequency.setValueAtTime(v===BOMB?70:920,audio.currentTime)}else{o.type='sine';o.frequency.setValueAtTime(220+Math.log2(v)*55,audio.currentTime)}g.gain.setValueAtTime(v===BOMB?.09:.055,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+(v>=128?.32:.16));o.connect(g);g.connect(audio.destination);o.start();o.stop(audio.currentTime+(v>=128?.33:.17))}catch{}}
-function tryThrow(){if(over||paused||choosing||!ready||throwActive)return;try{audio??=new(window.AudioContext||window.webkitAudioContext)();audio.resume()}catch{}const r=radius(current);const x=Math.max(r+9,Math.min(CFG.W-r-9,aim));balls.push({x,y:CFG.dropY,r,v:current,vx:0,vy:CFG.launchVy,age:0,s:.5,sv:0});launched=balls[balls.length-1];current=next;next=rollValue();ready=false;throwActive=true;throwStart=T;settled=0;chain=0;chargeAwarded=false;suppressChain=false;refreshLadder();updateHud()}
+function tryThrow(){if(over||paused||choosing||!ready||throwActive)return;try{audio??=new(window.AudioContext||window.webkitAudioContext)();audio.resume()}catch{}const r=radius(current);const x=Math.max(r+9,Math.min(CFG.W-r-9,aim));balls.push({x,y:CFG.dropY,r,v:current,vx:0,vy:-CFG.launchVy,age:0,s:.5,sv:0});launched=balls[balls.length-1];current=next;next=rollValue();ready=false;throwActive=true;throwStart=T;settled=0;chain=0;chargeAwarded=false;suppressChain=false;refreshLadder();updateHud()}
 function burst(x,y,v,gained){const p=pal(v),n=Math.round((14+Math.min(20,Math.log2(v)*2))*CFG.particleScale);for(let k=0;k<n;k++){const a=Math.random()*7,s=50+Math.random()*190,t=.5+Math.random()*.5;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-30,t,T:t,z:2+Math.random()*3.5,c:Math.random()<.4?'#fff':p[0]})}rings.push({x,y,t:.55,r0:radius(v)*.8,c:p[0]});floats.push({x,y:y-radius(v),t:1,c:p[0],s:'+'+gained});if(!RM)shake=Math.max(shake,Math.min(7,1.2+Math.log2(v)*.5));if(v>=128){flash=.5;if(!RM)shake=Math.max(shake,10)}try{if(navigator.vibrate)navigator.vibrate(v>=128?40:15)}catch{};sound(v)}
 function doMerge(x,y,v){let base=v,bonus=0;if(!suppressChain){chain++;bonus=(chain-1)*CFG.comboBonusStep*v}const gained=Math.round((base+bonus)*mult);score+=gained;updateScore(true);burst(x,y,v,gained);maxV=Math.max(maxV,v);refreshLadder();if(v>=1024&&!won){won=true;show(true)}}
 function deleteBall(ball){const i=balls.indexOf(ball);if(i<0)return;const x=ball.x,y=ball.y,r=ball.r;balls.splice(i,1);const n=Math.round(10*CFG.particleScale);for(let k=0;k<n;k++){const a=Math.random()*7,s=40+Math.random()*120,t=.4+Math.random()*.4;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-20,t,T:t,z:2+Math.random()*3,c:'#7cf5ff'})}rings.push({x,y,t:.5,r0:r,c:'#7cf5ff'});charges--;choosing=false;suppressChain=true;chain=0;chargeAwarded=true;throwActive=true;throwStart=T;settled=0;launched=null;updateHud()}
 function show(win){paused=true;over=!win;const i=document.querySelector('#icon');i.className='badge'+(win?'':' lose');i.textContent=win?'1024':'🫧';document.querySelector('#title').textContent=win?'Есть 1024!':'Переполнено';document.querySelector('#message').textContent=win?'Цель достигнута. Можно собирать дальше.':'Шарики дошли до линии. Счёт: '+score;document.querySelector('#continue').hidden=!win;document.querySelector('#overlay').hidden=false}
-function step(dt){if(paused)return;for(const b of balls){b.age+=dt;b.vy+=CFG.grav*dt;b.vx*=.996;b.x+=b.vx*dt;b.y+=b.vy*dt;b.sv+=(1-b.s)*380*dt;b.sv*=Math.pow(.015,dt);b.s+=b.sv*dt;if(b.x<b.r+8){b.x=b.r+8;b.vx=Math.abs(b.vx)*.45}if(b.x>CFG.W-b.r-8){b.x=CFG.W-b.r-8;b.vx=-Math.abs(b.vx)*.45}if(b.y>CFG.H-b.r-10){b.y=CFG.H-b.r-10;b.vy=-Math.abs(b.vy)*.18;b.vx*=.97}}
+function step(dt){if(paused)return;for(const b of balls){b.age+=dt;b.vy-=CFG.grav*dt;b.vx*=.996;b.x+=b.vx*dt;b.y+=b.vy*dt;b.sv+=(1-b.s)*380*dt;b.sv*=Math.pow(.015,dt);b.s+=b.sv*dt;if(b.x<b.r+8){b.x=b.r+8;b.vx=Math.abs(b.vx)*.45}if(b.x>CFG.W-b.r-8){b.x=CFG.W-b.r-8;b.vx=-Math.abs(b.vx)*.45}if(b.y<b.r+10){b.y=b.r+10;b.vy=Math.abs(b.vy)*.18;b.vx*=.97}if(b.y>CFG.H-b.r-10){b.y=CFG.H-b.r-10;b.vy=-Math.abs(b.vy)*.18;b.vx*=.97}}
 for(let pass=0;pass<8;pass++){let sp=null,po=null;for(let i=0;i<balls.length&&!sp;i++){for(let j=i+1;j<balls.length;j++){let a=balls[i],b=balls[j];if(a.rm||b.rm)continue;let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy),sum=a.r+b.r;if(d>=sum)continue;if(a.v<0||b.v<0){sp=a.v<0?a:b;po=a.v<0?b:a;break}if(a.v===b.v){let v=a.v*2,x=(a.x+b.x)/2,y=(a.y+b.y)/2;balls.splice(j,1);balls.splice(i,1);balls.push({x,y,r:radius(v),v,vx:(a.vx+b.vx)*.3,vy:-70,age:0,s:1.25,sv:0});doMerge(x,y,v);i--;break}let nx=d?dx/d:1,ny=d?dy/d:0,overlap=sum-d,ma=a.r*a.r,mb=b.r*b.r,wa=mb/(ma+mb),wb=ma/(ma+mb);a.x-=nx*overlap*wa;b.x+=nx*overlap*wb;a.y-=ny*overlap*wa;b.y+=ny*overlap*wb;let rel=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(rel<0){a.vx+=rel*nx*wa*1.15;a.vy+=rel*ny*wa*1.15;b.vx-=rel*nx*wb*1.15;b.vy-=rel*ny*wb*1.15}}}if(!sp)break;triggerSpecial(sp,po)}
-for(const b of balls){if(b.v<0&&!b.rm&&b.y+b.r>=CFG.H-16)triggerSpecial(b,null)}
+for(const b of balls){if(b.v<0&&!b.rm&&b.y-b.r<=18)triggerSpecial(b,null)}
 if(balls.some(b=>b.rm))balls=balls.filter(b=>!b.rm);
 function triggerSpecial(s,o){if(s.rm)return;s.rm=true;if(s.v===BOMB){for(const x of balls){if(x!==s&&!x.rm&&Math.hypot(x.x-s.x,x.y-s.y)<CFG.bombRadius+x.r)x.rm=true}const n=Math.round(22*CFG.particleScale);for(let k=0;k<n;k++){const a=Math.random()*7,sv=60+Math.random()*220,t=.5+Math.random()*.5;particles.push({x:s.x,y:s.y,vx:Math.cos(a)*sv,vy:Math.sin(a)*sv-30,t,T:t,z:2+Math.random()*4,c:'#ff8a5b'})}rings.push({x:s.x,y:s.y,t:.6,r0:12,c:'#ff8a5b'});rings.push({x:s.x,y:s.y,t:.5,r0:34,c:'#ffd23f'});if(!RM)shake=Math.max(shake,9);sound(BOMB);try{if(navigator.vibrate)navigator.vibrate(40)}catch{}}else if(s.v===RAINBOW){if(o&&!o.rm&&o.v>0){o.v*=2;o.r=radius(o.v);o.s=1.3;o.vx*=.3;o.vy=-80;const gained=Math.round(o.v*mult);score+=gained;updateScore(true);burst(o.x,o.y,o.v,gained);maxV=Math.max(maxV,o.v);refreshLadder();if(!suppressChain)chain++;if(o.v>=1024&&!won){won=true;show(true)}}else if(o){o.rm=true}}else if(s.v===STAR){const gained=Math.round(CFG.starBonus*mult);score+=gained;updateScore(true);floats.push({x:s.x,y:s.y-radius(s.v),t:1,c:'#ffd23f',s:'+'+gained});const n=Math.round(12*CFG.particleScale);for(let k=0;k<n;k++){const a=Math.random()*7,sv=40+Math.random()*130,t=.5+Math.random()*.5;particles.push({x:s.x,y:s.y,vx:Math.cos(a)*sv,vy:Math.sin(a)*sv-30,t,T:t,z:2+Math.random()*3,c:'#ffd23f'})}rings.push({x:s.x,y:s.y,t:.5,r0:radius(s.v),c:'#ffd23f'});sound(STAR);try{if(navigator.vibrate)navigator.vibrate(15)}catch{}}}
 for(const p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=200*dt;p.vx*=.99;p.t-=dt}particles=particles.filter(p=>p.t>0);for(const r of rings)r.t-=dt;rings=rings.filter(r=>r.t>0);for(const f of floats){f.y-=40*dt;f.t-=dt*.9}floats=floats.filter(f=>f.t>0);shake=Math.max(0,shake-dt*22);
 if(throwActive&&!paused){const launchedOk=!launched||!balls.includes(launched)||launched.age>0.15;const calm=launchedOk&&balls.every(b=>Math.abs(b.vy)<CFG.calmSpeed&&Math.abs(b.vx)<CFG.calmSpeed);if(calm)settled+=dt;else settled=0;if(settled>=CFG.settleWait||(T-throwStart)>=CFG.maxWait){throwActive=false;ready=true;launched=null;suppressChain=false;if(chain>=1)mult=Math.min(mult+1,CFG.comboMultMax);else mult=1;if(!chargeAwarded&&chain>=CFG.chainChargeAt&&charges<CFG.maxCharges){charges++;rings.push({x:CFG.W/2,y:70,t:.7,r0:10,c:'#ffd23f'});floats.push({x:CFG.W/2,y:52,t:1.1,c:'#ffd23f',s:'+1 спасение'});}updateHud()}}
-if(balls.some(b=>b.age>2&&b.y-b.r<CFG.line&&Math.abs(b.vy)<CFG.calmSpeed))danger+=dt;else danger=Math.max(0,danger-dt*2);if(danger>1.4)show(false)}
+if(balls.some(b=>b.age>2&&b.y+b.r>CFG.line&&Math.abs(b.vy)<CFG.calmSpeed))danger+=dt;else danger=Math.max(0,danger-dt*2);if(danger>1.4)show(false)}
 function draw(fdt){T+=fdt;ctx.setTransform(DPR,0,0,DPR,0,0);ctx.drawImage(bg,0,0,CFG.W,CFG.H);
 if(flash>0){flash=Math.max(0,flash-fdt);ctx.fillStyle=`rgba(255,232,190,${flash*.55})`;ctx.fillRect(0,0,CFG.W,CFG.H)}
 for(const k of bokeh){k.y-=k.s*fdt;if(k.y<-k.r)k.y=CFG.H+k.r;const q=ctx.createRadialGradient(k.x,k.y,0,k.x,k.y,k.r);q.addColorStop(0,`rgba(${k.c},${k.a})`);q.addColorStop(1,`rgba(${k.c},0)`);ctx.fillStyle=q;ctx.fillRect(k.x-k.r,k.y-k.r,k.r*2,k.r*2)}
@@ -226,7 +219,7 @@ if(mult>1){const txt='×'+mult;ctx.font='800 15px Unbounded,system-ui';const w=c
 ctx.strokeStyle='#ffffff10';ctx.lineWidth=4;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(22,CFG.dropY);ctx.lineTo(CFG.W-22,CFG.dropY);ctx.stroke();
 if(!over&&!paused){const r=radius(current),x=Math.max(r+9,Math.min(CFG.W-r-9,aim));
 if(ready){const pulse=.5+.5*Math.sin(T*4);ctx.strokeStyle=`rgba(255,210,63,${.25+.2*pulse})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,CFG.dropY,r+8,0,7);ctx.stroke();}
-const q=ctx.createLinearGradient(0,95,0,CFG.H);q.addColorStop(0,'#ffffff55');q.addColorStop(1,'#ffffff00');ctx.strokeStyle=q;ctx.lineWidth=2;ctx.setLineDash([1,9]);ctx.beginPath();ctx.moveTo(x,95);ctx.lineTo(x,CFG.H-15);ctx.stroke();ctx.setLineDash([]);
+const q=ctx.createLinearGradient(0,CFG.dropY,0,20);q.addColorStop(0,'#ffffff55');q.addColorStop(1,'#ffffff00');ctx.strokeStyle=q;ctx.lineWidth=2;ctx.setLineDash([1,9]);ctx.beginPath();ctx.moveTo(x,CFG.dropY+20);ctx.lineTo(x,15);ctx.stroke();ctx.setLineDash([]);
 const gl=ctx.createRadialGradient(x,CFG.dropY,0,x,CFG.dropY,r*2);gl.addColorStop(0,pal(current)[1]+'55');gl.addColorStop(1,pal(current)[1]+'00');ctx.fillStyle=gl;ctx.fillRect(x-r*2,CFG.dropY-r*2,r*4,r*4);
 const grow=ready?1+Math.sin(T*3)*.03:.68;orb(x,CFG.dropY,current,grow,ready?1:.45)}
 // chain indicator
