@@ -23,9 +23,9 @@ header small{display:block;margin-top:5px;color:var(--mute);font-size:11px;font-
 canvas{display:block;width:100%;height:auto;aspect-ratio:420/590;touch-action:none;outline:none;cursor:grab}
 .board:has(canvas:focus-visible){outline:3px solid #b7a4ff;outline-offset:3px}
 .bar{position:relative;display:flex;align-items:center;justify-content:center;gap:12px;margin:12px 0 2px;min-height:34px}
-.rescue{position:absolute;left:0;top:50%;transform:translateY(-50%);height:34px;padding:0 11px;font:700 12px var(--body);display:flex;align-items:center;gap:6px;border-radius:10px;background:var(--glass);border:1px solid var(--line);color:#fff;cursor:pointer;box-shadow:inset 0 1px #ffffff22;transition:transform .15s,background .2s}
-.rescue b{font:800 13px var(--disp);color:var(--gold)}
-.rescue:active{transform:translateY(-50%) scale(.94)}
+.rescue{position:absolute;top:10px;left:10px;z-index:5;width:42px;height:42px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:18px;border-radius:12px;background:var(--glass);border:1px solid var(--line);color:#fff;cursor:pointer;box-shadow:inset 0 1px #ffffff22;transition:transform .15s,background .2s}
+.rescue b{font:800 10px var(--disp);color:var(--gold);line-height:1}
+.rescue:active{transform:scale(.92)}
 .rescue.off{opacity:.38;pointer-events:none}
 .rescue.active{background:linear-gradient(135deg,#8c6cf5,#5b6cf5);border-color:#ffffff40;box-shadow:0 4px 16px #6a4cf066,inset 0 1px #ffffff55}
 .ladder{display:flex;align-items:center;gap:6px}
@@ -75,7 +75,7 @@ button:hover{background:#ffffff22}button:active{transform:scale(.95)}button:focu
 .stat{min-width:56px;padding:6px 8px}.stat b{font-size:14px}.stat label{font-size:9px}
 h1{font-size:27px}header small{font-size:10px}
 .o{width:15px;height:15px}.o.goal{width:21px;height:21px;font-size:10px}.ladder{gap:4px}
-.rescue{height:30px;font-size:11px}.statusline{font-size:11px}
+.rescue{width:38px;height:38px;top:8px;left:8px;font-size:16px}.statusline{font-size:11px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
@@ -98,9 +98,9 @@ h1{font-size:27px}header small{font-size:10px}
 <main>
 <header><div><h1>1024</h1><small>bubble 3D · v2</small></div>
 <div class="stats"><div class="stat"><label>счёт</label><b id="score">0</b></div><div class="stat"><label>рекорд</label><b id="best">0</b></div><button id="restart" aria-label="Начать новую игру">↻</button><button class="menu-btn" id="menuBtn" aria-label="Меню"><span></span><span></span></button></div></header>
-<div class="board"><canvas id="game" aria-label="Игровое поле. Выбери место и отпусти шарик. Стрелки, пробел и Enter работают." tabindex="0"></canvas>
+<div class="board"><canvas id="game" aria-label="Игровое поле. Выбери место и отпусти шарик. Стрелки, пробел и Enter работают." tabindex="0"></canvas><button class="rescue off" id="rescueBtn" aria-label="Удалить шарик (спасение)">🧲<b id="rescueCount">0</b></button>
 <div class="overlay" id="overlay" hidden><div class="badge" id="icon"></div><h2 id="title"></h2><p id="message"></p><div><button id="again">Играть ещё</button><button id="continue" hidden>Продолжить</button></div></div></div>
-<div class="bar"><button class="rescue off" id="rescueBtn" aria-label="Удалить шарик">🧲 <b id="rescueCount">0</b><span>/2</span></button><div class="ladder" id="ladder" aria-label="Цель: собрать шарик 1024"></div></div>
+<div class="bar"><div class="ladder" id="ladder" aria-label="Цель: собрать шарик 1024"></div></div>
 <p class="statusline" id="statusline">Бросок готов</p>
 <div class="footer">
 <div><span>© 2026 RunTimer</span><span class="sep"> · </span><a href="https://github.com/OopsPoops/RunTimer" target="_blank" rel="noopener">О приложении</a><span class="sep"> · </span><a href="#" id="privacyLink">Политика</a></div>
@@ -130,7 +130,7 @@ const CFG={
   W:420,H:590,line:134,dropY:76,aimMin:35,aimMax:385,
   grav:760,
   radiusBase:19.5,radiusStep:3.3,
-  settleWait:0.3,maxWait:1.9,calmSpeed:62,
+  settleWait:0.03,maxWait:0.1,calmSpeed:62,
   comboBonusStep:1.0,    // бонус = v*(номерСлияния-1)*шаг
   chainChargeAt:3,       // сколько слияний за бросок даёт заряд
   maxCharges:2,
@@ -216,7 +216,7 @@ const q=ctx.createLinearGradient(0,95,0,CFG.H);q.addColorStop(0,'#ffffff55');q.a
 const gl=ctx.createRadialGradient(x,CFG.dropY,0,x,CFG.dropY,r*2);gl.addColorStop(0,pal(current)[1]+'55');gl.addColorStop(1,pal(current)[1]+'00');ctx.fillStyle=gl;ctx.fillRect(x-r*2,CFG.dropY-r*2,r*4,r*4);
 const grow=ready?1+Math.sin(T*3)*.03:.68;orb(x,CFG.dropY,current,grow,ready?1:.45)}
 // chain indicator
-if(chain>=2){const txt='×'+chain;ctx.font='800 16px Unbounded,system-ui';const w=ctx.measureText(txt).width+22;ctx.fillStyle='#ffd23f22';ctx.strokeStyle='#ffd23f66';ctx.beginPath();ctx.roundRect(12,14,w,30,15);ctx.fill();ctx.stroke();ctx.fillStyle='#ffd23f';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(txt,23,30)}
+if(chain>=2){const txt='×'+chain;ctx.font='800 16px Unbounded,system-ui';const w=ctx.measureText(txt).width+24;const cx=CFG.W/2;ctx.fillStyle='#ffd23f22';ctx.strokeStyle='#ffd23f66';ctx.beginPath();ctx.roundRect(cx-w/2,14,w,30,15);ctx.fill();ctx.stroke();ctx.fillStyle='#ffd23f';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(txt,cx-w/2+12,30)}
 // balls (and delete-mode highlight)
 for(const b of balls){if(b.v>=1024){const q=ctx.createRadialGradient(b.x,b.y,b.r*.6,b.x,b.y,b.r*1.9);q.addColorStop(0,`rgba(255,210,63,${.4+.15*Math.sin(T*4)})`);q.addColorStop(1,'#ffd23f00');ctx.fillStyle=q;ctx.fillRect(b.x-b.r*2,b.y-b.r*2,b.r*4,b.r*4)}orb(b.x,b.y,b.v,b.s)}
 if(choosing){const hit=balls.find(b=>Math.hypot(b.x-lastPX,b.y-lastPY)<b.r+12);ctx.save();ctx.strokeStyle='#7cf5ff';ctx.lineWidth=2.5;for(const b of balls){const pulse=.5+.5*Math.sin(T*6);ctx.globalAlpha=.35+.35*pulse;ctx.beginPath();ctx.arc(b.x,b.y,b.r+4,0,7);ctx.stroke()}ctx.globalAlpha=1;if(hit){ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(hit.x,hit.y,hit.r+7,0,7);ctx.stroke()}ctx.restore()}
