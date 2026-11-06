@@ -134,6 +134,7 @@ const CFG={
   maxCharges:2,
   comboMultMax:4,        // макс. комбо-умножитель очков
   specialChance:0.18,    // шанс выпадения спец-шарика (чаще)
+  specialOtherWeight:4,  // вес радуги/звезды при выборе спеца (бомба — всегда 1, чтобы летала реже)
   specialRadius:24,
   topR:120,              // радиус закругления верха (совпадает с CSS .board)
   bombRadius:92,         // радиус взрыва бомбы
@@ -155,7 +156,7 @@ const pal=v=>v<0?SPAL[v]:PAL[Math.min(10,Math.log2(v)-1)];
 // верх поля — арка (потолок повторяет закругление верха, чтобы шары не врезались в круглые углы)
 const ceilY=x=>{if(x>=CFG.topR&&x<=CFG.W-CFG.topR)return 0;const c=x<CFG.topR?CFG.topR:CFG.W-CFG.topR;const dx=x-c;const d=Math.sqrt(CFG.topR*CFG.topR-dx*dx);return CFG.topR-d};
 function pickTier(){let m=Math.max(maxV,...balls.map(b=>b.v),0),t=TIERS[0];for(const x of TIERS)if(m>=x.unlock)t=x;return t}
-function rollValue(){if(Math.random()<CFG.specialChance)return [BOMB,RAINBOW,STAR][Math.floor(Math.random()*3)];const t=pickTier();let total=0;for(const [v,w] of t.pool)total+=w;let r=Math.random()*total;for(const [v,w] of t.pool){if(r<w)return v;r-=w}return t.pool[0][0]}
+function rollValue(){if(Math.random()<CFG.specialChance){const w=CFG.specialOtherWeight,r=Math.random()*(w*2+1);return r<w?RAINBOW:(r<w*2?STAR:BOMB)}const t=pickTier();let total=0;for(const [v,w] of t.pool)total+=w;let r=Math.random()*total;for(const [v,w] of t.pool){if(r<w)return v;r-=w}return t.pool[0][0]}
 let balls=[],particles=[],rings=[],floats=[],bokeh=[],score=0,best=0,aim=CFG.W/2,current=2,next=2,
   over=false,won=false,paused=false,ready=true,throwActive=false,throwStart=0,settled=0,
   choosing=false,charges=0,chain=0,chargeAwarded=false,suppressChain=false,
